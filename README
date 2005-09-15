@@ -1,0 +1,34 @@
+Package: MSBVAR
+Title: Bayesian Vector Autoregression Models, Impulse Responses and Forecasting.
+Version: 0.1
+Author: Patrick T. Brandt <pbrandt@utdallas.edu>
+Description: Provides methods for estimating frequentist and Bayesian
+Vector Autoregression (VAR) models.  Also includes methods for the
+generating posterior inferences for VAR forecasts and error
+decompositions.
+
+Maintainer: Patrick T. Brandt  <pbrandt@utdallas.edu>
+License: GPL
+
+
+/* Revisions and History */
+2005-03-17 Initial version
+2005-07-21 Revised to new site and location.  Revised forecasting
+	   functions to match the Political Analysis paper by Brandt
+           and Freeman.
+2005-09-15 Revised documentation and code to pass checks for generics.
+	   Included Israeli-Palestinian dataset for examples.
+
+MSBVAR Package
+Copyright (C) 2005 Patrick T. Brandt
+Support provided by the U.S. National Science Foundation
+(Grants SES-0351179, SES-0351205, and SES-0540816)
+
+
+Patrick T. Brandt
+School of Social Sciences
+University of Texas at Dallas
+Box 830688,
+Richardson, Texas 75083
+
+pbrandt@utdallas.edu

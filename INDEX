@@ -1,0 +1,43 @@
+IsraelPalestineConflict
+                        Weekly Goldstein Scaled Israeli-Palestinian
+                        Conflict Data, 1979-2003
+SZ.prior.evaluation     Sims-Zha Bayesian VAR Prior Specification
+                        Search
+cf.forecasts            Compare VAR forecasts to each other or real
+                        data
+decay.spec              Lag decay specification check
+dfev                    Decompositions of Forecast Error Variance
+                        (DFEV) for VAR models
+forc.ecdf               Empirical CDF computations for posterior
+                        forecast samples
+forecast.var            Generate forecasts for fitted VAR objects
+granger.test            Bivariate Granger causality testing
+hc.forecast.var         Forecast density estimation of hard condition
+                        forecasts for VAR models via MCMC
+irf.var                 Impulse Response Function (IRF) Computation
+                        for a VAR
+mae                     Mean absolute error of VAR forecasts
+mc.irf.var              Monte Carlo Integration / Simulation of
+                        Impulse Response Functions
+mountains               Mountain plots for summarizing forecast
+                        densities
+plot.forc.ecdf          Plots VAR forecasts and their empirical error
+                        bands
+plot.irf.var            Plots impulse responses
+plot.mc.irf.var         Plotting posteriors of Monte Carlo simulated
+                        impulse responses
+plot.var.forecasts      Plots competing sets of VAR forecasts or a
+                        single set of VAR forecasts
+print.dfev              Printing DFEV tables
+reduced.form.var        Estimation of a reduced form VAR model
+restmtx                 Utility function for generating the
+                        restriction matrix for hard condition
+                        forecasting
+rmse                    Root mean squared error of a Monte Carlo /
+                        MCMC sample of forecasts
+rmultnorm               Multivariate Normal Random Number Generator
+rwishart                Random deviates from a Wishart distribution
+szbvar                  Sims-Zha Bayesian VAR model estimation
+uc.forecast.var         Forecast density estimation unconditional
+                        forecasts for VAR models via MCMC
+var.lag.specification   Automated VAR lag specification testing

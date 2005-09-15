@@ -1,0 +1,59 @@
+"reduced.form.var" <-
+function(dat, p, z=NULL)
+  {     dat<-as.matrix(dat);
+        n<-nrow(dat);	 	# of observations in data set
+	m<-ncol(dat);	 	# of variables in data set
+	ncoef<-(m*p)+1;	        # coefficients in each RF equation
+	Ts<-n-p;  		# of actual data observations
+ 
+	# Y and X matrices 
+	X<-matrix(0,nrow=Ts,ncol=ncoef) 
+	Y<-matrix(0,nrow=Ts,ncol=m)
+	const<-matrix(1,nrow=Ts)
+	X[,ncoef]<-const;
+
+	# Note that constant is put last here 
+	for(i in 1:p)
+          { X[(1:Ts),(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m)
+          }
+        X<-cbind(X[,ncoef],X[,1:ncoef-1]);  # put constant first
+	Y[1:Ts,]<-matrix(dat[(p+1):n,],ncol=m);
+
+        if (is.null(z)==FALSE)
+          { X <- cbind(X, z[(p+1):n,])
+          }
+        # Set up some matrices for later
+        XX <- crossprod(X)
+	Bh<-solve(XX, crossprod(X,Y), tol = 1e-16)
+	u<-(Y - X%*%(Bh));
+	Sh<-crossprod(u)/Ts;  # u'u/n form of estimator 
+        
+        # Format the output variables
+        # Split the coefficient matrix (will make IRFs and forecasting easier)
+        intercept<-Bh[1,];                   # extract the intercept
+        ar.coefs<-t(Bh[2:(m*p+1),]);           # extract the ar coefficients
+        dim(ar.coefs)<-c(m,m,p)              # push ar coefs into M x M x P array
+        ar.coefs<-aperm(ar.coefs,c(2,1,3))   # reorder array so columns are for eqn
+
+        if(is.null(z)==FALSE)
+          {
+            exog.coefs <- Bh[(m*p+2):nrow(Bh),]
+          }
+        else
+          {exog.coefs <- NA}
+        
+	output <- list(intercept = intercept,
+                       ar.coefs=ar.coefs,
+                       Bhat = Bh,
+                       vcv=Sh,
+                       exog.coefs=exog.coefs,
+                       residuals=u,
+                       mean.S=Sh,
+                       hstar=XX,
+                       X=X,
+                       Y=Y,  # the VAR Y
+                       y=dat); # original y
+        class(output) <- c("VARobject")
+        return(output)
+      }
+
