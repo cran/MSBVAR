@@ -1,7 +1,7 @@
 Package: MSBVAR
 Title: Bayesian Vector Autoregression Models, Impulse Responses and Forecasting.
-Version: 0.1
-Date: 2005-09-15
+Version: 0.1.1
+Date: 2006-01-30
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
 Depends: R (>= 2.1.0), KernSmooth, xtable
@@ -16,4 +16,4 @@ Description: Provides methods for estimating frequentist and
   possibly some models with Markov switching. 
 License: GPL version 2 or newer
 URL: http://www.utdallas.edu/~pbrandt/
-Packaged: Mon Sep 19 17:36:19 2005; brandt
+Packaged: Mon Jan 30 12:50:39 2006; brandt

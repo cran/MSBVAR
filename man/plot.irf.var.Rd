@@ -18,7 +18,8 @@ plot.irf.var(x, varnames = NULL, ...)
 \details{
   Generates a plot in ther current plotting device of the impulse
   responses in \code{irf}.  See below for functions that allow one to
-  add error bands and confidence regions to the impulse responses.}
+  add error bands and confidence regions to the impulse responses.
+  Impulses or shocks are in the columns and the rows are the responses.}  
 }
 \value{
   None.  Draws a graph in the current device.

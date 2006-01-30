@@ -14,11 +14,11 @@ forecast.var            Generate forecasts for fitted VAR objects
 granger.test            Bivariate Granger causality testing
 hc.forecast.var         Forecast density estimation of hard condition
                         forecasts for VAR models via MCMC
-irf.var                 Impulse Response Function (IRF) Computation
-                        for a VAR
+irf.var                 Impulse Response Function (IRF) Computation for
+                        a VAR
 mae                     Mean absolute error of VAR forecasts
-mc.irf.var              Monte Carlo Integration / Simulation of
-                        Impulse Response Functions
+mc.irf.var              Monte Carlo Integration / Simulation of Impulse
+                        Response Functions
 mountains               Mountain plots for summarizing forecast
                         densities
 plot.forc.ecdf          Plots VAR forecasts and their empirical error
@@ -30,11 +30,10 @@ plot.var.forecasts      Plots competing sets of VAR forecasts or a
                         single set of VAR forecasts
 print.dfev              Printing DFEV tables
 reduced.form.var        Estimation of a reduced form VAR model
-restmtx                 Utility function for generating the
-                        restriction matrix for hard condition
-                        forecasting
-rmse                    Root mean squared error of a Monte Carlo /
-                        MCMC sample of forecasts
+restmtx                 Utility function for generating the restriction
+                        matrix for hard condition forecasting
+rmse                    Root mean squared error of a Monte Carlo / MCMC
+                        sample of forecasts
 rmultnorm               Multivariate Normal Random Number Generator
 rwishart                Random deviates from a Wishart distribution
 szbvar                  Sims-Zha Bayesian VAR model estimation

@@ -1,5 +1,5 @@
 "irf.var" <-
-function(var.obj, nsteps, A0=t(chol(var.obj$mean.S)))
+function(var.obj, nsteps, A0=chol(var.obj$mean.S))
   {  
     ar.coef <- var.obj$ar.coef
     m<-dim(ar.coef)[1]                   # Capture the number of variables

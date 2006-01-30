@@ -7,7 +7,7 @@
   representation (MAR) for an m-dimensional set of VAR coefficients.
 }
 \usage{
-irf.var(var.obj, nsteps, A0=t(chol(var.obj$mean.S)))
+irf.var(var.obj, nsteps, A0=chol(var.obj$mean.S))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +17,7 @@ irf.var(var.obj, nsteps, A0=t(chol(var.obj$mean.S)))
     the IRFs (typically 1.5 to 2 times the lag length used in estimation}
   \item{A0}{ Decomposition contemporaneous error covariance of a VAR,
     default is a Cholesky decomposition of the error covariance matrix,
-    \code{A0 = t(chol(var.obj$mean.S))}}
+    \code{A0 = chol(var.obj$mean.S)}}
 }
 \details{
   This function should rarely be called by the user.  It is a working
@@ -29,10 +29,12 @@ irf.var(var.obj, nsteps, A0=t(chol(var.obj$mean.S)))
 \value{
   A list of the AR coefficients used in computing the IRF and the
   impulse response matrices:
-  \item{B}{Autoregressive coefficient matrices in lag order.  Note that
-    all AR coefficient matrices for k>p are zero}
-  \item{mhat }{M x M x k impulse response matrices.  mhat[,,i] are the
-    impulses for the i'th period for the M variables.}
+  \item{B}{ \eqn{m \times m \times nstep}{ m x m x nstep} Autoregressive
+    coefficient matrices in lag order.  Note that
+    all AR coefficient matrices for \eqn{nstep>p}{nstep > p} are zero.}
+  \item{mhat }{ \eqn{m \times m \times \times nstep}{m x m x nstep}
+    impulse response matrices.  \code{mhat[,,i]} are the
+    impulses for the i'th period for the \eqn{m} variables.}
 }
 \references{ Sims, C.A. and Tao Zha. 1999. "Error Bands for Impulse
   Responses." Econometrica 67(5): 1113-1156.
