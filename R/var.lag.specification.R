@@ -10,16 +10,16 @@ function(y, lagmax=20)
       obs <- nrow(y) - lagmax
       ldets[lagmax-p+1,2] <- log(det(tmp$var.pred))
       ldets[lagmax-p+1,1] <- p
-      aic <- obs*ldets[lagmax-p+1,2] + no.param*2
-      bic <- obs*ldets[lagmax-p+1,2] + no.param*log(obs)
-      sic <- obs*ldets[lagmax-p+1,2] + (no.param*log(obs)/obs)
+      aic <- ldets[lagmax-p+1,2] + no.param*2/obs
+      bic <- ldets[lagmax-p+1,2] + no.param*log(obs)/obs
+      hq <- ldets[lagmax-p+1,2] + 2*log(log(obs))*(no.param/obs)
       results[p,1] <- p
       results[p,2] <- aic
       results[p,3] <- bic
-      results[p,4] <- sic
+      results[p,4] <- hq
     }
-  
-  colnames(results) <- c("Lags","AIC","BIC", "Schwarz")
+
+  colnames(results) <- c("Lags","AIC","BIC", "HQ")
 
   # now do LR tests
   for (i in 1:(lagmax-1))
@@ -32,7 +32,8 @@ function(y, lagmax=20)
     }
 
   colnames(ldets) <- c("Lags","Log-Det","Chi^2","p-value")
-  
-  return(list(ldets=ldets,results=results))
+  output <- list(ldets=ldets,results=results)
+  class(output) <- c("var.lag.specification")
+  return(output)
 }
 

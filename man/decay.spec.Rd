@@ -15,7 +15,7 @@ decay.spec(qm, p, lambda)
     monthly data.}
   \item{p}{ Number of lags}
   \item{lambda}{ Lag decay parameter [>0], which is \code{lambda3} in
-    the Sims-Zha BVAR specification}
+    the Sims-Zha BVAR specification in \code{szbvar}}
 }
 \details{
   Computes the relative decay in the prior variance of the VAR prior
@@ -28,8 +28,7 @@ decay.spec(qm, p, lambda)
 
 }
 \references{ Sims, C.A. and Tao Zha. 1998. "Bayesian Methods for Dynamic
-  Multivariate Models." \emph{International Economic
-  Review}. 39(4):949-968.}
+  Multivariate Models." \emph{International Economic Review}. 39(4):949-968.}
 \author{ Patrick T. Brandt}
 \note{}
 

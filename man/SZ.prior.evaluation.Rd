@@ -3,14 +3,15 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Sims-Zha Bayesian VAR Prior Specification Search }
 \description{
-  Estimates posterior and in-sample fit measures for vector
-  autoregression models with different specifications of the Sims-Zha
+  Estimates posterior and in-sample fit measures for a reduced form vector
+  autoregression model with different specifications of the Sims-Zha
   hyperparameters values.  
 }
 \usage{
-SZ.prior.evaluation(Y, p, lambda0, lambda1, lambda3, lambda4, lambda5,
-                    mu5, mu6, z = NULL, nu = ncol(Y) + 1, qm, prior = 0,
-                    nstep, y.future)
+SZ.prior.evaluation(Y, p,
+                    lambda0, lambda1, lambda3, lambda4, lambda5,
+                    mu5, mu6, z = NULL, nu = ncol(Y) + 1, qm,
+                    prior = 0, nstep, y.future)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -53,12 +54,13 @@ SZ.prior.evaluation(Y, p, lambda0, lambda1, lambda3, lambda4, lambda5,
 }
 \value{
   A matrix of the results with columns corresponding to the values of 
-  \code{c("lambda0", "lambda1", "lambda3", "lambda4", "lambda5", "mu5",
-    "mu6", "RMSE", "MAE", "MargLLF","MargPosterior")}
+  "lambda0", "lambda1", "lambda3", "lambda4", "lambda5", "mu5",
+  "mu6", "RMSE", "MAE", "MargLLF","MargPosterior".
 }
 \references{ Brandt, Patrick T. and John R. Freeman. 2006. "Advances in Bayesian
-   Time Series Modeling and the Study of Politics: Theory Testing, Forecasting, and Policy Analysis"
-   \emph{Political Analysis}.}
+  Time Series Modeling and the Study of Politics: Theory Testing,
+  Forecasting, and Policy Analysis"
+   \emph{Political Analysis} 14(1):1-36.}
 \author{ Patrick T. Brandt }
 \note{  The matrix of the results can be usefully plotted using the
   \code{lattice} package.  See the example below.

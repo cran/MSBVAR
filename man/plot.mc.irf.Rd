@@ -1,20 +1,22 @@
-\name{plot.mc.irf.var}
-\alias{plot.mc.irf.var}
+\name{plot.mc.irf}
+\alias{plot.mc.irf}
+\alias{plot.mc.irf.VAR}
+\alias{plot.mc.irf.BVAR}
+\alias{plot.mc.irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plotting posteriors of Monte Carlo simulated impulse responses}
 \description{
-  Provides a plotting method for the \code{mc.irf.var} Monte Carlo
+  Provides a plotting method for the \code{mc.irf} Monte Carlo
   sample of impulse responses.  Responses can be plotted with classical
   or Bayesian error bands, as suggested by Sims and Zha (1999).
 }
 \usage{
-plot.mc.irf.var(x, method = c("Sims-Zha2"),
-                component = 1, probs = c(0.16, 0.84),
-                varnames = NULL, ...)
+plot.mc.irf(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84), 
+            varnames = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ Output of the \code{mc.irf.var} function}
+  \item{x}{ Output of the \code{mc.irf} function}
   \item{method}{ Method to be used for the error band construction.
     Default method is to use the eigendecomposition method proposed by
     Sims and Zha.  Defined methods are "Percentile" (error bands are
@@ -34,10 +36,10 @@ plot.mc.irf.var(x, method = c("Sims-Zha2"),
 }
 \details{
  This function plots the output of a Monte Carlo simulation of VAR
- impulse response functions produced by \code{mc.irf.var}.  The function
+ impulse response functions produced by \code{mc.irf}.  The function
  allows the user to choose among a variety of frequentist (normal
- appproximation and percentile methods) and Bayesian (eigendecomposition
- methods) for constructing error bands around a set of impulse
+ appproximation and percentile) and Bayesian (eigendecomposition)
+ methods for constructing error bands around a set of impulse 
  responses. Impulses or shocks are in the columns and the rows are the
  responses.
 }
@@ -56,8 +58,9 @@ plot.mc.irf.var(x, method = c("Sims-Zha2"),
 
 }
 \references{ Brandt, Patrick T. and John R. Freeman. 2006. "Advances in Bayesian
-   Time Series Modeling and the Study of Politics: Theory Testing, Forecasting, and Policy Analysis"
-   \emph{Political Analysis}.
+  Time Series Modeling and the Study of Politics: Theory Testing,
+  Forecasting, and Policy Analysis"
+  \emph{Political Analysis} 14(1):1-36.
 
    Sims, C.A. and Tao Zha. 1999. "Error Bands for Impulse
   Responses." \emph{Econometrica}. 67(5): 1113-1156.
@@ -66,8 +69,13 @@ plot.mc.irf.var(x, method = c("Sims-Zha2"),
 \author{ Patrick T. Brandt}
 \note{ }
 
-\seealso{ See Also \code{\link{mc.irf.var}} for te computation of Monte
-  Carlo samples of impulse responses.}
+\seealso{ See Also \code{\link{mc.irf}} for the computation of Monte
+  Carlo samples of impulse responses,
+  \code{\link{szbsvar}} for estimation of the posterior
+  moments of the B-SVAR model,
+  \code{\link{gibbs.A0.BSVAR}} for Gibbs sampling the
+  posterior of the \eqn{A_0}{A(0)} for the model, and 
+}
 \examples{
 \dontrun{
 data(IsraelPalestineConflict)
@@ -76,7 +84,7 @@ fit.BVAR <- szbvar(IsraelPalestineConflict, p=6, z=NULL, lambda0=0.6,
                    mu5=0, mu6=0, nu=3, qm=4, prior=0,
                    posterior.fit=FALSE)
 
-posterior.impulses <- mc.irf.var(fit.BVAR, nsteps=12, draws=1000)
+posterior.impulses <- mc.irf(fit.BVAR, nsteps=12, draws=1000)
 plot(posterior.impulses, method = c("Percentile"))
 }
 }

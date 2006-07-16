@@ -5,7 +5,7 @@
   condition forecasting}
 \description{
   Generates the restriction matrix for a set of hard condition
-  forecasts.  See \code{\link{hc.forecast.var}} for details.
+  forecasts.  See \code{\link{hc.forecast}} for details.
 }
 \usage{
 restmtx(nsteps, m)
@@ -22,7 +22,7 @@ restmtx(nsteps, m)
 \value{
   A matrix of dimensions (nsteps x m*nsteps) that can be used to
   represent the restrictions in hard condition forecasting using
-  \code{hc.forecast.var}
+  \code{hc.forecast}
 }
 
 \references{ Waggoner, Daniel F. and Tao Zha. 1999. "Conditional
@@ -30,7 +30,7 @@ restmtx(nsteps, m)
   Statistics}, 81(4):639-651.}
 \author{ Patrick T. Brandt}
 
-\seealso{ \code{\link{hc.forecast.var}}}
+\seealso{ \code{\link{hc.forecast}}}
 \examples{
 }
 \keyword{ models}

@@ -17,7 +17,7 @@ granger.test(y, p)
   Estimates all possible bivariate Granger causality tests for m
   variables.  Bivariate Granger causality tests for two variables X and
   Y evaluate whether the past values of X are useful for predicting Y
-  once Y's history has been modelled.  The null hypothesis is that the
+  once Y's history has been modeled.  The null hypothesis is that the
   past p values of X do not help in predicting the value of Y.
 
   The test is implemented by regressing Y on p past values of Y and p

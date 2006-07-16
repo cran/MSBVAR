@@ -1,31 +1,39 @@
 \name{dfev}
 \alias{dfev}
+\alias{dfev.VAR}
+\alias{dfev.BVAR}
+\alias{dfev.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Decompositions of Forecast Error Variance (DFEV) for VAR models }
+\title{ Decompositions of Forecast Error Variance (DFEV) for VAR/BVAR/BSVAR models }
 \description{
-  Computes the M dimensional decomposition of forecast error variance
-  for a VAR model.  User can specify the decomposition of the
-  contemporaneous innovations.
-}
+  Computes the m dimensional decomposition of forecast error variance
+  (DFEV) for a VAR/BVAR/BSVAR model.  User can specify the decomposition of the
+  contemporaneous innovations.  }
 \usage{
-dfev(var.obj, A0 = t(chol(var.obj$mean.S)), k)
+dfev(varobj, A0 = NULL, k)
+dfev.VAR(varobj, A0 = t(chol(varobj$mean.S)), k)
+dfev.BVAR(varobj, A0 = t(chol(varobj$mean.S)), k)
+dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{var.obj}{ VAR object created from fitting a VAR model using
-    either szbvar() or mlevar() }
+\item{varobj}{ VAR/BVAR/BSVAR object created from fitting a
+    VAR/BVAR/BSVAR model using \code{szbvar}, \code{szbsvar}, or
+    \code{reduced.form.var}. }
   \item{A0}{ Decomposition of the contemporaneous error covariance
-    matrix.  Default is to use the Cholesky decomposition of the
-    residual error covariance matrix. }
+    matrix.  Default is to use the (lower) Cholesky decomposition of the
+    residual error covariance matrix for VAR and BVAR models, or the
+    inverse of \eqn{A_0}{A(0)} in B-SVAR models. }
   \item{k}{ Number of periods over which to compute the deccomposition. }
 }
 \details{
   The decomposition of the forecast error variance (DFEV) provides a
   measure of the relationship among forecast errors or impact of shocks
-  to a VAR system. It is computed by finding the moving average
-  representation (MAR) of the VAR model and then tracing out the path of
+  to a VAR/BVAR/BSVAR system. It is computed by finding the moving average
+  representation (MAR) of the VAR/BVAR/BSVAR model and then tracing out the path of
   innovations through the system.  For each of the M innovations in a
-  VAR, the amount of the variance in these forecast errors or
+  VAR/BVAR/BSVAR, the amount of the variance in these forecast errors or
   innovations is computed and returned in a table.  The table can be
   accessed via the \code{\link{print.dfev}} and \code{\link{summary.dfev}}
   functions.
@@ -62,8 +70,8 @@ dfev(var.obj, A0 = t(chol(var.obj$mean.S)), k)
     A0 <- t(chol(fitted.BVAR$mean.S))
     dat.dfev <- dfev(fitted.BVAR, A0, 24)
 
-    print.dfev(dat.dfev)
-    summary.dfev(dat.dfev)
+    print(dat.dfev)
+    summary(dat.dfev)
 }
 \keyword{ ts }% at least one, from doc/KEYWORDS
 

@@ -38,7 +38,7 @@ mountains(fcasts1, fcasts2, varnames, pts, ...)
 \references{ Brandt, Patrick T. and John R. Freeman. 2006. "Advances in
   Bayesian  Time Series Modeling and the Study of Politics: Theory
   Testing, Forecasting, and Policy Analysis"
-  \emph{Political Analysis}.
+  \emph{Political Analysis} 14(1):1-36.
 }
 \author{ Patrick T. Brandt}
 \note{ This function requires the bivariate kernel smoother in the

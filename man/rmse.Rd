@@ -24,7 +24,7 @@ rmse(m1, m2)
 \author{ Patrick T. Brandt}
 \note{ }
 
-\seealso{ \code{\link{mae}}}
+\seealso{ \code{\link{mae}}, \code{\link{forecast}}}
 \examples{
 data(IsraelPalestineConflict)
 Y.sample1 <- window(IsraelPalestineConflict, end=c(2002, 52))
@@ -36,7 +36,7 @@ fit.bvar <- szbvar(Y.sample1, p=6, lambda0=0.6, lambda1=0.1, lambda3=2,
 
 # Forecast -- this gives back the sample PLUS the forecasts!
 
-forecasts <- forecast.var(fit.bvar, nsteps=nrow(Y.sample2))
+forecasts <- forecast(fit.bvar, nsteps=nrow(Y.sample2))
 
 # Compare forecasts to real data
 rmse(forecasts[(nrow(Y.sample1)+1):nrow(forecasts),], Y.sample2)

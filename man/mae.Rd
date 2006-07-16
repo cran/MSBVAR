@@ -10,11 +10,11 @@ mae(m1, m2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{m1}{ nsteps x m matrix of VAR forecasts }
-  \item{m2}{ nsteps x m matrix of VAR forecasts or true values}
+  \item{m1}{ \eqn{nsteps \times m}{nstep x m} matrix of VAR forecasts }
+  \item{m2}{ \eqn{nsteps \times m}{nstep x m} matrix of VAR forecasts or true values}
 }
 \details{
-  Computes the MAE across a series of VAR forecasts.
+  Computes the mean absolute error (MAE) across a series of VAR forecasts.
 }
 \value{
   MAE value
@@ -33,7 +33,7 @@ fit.bvar <- szbvar(Y.sample1, p=6, lambda0=0.6, lambda1=0.1, lambda3=2,
 
 # Forecast -- this gives back the sample PLUS the forecasts!
 
-forecasts <- forecast.var(fit.bvar, nsteps=nrow(Y.sample2))
+forecasts <- forecast(fit.bvar, nsteps=nrow(Y.sample2))
 
 # Compare forecasts to real data
 mae(forecasts[(nrow(Y.sample1)+1):nrow(forecasts),], Y.sample2)

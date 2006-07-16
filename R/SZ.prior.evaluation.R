@@ -4,7 +4,7 @@
   { combos <- length(lambda0)*length(lambda1)*length(lambda3)*length(lambda4)
     results <- matrix(0, combos ,11)
     h <- 0
-    
+
     for(i in 1:length(lambda0))
       { for(j in 1:length(lambda1))
         { for(k in 1:length(lambda3))
@@ -21,8 +21,8 @@
                             qm=qm,
                             prior=prior,
                             posterior.fit=T)
-              
-              forecast <- forecast.var(fit, nstep)
+
+              forecast <- forecast.VAR(fit, nstep)
               eval.forecasts <-
                 cf.forecasts(forecast[(nrow(forecast)-nstep+1):nrow(forecast),], y.future)
 
@@ -34,9 +34,9 @@
 
               h <- h+1
               results[h,] <- tmp
-              
+
             }}}}
-    
+
     colnames(results) <- c("lambda0", "lambda1", "lambda3", "lambda4",
                            "lambda5", "mu5", "mu6", "RMSE", "MAE", "MargLLF",
                            "MargPosterior")

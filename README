@@ -1,6 +1,6 @@
 Package: MSBVAR
-Title: Bayesian Vector Autoregression Models, Impulse Responses and Forecasting.
-Version: 0.1.1
+Title: Bayesian Vector Autoregression Models
+Version: 0.2.0
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Description: Provides methods for estimating frequentist and Bayesian
 Vector Autoregression (VAR) models.  Also includes methods for the
@@ -18,18 +18,98 @@ License: GPL
            and Freeman.
 2005-09-15 Revised documentation and code to pass checks for generics.
 	   Included Israeli-Palestinian dataset for examples.
+2005-10-18 Incorporates preliminary functions for Bayesian SVAR models.
+2006-01-19 Updated calls to Matrix package so they do not default to
+           using sparse matrices in MSBVAR functions.
 2006-01-29 Revised impulse response plotting functions to plot shocks
            / impulses in the columns and responses in the rows. The
 	   code was documented to work this way, but delivered an
-           incorrect plot.
+           incorrect plot.  Also changed the irf.var() function so
+	   that it used an UPPER triangular A0 matrix rather than a
+           lower one (the former is consistent with the return from
+           chol()).
+2006-02-01 Updated plotting functions for IRFs to use correct ylims
+           for response plots.
+2006-02-02 Removed creation of "L" in the LU decomposition used to
+           backsolve structural VAR systems in "drawA0".  The U's from
+	   the lu(t(A0)) are valid -- sometimes the Matrix library
+           cannot generate a well behaved L, but it is not necessary
+	   for the Gibbs sampler.
+2006-02-10 Changed starting value computation for structural.szbvar()
+	   from a set of N(0,25) to N(0,1).
+	   Added a tolerance of 1e-12 to QR decompositions in drawing
+           A(0) for B-SVAR models.
+2006-02-18 Version 0.1.6
+	   Replaced LU decompositions with QR
+           decompositions in the computation of the orthonormal basis
+           of the B-SVAR model posterior sampling.
+	   Removed dependency on matrix package by replacing LU
+           decompositions with QR decompositions
+2006-02-24 Corrected limits for plots in plot.irf.var().  Previous
+           versions could truncate the plot axes incorrectly.
+2006-03-02 Corrected an error in the computation of the marginal data
+           density for B-SVAR models.  Optimized code for computing
+           posterior fit measures for
+	   posterior.fit.structural.szbvar()
+2006-03-07 Corrected overflow error in some computations of the log
+	   determinants in posterior.fit.structural.szbvar() by
+	   changing the computation of the log determinant for a
+	   diagonal matrix to the simpler sum of the diagonal
+           elements or using the determinant(,logarithm=T) function. 
+2006-03-15 Version 0.1.9
+	   1) Added option to change normalization rules for A(0) in
+           sampling the structural parameters of B-SVAR models.
+           Previous versions had hard coded the normalization.  New
+	   version supports all of the normalization rules in
+	   normalize.svar().  Documentation for this change has been
+           updated as well.
+2006-03-15 Version 0.1.10	
+	   1) Corrected matrix inversion of A(0) in
+	   mc.irf.structural.szbvar() and mcmc.structural.szbvar().
+	   Previous version were possibly zeroing out A(0) terms
+	   incorrectly when computing IRFs.  This did NOT affect the
+	   sampling of IRFs using gibbs.A0.structural.szbvar().
+	   2) Corrected indexing of AR coefficients and intercepts for
+           the output object in reduced.form.var().  Previous version
+	   selected the wrong coefficients for the intercept and AR(1)
+	   terms.
+2006-03-17 Version 0.1.11 
+	   Changed order of arguments in gibbs.A0.structural.szbvar()
+	   so that the normalization options do not break older
+	   code.
+2006-03-26 Added forced matrix via as.matrix for testing Ui object
+	   dimensions in b2a function in hidden.R
+2006-04-01 Version 0.1.12
+	   Now requires "coda" package.
+	   Flattened the A0 and W objects that are output by gibbs.A0
+	   function to conserve memory.  Lowers the memory overhead
+           for B-SVAR models by nearly 70% allowing for longer runs of
+	   the Gibbs sampler.
+	   Added function "A02mcmc" to convert A0 posterior draws to
+           coda mcmc objects.
+2006-04-06 Changed selection criteria in var.lag.specification to
+           include the Hannan-Quinn measure and to minimize fit
+	   criteria.
+2006-04-07 Added a check on the rank of the exogenous variables to the
+	   structural.szbvar() function.
+2006-06-18 Implemented classes for VAR, BVAR, and B-SVAR models.
+	   Class based dispatching is now available for most
+	   post-estimation tasks such as impulse responses, Monte
+	   Carlo sampling, plotting, etc.   Some function names have
+	   changed from previous (post 0.1.1) versions.  Please be
+	   aware of this.
+2006-07-15 Revised documentation to acccount for new class-based
+	   dispatching.
+
 
 MSBVAR Package
 Copyright (C) 2005-2006 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, and SES-0540816)
 
+
 Patrick T. Brandt
-School of Social Sciences
+School of Economic, Political and Policy Sciences
 University of Texas at Dallas
 Box 830688,
 Richardson, Texas 75083

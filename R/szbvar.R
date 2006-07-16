@@ -1,6 +1,5 @@
 
-# szbvar estimator  -- Does reduced form if no A0 pattern is given.
-# O/W WE WANT THIS TO DO SVAR
+# szbvar estimator  
 
 "szbvar" <-
 function(dat, p, z=NULL, lambda0, lambda1, lambda3,
@@ -27,7 +26,7 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     # Declare the endoegnous variables as a matrix.
     dat<-as.matrix(dat);
 
-    # Create data matrix including dummy observations 
+    # Create data matrix including dummy observations
     # X: Tx(m*p+1)
     # Y: Txm, ndum=m+1 prior dummy obs (sums of coeffs and coint).
 	# mean of the first p data values = initial conditions
@@ -35,9 +34,9 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
       { datint <- as.vector(dat[1,]) }
     else
       { datint<-as.vector(apply(dat[1:p,],2,mean)) }
-        
-    # Y and X matrices with m+1 initial dummy observations 
-    X<-matrix(0, nrow=capT, ncol=ncoef) 
+
+    # Y and X matrices with m+1 initial dummy observations
+    X<-matrix(0, nrow=capT, ncol=ncoef)
     Y<-matrix(0, nrow=capT, ncol=m)
     const<-matrix(1, nrow=capT)
     const[1:m,]<-0;	         # no constant for the first m periods
@@ -58,7 +57,7 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     for(i in 1:p)
       { X[(ndum+1):capT,(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m)
       }
-    
+
      # Put on the exogenous regressors and make the constant the
      # first exog regressor after the AR coefs
     if(is.null(z)==F)
@@ -67,11 +66,11 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
         pad.z[(ndum+1):capT,] <- matrix(z[(p+1):n,], ncol=ncol(z))
         X<-cbind(X,pad.z);
       }
-    
+
     # Get the corresponding values of Y
     Y[(ndum+1):capT,]<-matrix(dat[(p+1):n,],ncol=m);
 
-    # Weight dummy observations 
+    # Weight dummy observations
     X[1:m,]<-mu5*X[1:m,];
     Y[1:m,]<-mu5*Y[1:m,];
     X[ndum,]<-mu6*X[ndum,];
@@ -80,24 +79,24 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     # END OF DATA SET UP FOR THE MIXED ESTIMATION
 
     # NOW CREATE THE PRIORS
-    
+
     # create monthly lag decay to match 1/k decay in quarterly
     #  data where k = quarters
-    ld<-seq(1:p)^-lambda3;			# regular lag decay (note ^-lambda3) 
+    ld<-seq(1:p)^-lambda3;			# regular lag decay (note ^-lambda3)
     if(qm==12)
       { j<-ceiling(p/3)^-lambda3;   	# last quarter (rounded up) eg. l2=13=>xx2=5
         b<-0
         if(p > 1)
           { b<-(log(1)-log(j))/(1-p) }
         a<-exp(-b);
-        ld<-a*exp(b*seq(1:p));	# Tao Zha's lag decay to match 13th lag 
+        ld<-a*exp(b*seq(1:p));	# Tao Zha's lag decay to match 13th lag
       }
-    
+
     # Scale factors from OLS
     s2<-matrix(0,nrow=m,ncol=1)
     for(i in 1:m)
       {
-        s2[i,1] <- ar(dat[,i], aic=FALSE, order.max=p, 
+        s2[i,1] <- ar(dat[,i], aic=FALSE, order.max=p,
                      intercept=TRUE, demean=FALSE)$var.pred
       }
     #  Prior scale matrix for Sigma:  Sigma ~ IW(H0,v) @
@@ -113,8 +112,8 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     prior.exog <- 0
     if( lambda5 > 0 )
       { prior.exog <- 1/(lambda0*lambda5)^2 }
-    
-    
+
+
     # Prior cov of B|Sigma is Sigma.*.inv(H0)  for now, this uses the
     # prior on the intercept for the exogenous variables
 
@@ -130,8 +129,8 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
 
     # Now, do the special cases of normal-flat and flat-flat
     if(prior == 1)
-      { S0 <-0*S0 } # using normal-flat prior as special case 
-      
+      { S0 <-0*S0 } # using normal-flat prior as special case
+
     if(prior == 2)         # using the flat-flat prior as a special case
       { H0<-0*H0
         S0<-0*S0
@@ -159,21 +158,7 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
 
     # Residuals and MLE estimators of the variance
     u<-(Y - X%*%(Bh));
-    Sh1<-crossprod(u)/capT;  # u'u/n form of estimator 
-
-    # Compute the posterior fit measures.
-    if(posterior.fit==T)
-      { tmp <- posterior.fit.szbvar(capT,m,ncoef,num.exog,nu,H0,S0,Y,X,hstar1,Sh,u,Bh,Sh1)
-        marg.llf <- tmp$data.marg.llf
-        marg.post <- tmp$data.marg.post
-        coef.post <- tmp$coef.post
-      }
-    else
-      {
-        marg.llf <- NA
-        marg.post <- NA
-        coef.post <- NA
-      }
+    Sh1<-crossprod(u)/capT;  # u'u/n form of estimator
 
     # Format the output variables
     # Split the coefficient matrix (will make IRFs and forecasting easier)
@@ -192,32 +177,51 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
         exog.coefs <- Bh[(ncoef+1):nrow(Bh),]
       }
 
+    marg.llf <- NA
+    marg.post <- NA
+    coef.post <- NA
+
+    pfit <- list(capT=capT, m=m, ncoef=ncoef, num.exog=num.exog,
+                          nu=nu, H0=H0, S0=S0, Y=Y, X=X,
+                          hstar1=hstar1, Sh=Sh, u=u, Bh=Bh, Sh1=Sh1)
+
     output <- list(intercept = intercept,
-                ar.coefs=ar.coefs,
-                exog.coefs=exog.coefs,
-                Bhat = Bh,
-                vcv=Sh1,
-                vcv.Bh=vcv.Bh,
-                mean.S=Sh,
-                St=St,   
-                hstar=(H0 + XX),
-                hstarinv=hstarinv,   
-                H0=H0,
-                S0=S0,
-                residuals = u,
-                X=X,
-                Y=Y,
-                y=dat,
-                z=z,
-                p=p,
-                num.exog=num.exog,
-                qm=qm,
-                prior.type=prior,
-                prior=c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5,mu6,nu),
-                marg.llf=marg.llf,
-                marg.post=marg.post,
-                coef.post=coef.post)
-    class(output) <- c("VARobject")
+                   ar.coefs=ar.coefs,
+                   exog.coefs=exog.coefs,
+                   Bhat = Bh,
+                   vcv=Sh1,
+                   vcv.Bh=vcv.Bh,
+                   mean.S=Sh,
+                   St=St,
+                   hstar=(H0 + XX),
+                   hstarinv=hstarinv,
+                   H0=H0,
+                   S0=S0,
+                   residuals = u,
+                   X=X,
+                   Y=Y,
+                   y=dat,
+                   z=z,
+                   p=p,
+                   num.exog=num.exog,
+                   qm=qm,
+                   prior.type=prior,
+                   prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,mu5,mu6,nu),
+                   pfit=pfit,
+                   marg.llf=marg.llf,
+                   marg.post=marg.post,
+                   coef.post=coef.post)
+    class(output) <- c("BVAR")
+
+    # Compute the posterior fit measures.
+    if(posterior.fit==T)
+    {
+        tmp <- posterior.fit.BVAR(output)
+        output$marg.llf <- tmp$data.marg.llf
+        output$marg.post <- tmp$data.marg.post
+        output$coef.post <- tmp$coef.post
+    }
+
     # Here are the returns
     return(output)
   }

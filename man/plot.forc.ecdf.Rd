@@ -30,7 +30,7 @@ plot.forc.ecdf(x, probs = c(0.05, 0.95),
 \author{ Patrick T. Brandt}
 \note{ }
 
-\seealso{ \code{\link{plot.var.forecasts}}}
+\seealso{ \code{\link{plot.forecast}}}
 \examples{
 \dontrun{
 data(IsraelPalestineConflict)
@@ -42,14 +42,18 @@ fit.BVAR <- szbvar(IsraelPalestineConflict, p=6, z=NULL, lambda0=0.6,
                    posterior.fit=FALSE)
 
 # Generate unconditional forecasts for both models
-forecast.BVAR <- uc.forecast.var(fit.BVAR, nsteps=12,
+forecast.BVAR <- uc.forecast(fit.BVAR, nsteps=12,
                                  burnin=100, gibbs=1000)
 
 # Plot the forecasts
 par(mfrow=c(2,1))
-plot.forc.ecdf(forecast.BVAR$forecast[,,1], probs=c(0.16,0.84), main="I2P Forecast")
+
+plot(forecast.BVAR$forecast[,,1], probs=c(0.16,0.84),
+               main="I2P Forecast")
 abline(h=0)
-plot.forc.ecdf(forecast.BVAR$forecast[,,2], probs=c(0.16,0.84), main="P2I Forecast")
+
+plot(forecast.BVAR$forecast[,,2], probs=c(0.16,0.84),
+               main="P2I Forecast")
 abline(h=0)
 }
 }

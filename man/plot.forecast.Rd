@@ -1,17 +1,18 @@
-\name{plot.var.forecasts}
-\alias{plot.var.forecasts}
+\name{plot.forecast}
+\alias{plot.forecast}
+\alias{plot.forecast.VAR}
+\alias{plot.forecast.BVAR}
+\alias{plot.forecast.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plots competing sets of VAR forecasts or a single set of VAR forecasts}
 \description{
   Produces a high level plot of two sets of VAR forecasts computed from
   a Markov Chain Monte Carlo (MCMC) posterior sample.  Forecasts are the
-  output of \code{hc.forecast.var}, \code{sc.forecast.var},
-  \code{uc.forecast.var}.
+  output of \code{hc.forecast}, \code{forecast}, and \code{uc.forecast}.
 }
 \usage{
-plot.var.forecasts(x, y = NULL, varnames = NULL,
-                   start = c(0, 1), freq = 1, probs = c(0.05, 0.95),
-                   compare.level = NULL, ylab = NULL, ...)
+plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1), freq = 1, probs =
+     c(0.05, 0.95), compare.level = NULL, ylab = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,7 +43,7 @@ plot.var.forecasts(x, y = NULL, varnames = NULL,
 \note{}
 
 \seealso{ \code{\link{plot.forc.ecdf}}, and
-  \code{\link{uc.forecast.var}} for an example.}
+  \code{\link{uc.forecast}} for an example.}
 \examples{
 
 }

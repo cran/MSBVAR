@@ -1,16 +1,23 @@
-\name{plot.irf.var}
-\alias{plot.irf.var}
+\name{plot.irf}
+\alias{plot.irf}
+\alias{plot.irf.VAR}
+\alias{plot.irf.BVAR}
+\alias{plot.irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plots impulse responses }
 \description{
-  Plots the m x m matrix of impulse responses produced by \code{irf.var}.
+  Plots the m x m matrix of impulse responses produced by \code{irf}.
+  
 }
 \usage{
-plot.irf.var(x, varnames = NULL, ...)
+plot.irf(x, varnames = NULL, ...)
+plot.irf.VAR(x, varnames = NULL, ...)
+plot.irf.BVAR(x, varnames = NULL, ...)
+plot.irf.BSVAR(x, varnames = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ Impulse response object produced by \code{irf.var}}
+  \item{x}{ Impulse response object produced by \code{\link{irf}}}
   \item{varnames}{ Variance names in the format
     \code{c("name1","name2",...)} }
   \item{...}{other plot arguments}
@@ -31,16 +38,16 @@ plot.irf.var(x, varnames = NULL, ...)
   }
 \author{ Patrick T. Brandt}
 \note{ This function should NOT be used for Monte Carlo samples of
-  IRFs.  Use \code{\link{plot.mc.irf.var}} for this purpose.}
+  IRFs.  Use \code{\link{plot.mc.irf}} for this purpose.}
 
-\seealso{ \code{\link{irf.var}} to produce impulse responses from a VAR
-  object, \code{\link{mc.irf.var}}, and \code{\link{plot.mc.irf.var}}
+\seealso{ \code{\link{irf}} to produce impulse responses from a VAR
+  object, \code{\link{mc.irf}}, and \code{\link{plot.mc.irf}}
   for methods that allow frequentist and Bayesian error bands in the
   impulse responses}
 \examples{
 data(IsraelPalestineConflict)
 rf.var <- reduced.form.var(IsraelPalestineConflict, p=6)
-plot(irf.var(rf.var, nsteps = 12))
+plot(irf(rf.var, nsteps = 12))
 }
 \keyword{ hplot}
 \keyword{ models}

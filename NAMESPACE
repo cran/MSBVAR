@@ -1,29 +1,76 @@
 import(KernSmooth)
-export(
-       cf.forecasts,
-       dfev,
-       forc.ecdf,
-       forecast.var,
-       granger.test,
-       hc.forecast.var,
-       irf.var,
-       decay.spec,
-       mae,
-       mc.irf.var,
-       reduced.form.var,
-       mountains,
-       plot.forc.ecdf,
-       plot.irf.var,
-       plot.mc.irf.var,
-       plot.var.forecasts,
+import(coda)
+export(dfev,
+       dfev.VAR,
+       dfev.BVAR,
+       dfev.BSVAR,
        print.dfev,
+       summary.dfev,
+       granger.test,
+       var.lag.specification,
+       SZ.prior.evaluation,
+       decay.spec,
+       reduced.form.var,
+       szbvar,
+       szbsvar,
+       gibbs.A0,
+       gibbs.A0.BSVAR,
+       mcmc.szbsvar,
+       normalize.svar,
+       A02mcmc,
+       irf,
+       irf.VAR,
+       irf.BVAR,
+       irf.BSVAR,
+       mc.irf,
+       mc.irf.VAR,
+       mc.irf.BVAR,
+       mc.irf.BSVAR,
+       null.space,
+       mae,
        restmtx,
        rmse,
        rmultnorm,
        rwishart,
-       summary.dfev,
-       szbvar,
-       uc.forecast.var,
-       var.lag.specification,
-       SZ.prior.evaluation
+       cf.forecasts,
+       forc.ecdf,
+       forecast,
+       forecast.VAR,
+       forecast.BVAR,
+       forecast.BSVAR,
+       hc.forecast,
+       hc.forecast.VAR,
+       uc.forecast,
+       uc.forecast.VAR,
+       posterior.fit,
+       posterior.fit.BVAR,
+       posterior.fit.BSVAR,
+       mountains,
+       plot.irf.VAR,
+       plot.irf.BVAR,
+       plot.irf.BSVAR,
+       plot.mc.irf.VAR,
+       plot.mc.irf.BVAR,
+       plot.mc.irf.BSVAR,
+       plot.forecast.VAR,
+       plot.forc.ecdf,
+       print.posterior.fit.BVAR,
+       print.posterior.fit.BSVAR
 )
+
+S3Method(print, posterior.fit.BVAR)
+S3Method(print, posterior.fit.BSVAR)
+S3Method(print, dfev)
+
+S3Method(summary, dfev)
+
+S3Method(plot, irf.VAR)
+S3Method(plot, irf.BVAR)
+S3Method(plot, irf.BSVAR)
+
+S3Method(plot, mc.irf.VAR)
+S3Method(plot, mc.irf.BVAR)
+S3Method(plot, mc.irf.BSVAR)
+
+S3Method(plot, forecast.VAR)
+

@@ -12,7 +12,7 @@ forc.ecdf(forecasts, probs = c(0.05, 0.95), start = c(0, 1), ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{forecasts}{ Posterior sample of VAR forecasts produced by
-    \code{hc.forecast.var()} or \code{uc.forecast.var()}}
+    \code{hc.forecast.VAR()} or \code{uc.forecast.VAR()}}
   \item{probs}{ Error band width in percentiles, default is 90\% error band. }
   \item{start}{ Start value for the time series -- as in the \code{ts()}
   for the forecast horizon}

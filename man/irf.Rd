@@ -1,29 +1,38 @@
-\name{irf.var}
-\alias{irf.var}
+\name{irf}
+\alias{irf}
+\alias{irf.VAR}
+\alias{irf.BVAR}
+\alias{irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Impulse Response Function (IRF) Computation for a VAR}
 \description{
   Computes the impulse response function (IRF) or moving average
-  representation (MAR) for an m-dimensional set of VAR coefficients.
+  representation (MAR) for an m-dimensional set of VAR/BVAR/B-SVAR
+  coefficients. 
 }
 \usage{
-irf.var(var.obj, nsteps, A0=chol(var.obj$mean.S))
+irf(varobj, nsteps, A0=NULL)
+irf.VAR(varobj, nsteps, A0=chol(varobj$mean.S))
+irf.BVAR(varobj, nsteps, A0=chol(varobj$mean.S))
+irf.BSVAR(varobj, nsteps, A0=solve(varobj$A0.mode))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{var.obj}{VAR objects for a fitted VAR model from either
-    \code{szbvar()} or \code{mlevar}}
+  \item{varobj}{VAR/BVAR/BSVAR objects for a fitted VAR/BVAR/BSVAR model
+    from \code{szbvar()}, \code{szbsvar} or \code{reduced.form.var}}
     \item{nsteps}{ Number or steps, or the horizon over which to compute
     the IRFs (typically 1.5 to 2 times the lag length used in estimation}
-  \item{A0}{ Decomposition contemporaneous error covariance of a VAR,
-    default is a Cholesky decomposition of the error covariance matrix,
-    \code{A0 = chol(var.obj$mean.S)}}
+  \item{A0}{ Decomposition contemporaneous error covariance of a VAR/BVAR/BSVAR,
+    default is a Cholesky decomposition of the error covariance matrix
+    for VAR and BVAR models,
+    \code{A0 = chol(varobj$mean.S)}, and the inverse of \eqn{A_0}{A(0)}
+    for B-SVAR models, \code{A0 = solve(varobj$A0.mode)}}
 }
 \details{
   This function should rarely be called by the user.  It is a working
   function to compute the IRFs for a VAR model.  Users will typically
   want to used one of the simulation functions that also compute error
-  bands for the IRF, such as \code{mc.irf.var} which calls this function
+  bands for the IRF, such as \code{mc.irf} which calls this function
   and simulates its multivariate posterior distribution.
 }
 \value{
@@ -46,13 +55,13 @@ irf.var(var.obj, nsteps, A0=chol(var.obj$mean.S))
   structure of the decomposition in A0.}
 
 \seealso{ See also \code{\link{dfev}} for the related decompositions of
-  the forecast error variance, \code{\link{mc.irf.var}} for Bayesian and
+  the forecast error variance, \code{\link{mc.irf}} for Bayesian and
   frequentist computations of IRFs and their variances (which is what
   you probably really want).}
 \examples{
 data(IsraelPalestineConflict)
 rf.var <- reduced.form.var(IsraelPalestineConflict, p=6)
-plot(irf.var(rf.var, nsteps = 12))
+plot(irf(rf.var, nsteps = 12))
 }
 \keyword{ ts}
 \keyword{ models}

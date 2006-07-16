@@ -14,21 +14,21 @@ rmultnorm(n, mu, vmat, tol = 1e-10)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{n}{ Number of variates to draw.}
-  \item{mu}{ M column matrix of multivariate means}
-  \item{vmat}{ M x M covariance matrix }
+  \item{mu}{ \eqn{m} column matrix of multivariate means}
+  \item{vmat}{ \eqn{m \times m}{m xm} covariance matrix }
   \item{tol}{ Tolerance level used for SVD of the covariance.  Default is 1e-10}
 }
 \details{
-  Generates N draws from a multivariate normal distribution with mean
-  matrix mu and covariance matrix vmat.
+  Generates \eqn{n} draws from a multivariate normal distribution with mean
+  matrix \code{mu} and covariance matrix \code{vmat}.
 }
 \value{
-  Matrix of the random draw that is conformable with the input mu.
+  Matrix of the random draw that is conformable with the input \code{mu}.
 }
 \references{ }
 \author{ Patrick T. Brandt }
 \note{ Based on code by Jeff Gill. This function is called in the hard
-  condition forecasting in \code{\link{hc.forecast.var}} for simulating
+  condition forecasting in \code{\link{hc.forecast}} for simulating
   the structural innovations.}
 
 \seealso{ \code{\link{rnorm}} }
