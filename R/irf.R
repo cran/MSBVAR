@@ -68,7 +68,6 @@
     dim(impulses) <- c((m^2), nsteps)
     impulses <- ts(t(impulses), start = c(0, 1), freq = 1)
     minmax <- apply(stacked.impulses, 2, range)
-    print(minmax)
 
     j <- 1
     par(mfrow = c(m, m), mai = c(0.25, 0.25, 0.15, 0.25), omi = c(0.15,

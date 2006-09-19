@@ -31,7 +31,7 @@ A02mcmc(x)
 }
 
 \seealso{ 
-  \code{\link{gibbs.A0}},\code{\link{mcmc}}
+  \code{\link{gibbs.A0}},\code{\link[coda]{mcmc}}
 }
 
 

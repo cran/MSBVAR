@@ -1,7 +1,7 @@
 Package: MSBVAR
 Title: Bayesian Vector Autoregression Models
-Version: 0.2.0
-Date: 2006-07-16
+Version: 0.2.1
+Date: 2006-09-19
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
 Depends: R (>= 2.3.0), KernSmooth, xtable, coda
@@ -16,4 +16,4 @@ Description: Provides methods for estimating frequentist and
   versions will include some models with Markov switching. 
 License: GPL version 2 or newer
 URL: http://www.utdallas.edu/~pbrandt/
-Packaged: Sun Jul 16 12:36:13 2006; brandt
+Packaged: Wed Sep 20 08:43:41 2006; brandt

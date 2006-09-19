@@ -15,8 +15,10 @@
 
 	# Note that constant is put last here
 	for(i in 1:p)
-          { X[(1:Ts),(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m) }
-        X<-cbind(X[,ncoef],X[,1:ncoef-1]);  # put constant first
+        { X[(1:Ts),(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m) }
+
+        X<-cbind(X[,1:ncoef-1],X[,ncoef])
+
 	Y[1:Ts,]<-matrix(dat[(p+1):n,],ncol=m);
 
         if (is.null(z)==FALSE)

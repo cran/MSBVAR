@@ -30,7 +30,8 @@ reduced.form.var(dat, p, z=NULL)
     coefficients.  The first \eqn{m \times m}{m x m} array is for lag 1,
     the p'th array for lag p.}
   \item{Bhat }{ \eqn{(mp + k + 1) \times m}{(mp + k + 1) x m} matrix of
-    the coefficients, where the columns correspond to the variables in the VAR}
+    the coefficients, where the columns correspond to the variables in
+    the VAR.  Intercepts follow the AR coefficients, etc.}
   \item{exog.coefs}{ \eqn{k \times m}{k x m} matrix of exogenous coefficients,
     or \code{NA} if \code{z=NULL}}
   \item{vcv}{ \eqn{m \times m}{m x m} matrix of the maximum likelihood estimate of the

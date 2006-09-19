@@ -1,6 +1,6 @@
 Package: MSBVAR
 Title: Bayesian Vector Autoregression Models
-Version: 0.2.0
+Version: 0.2.1
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Description: Provides methods for estimating frequentist and Bayesian
 Vector Autoregression (VAR) models.  Also includes methods for the
@@ -98,8 +98,13 @@ License: GPL
 	   Carlo sampling, plotting, etc.   Some function names have
 	   changed from previous (post 0.1.1) versions.  Please be
 	   aware of this.
-2006-07-15 Revised documentation to acccount for new class-based
+2006-07-15 Revised documentation to account for new class-based
 	   dispatching.
+2006-09-19 Corrected incorrect handling of intercepts in
+           reduced.form.var() function.  Previous version thought the
+	   intercept was the first, when it should be the last
+	   coefficients.  Updated to 0.2.1.  Thanks to Pu Chen of the
+	   New School for finding this.
 
 
 MSBVAR Package
