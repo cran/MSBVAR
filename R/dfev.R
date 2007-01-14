@@ -3,7 +3,7 @@
     if (class(varobj)==c("VAR") || class(varobj)==c("BVAR"))
     { return(dfev.VAR(varobj, A0=t(chol(varobj$mean.S)), k))}
     if (class(varobj)==c("BSVAR"))
-    { return(dfev.VAR(varobj, A0=solve(varobj$A0.mode), k)) }
+    { return(dfev.VAR(varobj, A0=t(solve(varobj$A0.mode)), k)) }
 }
 
 "dfev.BVAR" <- function(varobj, A0=t(chol(varobj$mean.S)), k)
@@ -13,7 +13,7 @@
     return(output)
 }
 
-"dfev.BSVAR" <- function(varobj, A0=solve(varobj$A0.mode), k)
+"dfev.BSVAR" <- function(varobj, A0=t(solve(varobj$A0.mode)), k)
 {
     output <- dfev.VAR(varobj,A0,k)
     attr(output, "class") <- c("dfev")

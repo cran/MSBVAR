@@ -318,6 +318,15 @@ function(Y, p, z=NULL,
       # compute the structural innovations
       structural.innovations <- Y1%*%A0.mode - X1%*%F.posterior
 
+      # reduced form exogenous coefficients
+      if(nexog==0)
+      { exog.coefs <- NA
+        } else {
+            exog.coefs <-
+                B.posterior[((m*p)+2):nrow(B.posterior),]
+        }
+
+
       # Now build an output list / object for the B-SVAR model
       output <- list(XX=XX,                               # data matrix moments with dummy obs
                      XY=XY,
@@ -337,7 +346,8 @@ function(Y, p, z=NULL,
                      F.posterior=F.posterior,
                      B.posterior=B.posterior,
                      ar.coefs=AR.coefs.posterior,
-                     intercept=F.posterior[(m*p+1),],
+                     intercept=B.posterior[(m*p+1),],
+                     exog.coefs=exog.coefs,
                      prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,
                        mu5,mu6),
                      df=capT,
@@ -348,3 +358,95 @@ function(Y, p, z=NULL,
       return(output)
 }
 
+
+# Summary function for BSVAR models
+"summary.BSVAR" <- function(object, ...)
+{
+    cat("------------------------------------------\n")
+    cat("A0 restriction matrix\n")
+    cat("------------------------------------------\n")
+    prmatrix(object$ident)
+    cat("\n")
+
+    cat("------------------------------------------\n")
+    cat("Sims-Zha Prior Bayesian Structural VAR\n")
+    cat("------------------------------------------\n")
+##     if(object$prior.type==0) prior.text <- "Normal-inverse Wishart"
+##     if(object$prior.type==1) prior.text <- "Normal-flat"
+##     if(object$prior.type==2) prior.text <- "Flat-flat"
+
+    cat("Prior form : Sims-Zha\n")
+    cat("Prior hyperparameters : \n")
+    cat("lambda0 =", object$prior[1], "\n")
+    cat("lambda1 =", object$prior[2], "\n")
+    cat("lambda3 =", object$prior[3], "\n")
+    cat("lambda4 =", object$prior[4], "\n")
+    cat("lambda5 =", object$prior[5], "\n")
+    cat("mu5     =", object$prior[6], "\n")
+    cat("mu6     =", object$prior[7], "\n")
+    cat("nu      =", dim(object$ar.coefs)[1]+1, "\n")
+
+    cat("------------------------------------------\n")
+    cat("Number of observations : ", nrow(object$Y), "\n")
+    cat("Degrees of freedom per equation : ", nrow(object$Y)-nrow(object$Bhat), "\n")
+    cat("------------------------------------------\n")
+
+    cat("Posterior Regression Coefficients :\n")
+    cat("------------------------------------------\n")
+    cat("Reduced Form Autoregressive matrices: \n")
+    for (i in 1:dim(object$ar.coefs)[3])
+    {
+        cat("B(", i, ")\n", sep="")
+        prmatrix(round(object$ar.coefs[,,i], 6))
+        cat("\n")
+    }
+    cat("------------------------------------------\n")
+    cat("Reduced Form Constants\n")
+    cat(round(object$intercept,6), "\n")
+    cat("------------------------------------------\n")
+
+    if(nrow(object$B.posterior)>m*p + 1)
+    {
+        cat("------------------------------------------\n")
+        cat("Reduced Form Exogenous coefficients\n")
+        prmatrix(object$B.posterior[(m*p+2):nrow(object$B.posterior),])
+        cat("\n")
+        cat("------------------------------------------\n")
+    }
+
+    # Now print the structural coefficients in the same way as the
+    # RFs.
+    cat("Structural Autoregressive matrices: \n")
+    m <- dim(object$ar.coefs)[1]
+    p <- dim(object$ar.coefs)[3]
+    struct.ar <- object$F.posterior[1:(m*p),]
+    dim(struct.ar) <- c(m, m, p)
+    struct.ar <- aperm(struct.ar, c(2,1,3))
+    for (i in 1:p)
+    {
+        cat("A(", i, ")\n", sep="")
+        prmatrix(round(struct.ar[,,i], 6))
+        cat("\n")
+    }
+    cat("------------------------------------------\n")
+    cat("Structural Constants\n")
+    cat(round(object$F.posterior[(m*p +1),],6), "\n")
+    cat("------------------------------------------\n")
+
+    if(nrow(object$B.posterior)>m*p + 1)
+    {
+        cat("------------------------------------------\n")
+        cat("Structural Exogenous coefficients\n")
+        prmatrix(object$F.posterior[(m*p+2):nrow(object$F.posterior),])
+        cat("\n")
+        cat("------------------------------------------\n")
+    }
+
+
+    cat("------------------------------------------\n")
+    cat("Posterior mode of the A0 matrix\n")
+    prmatrix(round(object$A0.mode,6))
+    cat("\n")
+    cat("------------------------------------------\n")
+
+}

@@ -13,7 +13,7 @@
 dfev(varobj, A0 = NULL, k)
 dfev.VAR(varobj, A0 = t(chol(varobj$mean.S)), k)
 dfev.BVAR(varobj, A0 = t(chol(varobj$mean.S)), k)
-dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
+dfev.BSVAR(varobj, A0 = t(solve(varobj$A0.mode)), k)
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -24,7 +24,10 @@ dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
   \item{A0}{ Decomposition of the contemporaneous error covariance
     matrix.  Default is to use the (lower) Cholesky decomposition of the
     residual error covariance matrix for VAR and BVAR models, or the
-    inverse of \eqn{A_0}{A(0)} in B-SVAR models. }
+    inverse of \eqn{A_0}{A(0)} in B-SVAR models. Note that these are
+    transposed from the \eqn{A_0}{A(0)} produced in the estimation.  The
+    estimation methods have the equations in columns while the DFEV uses
+    the equations of the VAR system in rows.}
   \item{k}{ Number of periods over which to compute the deccomposition. }
 }
 \details{

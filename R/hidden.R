@@ -419,6 +419,43 @@ function(capT,m,ncoef,num.exog,nu,H0,S0,Y,X,hstar1,Sh,u, Bh,Sh1)
     return(list(A0gbs=A0gbs, W=Wout))
 }
 
+# list.print function --- used to recursively print the list objects
+# in the printing of the VAR objects for users.
+
+"list.print" <- function(x)
+{
+    if(is.list(x$values)){
+        cat("==========================================\n")
+        cat(x$labels[1],"\n")
+        cat("==========================================\n")
+        for(i in 1:length(x$values)) list.print(x$values[[i]])
+    } else {
+        if(length(dim(x$values))==3){
+            cat(x$labels[1],": \n",sep="")
+            for(j in 1:dim(x$values)[3]){
+                cat("B(", j, ")\n", sep="")
+                prmatrix(x$values[,,j])
+                cat("\n")
+            }
+        } else if(length(dim(x$values))==2) {
+            cat(x$labels[1],": \n",sep="")
+            prmatrix(x$values)
+        } else if(is.null(dim(x$values))){
+            if ((length(x$values)/length(x$labels))==1){
+                for(i in 1:length(x$values))
+                    cat(x$labels[i], ":    ", x$values[i], "\n")
+            } else {
+                cat(x$labels[1],":\n")
+                for(i in 1:length(x$values)) cat(x$values[i], "\t")
+                cat("\n")
+            }
+        }
+        cat("------------------------------------------\n")
+    }
+}
+
+
+
 # old version, without memory conservation
 ## "drawA0" <- function(A0gbs, UT, df, n0, Wout)
 ##   { # Set up constants and place holder matrices

@@ -52,17 +52,24 @@ export(dfev,
        plot.mc.irf.VAR,
        plot.mc.irf.BVAR,
        plot.mc.irf.BSVAR,
-       plot.forecast.VAR,
+       plot.forecast,
        plot.forc.ecdf,
        print.posterior.fit.BVAR,
-       print.posterior.fit.BSVAR
-)
+       print.posterior.fit.BSVAR,
+       summary.VAR,
+       summary.BVAR,
+       summary.BSVAR
+       )
 
 S3Method(print, posterior.fit.BVAR)
 S3Method(print, posterior.fit.BSVAR)
 S3Method(print, dfev)
 
 S3Method(summary, dfev)
+
+S3Method(summary, VAR)
+S3Method(summary, BVAR)
+S3Method(summary, BSVAR)
 
 S3Method(plot, irf.VAR)
 S3Method(plot, irf.BVAR)
@@ -72,5 +79,5 @@ S3Method(plot, mc.irf.VAR)
 S3Method(plot, mc.irf.BVAR)
 S3Method(plot, mc.irf.BSVAR)
 
-S3Method(plot, forecast.VAR)
+
 

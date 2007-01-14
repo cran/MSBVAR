@@ -1,6 +1,6 @@
 Package: MSBVAR
 Title: Bayesian Vector Autoregression Models
-Version: 0.2.1
+Version: 0.2.2
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Description: Provides methods for estimating frequentist and Bayesian
 Vector Autoregression (VAR) models.  Also includes methods for the
@@ -103,12 +103,29 @@ License: GPL
 2006-09-19 Corrected incorrect handling of intercepts in
            reduced.form.var() function.  Previous version thought the
 	   intercept was the first, when it should be the last
-	   coefficients.  Updated to 0.2.1.  Thanks to Pu Chen of the
+	   coefficient row.  Updated to 0.2.1.  Thanks to Pu Chen of the
 	   New School for finding this.
-
+2007-01-11 Version 0.2.2 
+	   Fixed bugs in plotting of IRFs.  Sometimes the plotting
+	   would fail for certain classes of VARs.  Updated dfev.BSVAR
+	   to use the correctly transposed BSVAR A(0) matrix.  Noted
+	   this in the documentation of dfev() as well.  Added summary
+	   and print methods for the estimation methods reduced.form.var(),
+	   szbvar(), and szbsvar().  These print output from the estimation in
+           matrix formats.  See the documentation of the print() and summary()
+	   methods for details.  Updated SZ.prior.evaluation() to all
+	   a list of values for all hyperparameters.  This function
+	   has also been further optimized and is now several times
+	   faster.
+2007-01-13 Fixed A(0) inputs in dfev() and forecast().  Also fixed a
+	   scoping bug in the input of exogenous variables for
+	   forecast().  Added reduced form exog.coefs to the return
+	   list for szbsvar() so that they can be used in
+	   forecast(). Additional bug fixes to pass check on R 2.4.1.
+2007-01-14 Added BCF data that is used in the JSS piece.
 
 MSBVAR Package
-Copyright (C) 2005-2006 Patrick T. Brandt
+Copyright (C) 2005-2007 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, and SES-0540816)
 

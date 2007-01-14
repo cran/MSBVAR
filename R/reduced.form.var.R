@@ -65,3 +65,26 @@
         return(output)
       }
 
+# Summary function for VAR models
+"summary.VAR" <- function(object, ...)
+{
+    labels <- c("Reduced Form VAR", "Constants",
+                "Posterior Regression Coefficients",
+                "Posterior error covariance")
+    rf.list <- list(labels=c("Number of observations","Degrees of freedom per equation"),
+                    values=c(nrow(object$Y), nrow(object$Y)-nrow(object$Bhat)))
+    constants.list <- list(labels=c("Constants"),
+                           values=round(object$intercept,6))
+    ar.list <- list(labels=c("Autoregressive Matricies"),
+                    values=round(object$ar,6))
+    if(is.na(object$exog[1])==FALSE){
+        exog.list <- list(labels=c("Exogenous variable posterior coefficients"),
+                          values=round(object$exog,6))
+    } else { exog.list <- list(labels=NULL,values=NULL) }
+    vcv.list <- list(labels=c("Posterior error covariance"),
+                     values=object$mean.S)
+    values <- list(rf=rf.list, ar=ar.list, constants=constants.list,
+                   exog=exog.list, vcv=vcv.list)
+    output <- list(labels=labels, values=values)
+    list.print(output)
+}

@@ -18,19 +18,21 @@ SZ.prior.evaluation(Y, p,
   \item{Y}{ T x m matrix of endogenous variables for the VAR}
   \item{p}{ Lag length}
   
-  \item{lambda0}{ List of values, e,g, \code{c(0.7, 0.8, 0.9)} in [0,1],
+  \item{lambda0}{ List of values, e.g., \code{c(0.7, 0.8, 0.9)} in [0,1],
     Overall tightness of the prior (discounting of prior scale). }
-  \item{lambda1}{ List of values, e,g, \code{c(0.05, 0.1, 0.2)} in
+  \item{lambda1}{ List of values, e,g., \code{c(0.05, 0.1, 0.2)} in
     [0,1], Standard deviation or tightness of the prior around the AR(1)
     parameters. }
-  \item{lambda3}{ List of values, e,g, \code{c(0, 1, 2)} for Lag decay
+  \item{lambda3}{ List of values, e.g., \code{c(0, 1, 2)} for Lag decay
     (>0, with 1=harmonic) }
-  \item{lambda4}{ List of values, e,g, \code{c(0.15, 0.2, 0.5)} for
-    Standard deviation or tightness around the intercept [>0] }
-  \item{lambda5}{ Single value for the standard deviation or tightness
+  \item{lambda4}{ List of values, e.g., \code{c(0.15, 0.2, 0.5)} for
+    standard deviation or tightness around the intercept [>0] }
+  \item{lambda5}{ List of values  e.g., \code{c(0.15, 0.2, 0.5)} for
+    standard deviation or tightness
     around the exogneous variable coefficients [>0]}
-  \item{mu5}{ Single value for sum of coefficients prior weight [>=0]}
-  \item{mu6}{ Single value for dummy Initial observations or cointegration prior [>=0]}
+  \item{mu5}{ List of values, e.g., \code{c(0, 1, 2)} for sum of coefficients prior weight [>=0]}
+  \item{mu6}{ List of values, e.g., \code{c(0, 1, 2)} for dummy initial
+    observations or cointegration prior [>=0]}
   \item{z}{ Exogenous variables }
   \item{nu}{ Prior degrees of freedom = m+1}
   \item{qm}{ Frequency of the data for lag decay equivalence.  Default
@@ -44,7 +46,8 @@ SZ.prior.evaluation(Y, p,
 }
 \details{
   This function fits a series of BVAR models for the combinations of
-  \code{lambda0}, \code{lambda1}, \code{lambda3}, and \code{lambda4}
+  \code{lambda0}, \code{lambda1}, \code{lambda3}, \code{lambda4},
+  \code{lambda5}, \code{mu5}, and \code{mu6}
   provided.  For each possible value of these parameters specified, a
   Sims-Zha prior BVAR model is fit, posterior fit measures are computed, and
   forecasts are generated over \code{nsteps}.  These \code{nstep}
@@ -55,8 +58,15 @@ SZ.prior.evaluation(Y, p,
 \value{
   A matrix of the results with columns corresponding to the values of 
   "lambda0", "lambda1", "lambda3", "lambda4", "lambda5", "mu5",
-  "mu6", "RMSE", "MAE", "MargLLF","MargPosterior".
+  "mu6", "RMSE", "MAE", "LLF", "logMDD".
+  These correspond to the values of the hyperparameters, the root MSE of
+  the forcasts, the mean absolute error of the forecasts, the log
+  likelihood and the log marginal data density (MDD) for the specified
+  prior in a row.
+
 }
+
+
 \references{ Brandt, Patrick T. and John R. Freeman. 2006. "Advances in Bayesian
   Time Series Modeling and the Study of Politics: Theory Testing,
   Forecasting, and Policy Analysis"
@@ -74,9 +84,9 @@ results <- SZ.prior.evaluation(window(Y, start=c(1998, 1), end=c(1998,149)), p=3
                                lambda1=c(0.1,0.2),
                                lambda3=c(0,1),
                                lambda4=c(0.1,0.25),
-                               lambda5=0,
-                               mu5=4,
-                               mu6=4, z=NULL,
+                               lambda5=c(0),
+                               mu5=c(0,2,4),
+                               mu6=c(0,2,4), z=NULL,
                                nu=ncol(Y)+1, qm=4,
                                prior=0,
                                nstep=20, 
@@ -87,15 +97,13 @@ results <- SZ.prior.evaluation(window(Y, start=c(1998, 1), end=c(1998,149)), p=3
 # 6 period forecasts as a function of the prior parameters.  This can
 # easily be done using a lattice graphic.
 
-library(lattice)
-
 attach(as.data.frame(results))
 get(getOption("device"))()
 xyplot(RMSE ~ lambda0 | lambda1 + lambda3)
 get(getOption("device"))()
-xyplot(MargPosterior ~ lambda0 | lambda1 + lambda3)
+xyplot(logMDD ~ lambda0 | lambda1 + lambda3)
 get(getOption("device"))()
-xyplot(MargLLF ~ lambda0 | lambda1 + lambda3)
+xyplot(LLF ~ lambda0 | lambda1 + lambda3)
 }
 \keyword{ models }% at least one, from doc/KEYWORDS
 \keyword{ multivariate}% __ONLY ONE__ keyword per line

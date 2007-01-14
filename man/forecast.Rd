@@ -12,13 +12,13 @@
 \usage{
 forecast.VAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
          shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(exog.coefs)))
+         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
 forecast.BVAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
          shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(exog.coefs)))
-forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
+         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
+forecast.BSVAR(varobj, nsteps, A0 = t(solve(varobj$A0.mode)),
          shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(exog.coefs)))
+         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,7 +29,8 @@ forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
     contemporaneous endogenous forecast innovations}
   \item{shocks}{ Structural shocks to the VAR model.  These must be
     scaled consistent with the structural identification in \eqn{A_0}{A(0)}}
-  \item{exog.fut}{ nsteps x number of exogenous variables matrix of the
+  \item{exog.fut}{ \eqn{nsteps \times  number of exogenous
+      variables}{nsteps x number of exogenous variables} matrix of the
     future values of exogenous variable shocks.}
 }
 \details{

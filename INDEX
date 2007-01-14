@@ -1,4 +1,6 @@
 A02mcmc                 Converts A0 objects to coda MCMC objects
+BCF2006data             Subset of Data from Brandt, Colaresi, and
+                        Freeman (2006)
 IsraelPalestineConflict
                         Weekly Goldstein Scaled Israeli-Palestinian
                         Conflict Data, 1979-2003
@@ -46,6 +48,8 @@ rmse                    Root mean squared error of a Monte Carlo / MCMC
                         sample of forecasts
 rmultnorm               Multivariate Normal Random Number Generator
 rwishart                Random deviates from a Wishart distribution
+summary                 Summary functions for VAR / BVAR / B-SVAR model
+                        objects
 szbsvar                 Structural Sims-Zha Bayesian VAR model
                         estimation
 szbvar                  Reduced form Sims-Zha Bayesian VAR model

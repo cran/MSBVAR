@@ -184,7 +184,10 @@ szbsvar(Y, p, z = NULL,
       m} matrix of the posterior of the reduced form parameters for the predetermined variables}
   \item{ar.coefs}{ \eqn{(m^2 p) \times m}{m^2 p x m} matrix of the
     posterior of the reduced form autoregressive parameters }
-  \item{intercept}{ \eqn{m} dimensional vector of the reduced form intercepts }
+  \item{intercept}{ \eqn{m} dimensional vector of the reduced form
+    intercepts }
+  \item{exog.coefs}{ \eqn{h \times m}{h x m} matrix of the reduced form exogenous
+    variable coefficients } 
   \item{prior}{ List of the prior parameter:
     c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5, mu6)}
   \item{df}{ Degrees of freedom for the model: T + number of dummy

@@ -1,5 +1,5 @@
 
-# szbvar estimator  
+# szbvar estimator
 
 "szbvar" <-
 function(dat, p, z=NULL, lambda0, lambda1, lambda3,
@@ -226,3 +226,60 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     return(output)
   }
 
+
+# Summary function for BVAR models
+"summary.BVAR" <- function(object, ...)
+{
+    cat("------------------------------------------\n")
+    cat("Sims-Zha Prior reduced form Bayesian VAR\n")
+    cat("------------------------------------------\n")
+    if(object$prior.type==0) prior.text <- "Normal-inverse Wishart"
+    if(object$prior.type==1) prior.text <- "Normal-flat"
+    if(object$prior.type==2) prior.text <- "Flat-flat"
+
+    cat("Prior form : ", prior.text, "\n")
+    cat("Prior hyperparameters : \n")
+    cat("lambda0 =", object$prior[1], "\n")
+    cat("lambda1 =", object$prior[2], "\n")
+    cat("lambda3 =", object$prior[3], "\n")
+    cat("lambda4 =", object$prior[4], "\n")
+    cat("lambda5 =", object$prior[5], "\n")
+    cat("mu5     =", object$prior[6], "\n")
+    cat("mu6     =", object$prior[7], "\n")
+    cat("nu      =", object$prior[8], "\n")
+
+    cat("------------------------------------------\n")
+    cat("Number of observations : ", nrow(object$Y), "\n")
+    cat("Degrees of freedom per equation : ", nrow(object$Y)-nrow(object$Bhat), "\n")
+    cat("------------------------------------------\n")
+
+    cat("Posterior Regression Coefficients :\n")
+    cat("------------------------------------------\n")
+    cat("Autoregressive matrices: \n")
+    for (i in 1:dim(object$ar.coefs)[3])
+    {
+        cat("B(", i, ")\n", sep="")
+        prmatrix(round(object$ar.coefs[,,i], 6))
+        cat("\n")
+    }
+    cat("------------------------------------------\n")
+    cat("Constants\n")
+    cat(round(object$intercept,6), "\n")
+    cat("------------------------------------------\n")
+
+    if(is.na(object$exog.coefs[1])==FALSE)
+    {
+        cat("------------------------------------------\n")
+        cat("Exogenous variable posterior coefficients\n")
+        prmatrix(object$exog.coefs)
+        cat("\n")
+        cat("------------------------------------------\n")
+    }
+
+    cat("------------------------------------------\n")
+    cat("Posterior error covariance\n")
+    prmatrix(object$mean.S)
+    cat("\n")
+    cat("------------------------------------------\n")
+
+}
