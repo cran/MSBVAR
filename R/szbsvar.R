@@ -1,10 +1,13 @@
 "szbsvar" <-
-function(Y, p, z=NULL,
-         lambda0, lambda1, lambda3, lambda4, lambda5, mu5, mu6,
-         ident,
-         qm=4)
-{
-      # Set up some constants we need
+function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
+         mu5, mu6, ident, qm=4){
+
+    sanity.check.bsvar(list(Y=Y, p=p, z=z, lambda0=lambda0,
+                           lambda1=lambda1, lambda3=lambda3,
+                           lambda4=lambda4, lambda5=lambda5,
+                           mu5=mu5, mu6=mu6, qm=qm, ident=ident))
+
+    # Set up some constants we need
     m <- ncol(Y)                                  # number of endog variables
     nexog <- ifelse(is.null(z)==TRUE, 0, ncol(z)) # number of exog variables
     ncoef <- m*p + nexog + 1                      # plus 1 for the constant
@@ -318,15 +321,6 @@ function(Y, p, z=NULL,
       # compute the structural innovations
       structural.innovations <- Y1%*%A0.mode - X1%*%F.posterior
 
-      # reduced form exogenous coefficients
-      if(nexog==0)
-      { exog.coefs <- NA
-        } else {
-            exog.coefs <-
-                B.posterior[((m*p)+2):nrow(B.posterior),]
-        }
-
-
       # Now build an output list / object for the B-SVAR model
       output <- list(XX=XX,                               # data matrix moments with dummy obs
                      XY=XY,
@@ -346,8 +340,7 @@ function(Y, p, z=NULL,
                      F.posterior=F.posterior,
                      B.posterior=B.posterior,
                      ar.coefs=AR.coefs.posterior,
-                     intercept=B.posterior[(m*p+1),],
-                     exog.coefs=exog.coefs,
+                     intercept=F.posterior[(m*p+1),],
                      prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,
                        mu5,mu6),
                      df=capT,

@@ -1,68 +1,71 @@
-"reduced.form.var" <- function(dat, p, z=NULL)
-  {     dat<-as.matrix(dat);
-        n<-nrow(dat);	 	# of observations in data set
-	m<-ncol(dat);	 	# of variables in data set
-	ncoef<-(m*p)+1;	        # coefficients in each RF equation
-        ndum<-m+1;
-        capT<-n-p+ndum;
-        Ts<-n-p;  		# of actual data observations
+"reduced.form.var" <- function(Y, p, z=NULL)
+  {
+      sanity.check.var(list(Y=Y, p=p, z=z))
 
-	# Y and X matrices
-	X<-matrix(0,nrow=Ts,ncol=ncoef)
-	Y<-matrix(0,nrow=Ts,ncol=m)
-	const<-matrix(1,nrow=Ts)
-	X[,ncoef]<-const;
+      dat<-as.matrix(Y);
+      n<-nrow(dat);	 	# of observations in data set
+      m<-ncol(dat);	 	# of variables in data set
+      ncoef<-(m*p)+1;	        # coefficients in each RF equation
+      ndum<-m+1;
+      capT<-n-p+ndum;
+      Ts<-n-p;  		# of actual data observations
 
-	# Note that constant is put last here
-	for(i in 1:p)
-        { X[(1:Ts),(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m) }
+      # Y and X matrices
+      X<-matrix(0,nrow=Ts,ncol=ncoef)
+      Y<-matrix(0,nrow=Ts,ncol=m)
+      const<-matrix(1,nrow=Ts)
+      X[,ncoef]<-const;
 
-        X<-cbind(X[,1:ncoef-1],X[,ncoef])
+      # Note that constant is put last here
+      for(i in 1:p)
+      { X[(1:Ts),(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m) }
 
-	Y[1:Ts,]<-matrix(dat[(p+1):n,],ncol=m);
+      X<-cbind(X[,1:ncoef-1],X[,ncoef])
 
-        if (is.null(z)==FALSE)
-          { X <- cbind(X, z[(p+1):n,]) }
-        # Set up some matrices for later
-        XX <- crossprod(X)
-	Bh<-solve(XX, crossprod(X,Y), tol = 1e-16)
-	u<-(Y - X%*%(Bh));
-	Sh<-crossprod(u)/Ts;  # u'u/n form of estimator
-        Sh1<-crossprod(u)/capT
-        # Format the output variables
-        # Split the coefficient matrix (will make IRFs and forecasting easier)
-        intercept<-Bh[(m*p+1),];             # extract the intercept
-        ar.coefs<-t(Bh[1:(m*p),]);           # extract the ar coefficients
-        dim(ar.coefs)<-c(m,m,p)              # push ar coefs into M x M x P array
-        ar.coefs<-aperm(ar.coefs,c(2,1,3))   # reorder array so columns are for eqn
+      Y[1:Ts,]<-matrix(dat[(p+1):n,],ncol=m);
 
-        if(is.null(z)==FALSE)
-          {
-            exog.coefs <- Bh[(m*p+2):nrow(Bh),]
-            num.exog <- ncol(z)
-            z <- as.matrix(z)
-          }
-        else{
-            exog.coefs <- NA
-            num.exog <- 0
+      if (is.null(z)==FALSE)
+        { X <- cbind(X, z[(p+1):n,]) }
+      # Set up some matrices for later
+      XX <- crossprod(X)
+      Bh<-solve(XX, crossprod(X,Y), tol = 1e-16)
+      u<-(Y - X%*%(Bh));
+      Sh<-crossprod(u)/Ts;  # u'u/n form of estimator
+      Sh1<-crossprod(u)/capT
+      # Format the output variables
+      # Split the coefficient matrix (will make IRFs and forecasting easier)
+      intercept<-Bh[(m*p+1),];             # extract the intercept
+      ar.coefs<-t(Bh[1:(m*p),]);           # extract the ar coefficients
+      dim(ar.coefs)<-c(m,m,p)              # push ar coefs into M x M x P array
+      ar.coefs<-aperm(ar.coefs,c(2,1,3))   # reorder array so columns are for eqn
+
+      if(is.null(z)==FALSE)
+        {
+          exog.coefs <- Bh[(m*p+2):nrow(Bh),]
+          num.exog <- ncol(z)
+          z <- as.matrix(z)
         }
+      else{
+          exog.coefs <- NA
+          num.exog <- 0
+      }
 
-        pfit <- list(capT=capT, ncoef=ncoef, num.exog=num.exog,
-                     Sh1=Sh1)
-	output <- list(intercept = intercept,
-                       ar.coefs=ar.coefs,
-                       Bhat = Bh,
-                       vcv=Sh,
-                       exog.coefs=exog.coefs,
-                       residuals=u,
-                       mean.S=Sh,
-                       hstar=XX,
-                       X=X,
-                       Y=Y,  # the VAR Y
-                       y=dat, # original y
-                       pfit=pfit)
-        class(output) <- c("VAR")
-        return(output)
+      pfit <- list(capT=capT, ncoef=ncoef, num.exog=num.exog,
+                   Sh1=Sh1)
+      output <- list(intercept = intercept,
+                     ar.coefs=ar.coefs,
+                     Bhat = Bh,
+                     vcv=Sh,
+                     exog.coefs=exog.coefs,
+                     residuals=u,
+                     mean.S=Sh,
+                     hstar=XX,
+                     X=X,
+                     Y=Y,  # the VAR Y
+                     y=dat, # original y
+                     pfit=pfit)
+      class(output) <- c("VAR")
+      return(output)
       }
 
 # Summary function for VAR models

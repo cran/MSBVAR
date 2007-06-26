@@ -2,12 +2,18 @@
 # szbvar estimator
 
 "szbvar" <-
-function(dat, p, z=NULL, lambda0, lambda1, lambda3,
+function(Y, p, z=NULL, lambda0, lambda1, lambda3,
                  lambda4, lambda5, mu5, mu6, nu=ncol(dat)+1, qm=4, prior=0,
-                 posterior.fit=FALSE)
-  {
-    n<-nrow(dat);	 	# # of observations in data set
-    m<-ncol(dat);	 	# # of variables in data set
+                 posterior.fit=FALSE){
+
+    sanity.check.bvar(list(Y=Y, p=p, z=z, lambda0=lambda0,
+                           lambda1=lambda1, lambda3=lambda3,
+                           lambda4=lambda4, lambda5=lambda5,
+                           mu5=mu5, mu6=mu6, qm=qm, prior=prior,
+                           posterior.fit=posterior.fit))
+
+    n<-nrow(Y);	 	# # of observations in data set
+    m<-ncol(Y);	 	# # of variables in data set
 
     # Test for the exogenous variables
     if (is.null(z))
@@ -24,7 +30,7 @@ function(dat, p, z=NULL, lambda0, lambda1, lambda3,
     Ts<-n-p;  		      # # of actual data observations @
 
     # Declare the endoegnous variables as a matrix.
-    dat<-as.matrix(dat);
+    dat<-as.matrix(Y);
 
     # Create data matrix including dummy observations
     # X: Tx(m*p+1)

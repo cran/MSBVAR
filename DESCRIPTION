@@ -1,10 +1,10 @@
 Package: MSBVAR
-Version: 0.2.2
-Date: 2007-01-14
-Title: Bayesian Vector Autoregression Models
-Author: Patrick T. Brandt <pbrandt@utdallas.edu>
+Version: 0.3.0
+Date: 2007-06-26
+Title: Markov-Switching Bayesian Vector Autoregression Models
+Author: Patrick T. Brandt <pbrandt@utdallas.edu>, Justin Appleby <appleby@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
-Depends: R (>= 2.4.0), KernSmooth, xtable, coda, methods
+Depends: R (>= 2.4.0), KernSmooth, xtable, coda
 Description: Provides methods for estimating frequentist and 
   Bayesian Vector Autoregression (VAR) models.  Functions for reduced
   form and structural VAR models are also available. Includes 
@@ -17,4 +17,4 @@ Description: Provides methods for estimating frequentist and
 LazyLoad: yes
 License: GPL version 2 or newer
 URL: http://www.utdallas.edu/~pbrandt/
-Packaged: Thu Jan 18 12:06:20 2007; brandt
+Packaged: Mon Jul 30 04:32:09 2007; justin

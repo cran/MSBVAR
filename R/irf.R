@@ -11,27 +11,14 @@
     }
 }
 
-"irf.VAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S))
-  {
-    ar.coef <- varobj$ar.coef
-    m<-dim(ar.coef)[1]                   # Capture the number of variables
-     p<-dim(ar.coef)[3]                   # Capture the number of lags
-     B<-array(0,c(m,m,max(nsteps,p)))     # Make an array for the AR coefs
+"irf.msbsvar" <- function(gibbs, msbsvar, nsteps){
+    .Call("irf.msbsvar.cpp", gibbs, msbsvar, as.integer(nsteps))
+}
 
-     for(l in 1:(min(p,nsteps)))
-       { B[,,l]<-ar.coef[,,l] }
-
-     mhat<-matrix(0,ncol=m*m,nrow=nsteps)
-     dim(mhat)<-c(m,m,nsteps)             # Make an array to hold IRF
-     mhat[,,1]<-A0                        # Identification condition
-                                          # for IRF
-     for(i in 2:nsteps)                   # Compute the IRF
-       { for(j in 1:(i-1))
-           { mhat[,,i]<-mhat[,,i] + (mhat[,,(i-j)]%*%B[,,j]) }
-       }
-    output <- list(B=B,mhat=mhat)
-    attr(output, "class") <- c("irf.VAR")
-    return(output)
+"irf.VAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S)){
+    .Call("irf.var.cpp", as.double(varobj$ar.coefs),
+          as.integer(dim(varobj$ar.coefs)), as.integer(nsteps),
+          A0)
 }
 
 "irf.BVAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S))
@@ -68,6 +55,7 @@
     dim(impulses) <- c((m^2), nsteps)
     impulses <- ts(t(impulses), start = c(0, 1), freq = 1)
     minmax <- apply(stacked.impulses, 2, range)
+    print(minmax)
 
     j <- 1
     par(mfrow = c(m, m), mai = c(0.25, 0.25, 0.15, 0.25), omi = c(0.15,
@@ -90,10 +78,34 @@
 
 "plot.irf.BVAR" <- function (x, varnames = NULL, ...)
 {
-    plot.irf.VAR(x, varnames = NULL, ...)
+    plot.irf.VAR(x, varnames, ...)
 }
 
 "plot.irf.BSVAR" <- function (x, varnames = NULL, ...)
 {
-    plot.irf.VAR(x, varnames = NULL, ...)
+    plot.irf.VAR(x, varnames, ...)
 }
+
+
+## "irf.VAR.DEPRICATED" <- function(varobj, nsteps, A0=chol(varobj$mean.S))
+##   {
+##     ar.coef <- varobj$ar.coef
+##     m<-dim(ar.coef)[1]                   # Capture the number of variables
+##      p<-dim(ar.coef)[3]                   # Capture the number of lags
+##      B<-array(0,c(m,m,max(nsteps,p)))     # Make an array for the AR coefs
+
+##      for(l in 1:(min(p,nsteps)))
+##        { B[,,l]<-ar.coef[,,l] }
+
+##      mhat<-matrix(0,ncol=m*m,nrow=nsteps)
+##      dim(mhat)<-c(m,m,nsteps)             # Make an array to hold IRF
+##      mhat[,,1]<-A0                        # Identification condition
+##                                           # for IRF
+##      for(i in 2:nsteps)                   # Compute the IRF
+##        { for(j in 1:(i-1))
+##            { mhat[,,i]<-mhat[,,i] + (mhat[,,(i-j)]%*%B[,,j]) }
+##        }
+##     output <- list(B=B,mhat=mhat)
+##     attr(output, "class") <- c("irf.VAR")
+##     return(output)
+## }

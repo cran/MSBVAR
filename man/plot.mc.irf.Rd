@@ -31,7 +31,7 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84),
   \item{probs}{ \code{probs} is the width of the error bands.  Default
     is \code{c(0.16, 0.84)} which is a 68\% band that is approximately
     one standard deviation, as suggested by Sims and Zha. }
-  \item{varnames}{ List of variable names for labelling the impulse responses.}
+  \item{varnames}{ List of variable names for labeling the impulse responses.}
   \item{\dots}{ Other graphics parameters}
 }
 \details{

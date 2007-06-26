@@ -29,7 +29,12 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
   Estimates the marginal log likelihood, log prior, log posterior for
   the \eqn{A_0} and \eqn{A_1,\ldots,A_p} parameters of the model, and
   the log data density for the sample (after integrating out the model
-  parameters).  The approach used is that of Chib (1995)
+  parameters).  The approach used is that of Chib (1995).
+
+  The computations are done using compiled C++ code as of version
+  0.3.0.  See the package source code for details about the
+  implementation.
+
 }
 \value{
   BVAR:

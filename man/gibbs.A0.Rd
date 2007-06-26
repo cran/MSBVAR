@@ -31,6 +31,11 @@ gibbs.A0(varobj, N1, N2, thin=1, normalization="DistanceMLA")
   for further information.  The function draws \code{N2 * thin} draws
   from the sampler and returns the \code{N2} draws that are the
   \code{thin}'th elements of the Gibbs sampler sequence.
+
+  The computations are done using compiled C++ code as of version
+  0.3.0.  See the package source code for details about the
+  implementation.
+
 }
 \value{
   A list of five elements:
@@ -84,19 +89,29 @@ Normalization in Multiple Equation Models" \emph{Journal of Econometrics},
   marginal log likelihood for the model after sampling the posterior  }
 
 \examples{
-\dontrun{
-varobj <- szbsvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4,
-                  lambda5, mu5, mu6, ident, qm = 4)
-N1 <- 100
+# SZ, B-SVAR model for the Levant data
+data(BCFdata)
+m <- ncol(Y)
+ident <- diag(m)
+ident[1,] <- 1
+ident[2,1] <- 1
+
+# estimate the model's posterior moments
+set.seed(123)
+model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1, lambda3=1, lambda4=0.1,
+                 lambda5=0.05, mu5=0, mu6=5, ident, qm=12)
+
+# Set length of burn-in and size of posterior.  These are only an
+# example.  Production runs should set these much higher.
+N1 <- 1000
 N2 <- 1000
-A0posterior.obj <- gibbs.A0(varobj, N1, N2, thin=10)
+
+A0.posterior.obj <- gibbs.A0(model, N1, N2, thin=1)
 
 # Use coda to look at the posterior.
-library(coda)
 A0.free <- A02mcmc(A0.posterior.obj)
 
 plot(A0.free)
-}
 }
 \keyword{ ts }% at least one, from doc/KEYWORDS
 \keyword{ regression }% __ONLY ONE__ keyword per line

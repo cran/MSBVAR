@@ -1,9 +1,9 @@
-\name{BCF2006data}
+\name{BCFdata}
 \docType{data}
-\alias{BCF2006data}
+\alias{BCFdata}
 \alias{Y}
 \alias{z2}
-\title{Subset of Data from Brandt, Colaresi, and Freeman (2006)}
+\title{Subset of Data from Brandt, Colaresi, and Freeman (2007)}
 \description{
   This data set in two matrices about the Israeli-Palestinian conflict.
   The first matrix is a set of endogenous variables that gives 1)
@@ -18,12 +18,12 @@
   conflict and negative values indicate an average with more conflict
   than cooperation.  These are a subset
   of the Levant dataset from the Kansas Event Data System (KEDS) Levant
-  dataset.  The data are from Reuters and AFP news sources and encoded
+  dataset.  The data are from AFP news sources and encoded
   into the World Event Interaction Survey (WEIS) coding system and
   Goldstein scalings using the Kansas Event Data System (KEDS) TABARI
   program.  Source data can be found on the KEDS site below.
  }
- \usage{data(BCF2006data)}
+ \usage{data(BCFdata)}
  \format{Two matrices containing 108 observations.  The first matrix "Y"
    is a multiple \code{ts} object of the endogenous series that measure
    the average conflict-cooperation level and the public opinion data.
@@ -47,7 +47,7 @@
    the time of the next constitutionally mandated election.
 } 
    \source{Brandt, Patrick T., Michael Colaresi, and John
-     R. Freeman. 2006. "Reciprocity, Accountability and Credibility In
+     R. Freeman. 2007. "Reciprocity, Accountability and Credibility In
      International Relations"
      \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
  }
@@ -55,7 +55,7 @@
  \references{
 
    Brandt, Patrick T., Michael Colaresi, and John
-   R. Freeman. 2006. "Reciprocity, Accountability and Credibility In
+   R. Freeman. 2007. "Reciprocity, Accountability and Credibility In
    International Relations"
    \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
    

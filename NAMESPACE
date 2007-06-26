@@ -1,5 +1,8 @@
+useDynLib(MSBVAR, .registration=TRUE)
+
 import(KernSmooth)
 import(coda)
+
 export(dfev,
        dfev.VAR,
        dfev.BVAR,
@@ -14,7 +17,6 @@ export(dfev,
        szbvar,
        szbsvar,
        gibbs.A0,
-       gibbs.A0.BSVAR,
        mcmc.szbsvar,
        normalize.svar,
        A02mcmc,
@@ -46,20 +48,23 @@ export(dfev,
        posterior.fit.BVAR,
        posterior.fit.BSVAR,
        mountains,
+       plot.gibbs.A0,
        plot.irf.VAR,
        plot.irf.BVAR,
        plot.irf.BSVAR,
        plot.mc.irf.VAR,
        plot.mc.irf.BVAR,
        plot.mc.irf.BSVAR,
-       plot.forecast,
+       plot.forecast.VAR,
        plot.forc.ecdf,
        print.posterior.fit.BVAR,
        print.posterior.fit.BSVAR,
        summary.VAR,
        summary.BVAR,
        summary.BSVAR
+#       irf.msbsvar
        )
+
 
 S3Method(print, posterior.fit.BVAR)
 S3Method(print, posterior.fit.BSVAR)
@@ -79,5 +84,6 @@ S3Method(plot, mc.irf.VAR)
 S3Method(plot, mc.irf.BVAR)
 S3Method(plot, mc.irf.BSVAR)
 
+S3Method(plot, forecast.VAR)
 
 

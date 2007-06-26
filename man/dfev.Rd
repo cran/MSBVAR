@@ -13,7 +13,7 @@
 dfev(varobj, A0 = NULL, k)
 dfev.VAR(varobj, A0 = t(chol(varobj$mean.S)), k)
 dfev.BVAR(varobj, A0 = t(chol(varobj$mean.S)), k)
-dfev.BSVAR(varobj, A0 = t(solve(varobj$A0.mode)), k)
+dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -24,10 +24,7 @@ dfev.BSVAR(varobj, A0 = t(solve(varobj$A0.mode)), k)
   \item{A0}{ Decomposition of the contemporaneous error covariance
     matrix.  Default is to use the (lower) Cholesky decomposition of the
     residual error covariance matrix for VAR and BVAR models, or the
-    inverse of \eqn{A_0}{A(0)} in B-SVAR models. Note that these are
-    transposed from the \eqn{A_0}{A(0)} produced in the estimation.  The
-    estimation methods have the equations in columns while the DFEV uses
-    the equations of the VAR system in rows.}
+    inverse of \eqn{A_0}{A(0)} in B-SVAR models. }
   \item{k}{ Number of periods over which to compute the deccomposition. }
 }
 \details{
@@ -62,19 +59,19 @@ dfev.BSVAR(varobj, A0 = t(solve(varobj$A0.mode)), k)
   \code{\link{summary.dfev}} for a nicely formatted tables
   and an output example}
 \examples{
-    data(IsraelPalestineConflict)
-    varnames <- colnames(IsraelPalestineConflict)
-    fitted.BVAR <- szbvar(IsraelPalestineConflict, p=6, z=NULL,
-                           lambda0=0.6, lambda1=0.1,
-                           lambda3=2, lambda4=0.25, lambda5=0, mu5=0,
-                           mu6=0, nu=3, qm=4, prior=0,
-                           posterior.fit=FALSE)
+data(IsraelPalestineConflict)
+varnames <- colnames(IsraelPalestineConflict)
+fitted.BVAR <- szbvar(IsraelPalestineConflict, p=6, z=NULL,
+                       lambda0=0.6, lambda1=0.1,
+                       lambda3=2, lambda4=0.25, lambda5=0, mu5=0,
+                       mu6=0, nu=3, qm=4, prior=0,
+                       posterior.fit=FALSE)
 
-    A0 <- t(chol(fitted.BVAR$mean.S))
-    dat.dfev <- dfev(fitted.BVAR, A0, 24)
+A0 <- t(chol(fitted.BVAR$mean.S))
+dat.dfev <- dfev(fitted.BVAR, A0, 24)
 
-    print(dat.dfev)
-    summary(dat.dfev)
+print(dat.dfev)
+summary(dat.dfev)
 }
 \keyword{ ts }% at least one, from doc/KEYWORDS
 

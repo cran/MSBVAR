@@ -3,6 +3,7 @@
 \alias{irf.VAR}
 \alias{irf.BVAR}
 \alias{irf.BSVAR}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Impulse Response Function (IRF) Computation for a VAR}
 \description{

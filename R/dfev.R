@@ -1,9 +1,12 @@
 "dfev" <- function(varobj, A0=NULL, k)
 {
-    if (class(varobj)==c("VAR") || class(varobj)==c("BVAR"))
-    { return(dfev.VAR(varobj, A0=t(chol(varobj$mean.S)), k))}
-    if (class(varobj)==c("BSVAR"))
-    { return(dfev.VAR(varobj, A0=t(solve(varobj$A0.mode)), k)) }
+    if (!(k>0)){
+        stop("argument 'k' in dfev() must be greater than 0")
+    } else if (class(varobj)==c("VAR") || class(varobj)==c("BVAR")){
+        return(dfev.VAR(varobj, A0=t(chol(varobj$mean.S)), k))
+    } else if (class(varobj)==c("BSVAR")){
+        return(dfev.VAR(varobj, A0=solve(varobj$A0.mode), k))
+    }
 }
 
 "dfev.BVAR" <- function(varobj, A0=t(chol(varobj$mean.S)), k)
@@ -13,12 +16,11 @@
     return(output)
 }
 
-"dfev.BSVAR" <- function(varobj, A0=t(solve(varobj$A0.mode)), k)
+"dfev.BSVAR" <- function(varobj, A0=solve(varobj$A0.mode), k)
 {
     output <- dfev.VAR(varobj,A0,k)
     attr(output, "class") <- c("dfev")
     return(output)
-
 }
 
 "dfev.VAR" <- function(varobj, A0=t(chol(varobj$mean.S)), k)
@@ -64,38 +66,50 @@
     k <- dim(errors)[1]
     m <- dim(errors)[2]
 
-    if(latex==T)
-      { for (i in 1:m)
-          { tmp <- matrix(errors[,,i], nrow=k, ncol=m)
+    if(latex==T){
+        for (i in 1:m){
+            tmp <- matrix(errors[,,i], nrow=k, ncol=m)
             tmp <- cbind(std.err[,i],tmp)
             colnames(tmp) <- c("Std. Error", names)
-            if(i==1)
-              { # Ensure we clobber any old file
-                print(xtable(tmp,
-                             digits=rep(1,ncol(tmp)+1),
-                             caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
-                  file=file, append=F, table.placement="p")
-              }
-            else
-              { print(xtable(tmp,
-                         digits=rep(1,ncol(tmp)+1),
-                         caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
-                  file=file, append=T, table.placement="p")
-              }
-          }
-      }
-    else
-      { for (i in 1:m)
-          { cat(paste("Decomposition of Forecast Errors for a Shock to", names[i], "\n"))
-                  cat("-------------------------------------------------------------\n")
+            if(i==1){
+                if(is.null(file)){
+                    print(xtable(tmp, digits=rep(1,ncol(tmp)+1),
+                                 caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
+                          append=F, table.placement="p")
+                } else {
+
+                      # Ensure we clobber any old file
+                    print(xtable(tmp,
+                                 digits=rep(1,ncol(tmp)+1),
+                                 caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
+                          file=file, append=F, table.placement="p")
+                }
+            } else {
+                if(is.null(file)){
+                    print(xtable(tmp,
+                                 digits=rep(1,ncol(tmp)+1),
+                                 caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
+                          append=T, table.placement="p")
+                } else {
+                    print(xtable(tmp,
+                                 digits=rep(1,ncol(tmp)+1),
+                                 caption=paste("Decomposition of Forecast Errors for a Shock to", names[i])),
+                          file=file, append=T, table.placement="p")
+                }
+            }
+        }
+    } else {
+        for (i in 1:m){
+            cat(paste("Decomposition of Forecast Errors for a Shock to", names[i], "\n"))
+            cat("-------------------------------------------------------------\n")
             tmp <- matrix(errors[,,i], nrow=k, ncol=m)
             tmp <- cbind(std.err[,i],tmp)
             colnames(tmp) <- c("Std. Error", names)
             print(tmp)
-                  cat("-------------------------------------------------------------\n")
-          }
-      }
-  }
+            cat("-------------------------------------------------------------\n")
+        }
+    }
+}
 
 "summary.dfev" <- function(object, latex=F, file=NULL, ...)
 { print.dfev(object, latex=F, file=NULL, ...) }

@@ -7,14 +7,14 @@
   described in Sims and Zha (1998)
 }
 \usage{
-szbvar(dat, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
+szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
        mu5, mu6, nu = ncol(dat)+1, qm = 4, prior = 0,
        posterior.fit = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{dat}{ \eqn{T \times m}{T x m} matrix of time series or a multiple time series
-    object (e.g., \code{ts(matrix(...))}. }
+  \item{Y}{ \eqn{T \times m}{T x m} multiple time
+    series object created with \code{ts()}.}
   \item{p}{ Lag length }
   \item{z}{ \eqn{T \times k}{T x k} matrix of exogenous variables.  Can
     be \code{z = NULL} if there are none. }

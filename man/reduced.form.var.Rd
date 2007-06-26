@@ -7,12 +7,12 @@
   unrelated regression (SUR).
 }
 \usage{
-reduced.form.var(dat, p, z=NULL)
+reduced.form.var(Y, p, z=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{dat}{ \eqn{T \times m}{T x m} matrix of multiple time series or a multiple time
-    series object.}
+  \item{Y}{ \eqn{T \times m}{T x m} multiple time
+    series object created with \code{ts()}.}
   \item{p}{ Lag length}
   \item{z}{ \eqn{T \times k}{T x k} exogenous variables in a matrix of
     \eqn{T} rows.  Can be \code{NULL} if there are none.}
@@ -41,7 +41,7 @@ reduced.form.var(dat, p, z=NULL)
     variables crossproduct.}
   \item{X}{ Right hand side variables for the estimation of BVAR}
   \item{Y}{ Left hand side variables for the estimation of BVAR}
-  \item{y}{ Input data (dat)}
+  \item{y}{ Input data (Y)}
 }
 \references{ Sims, C.A. 1980.  "Macroeconomics and Reality"
   \emph{Econometrica} 48(1): 1-48.

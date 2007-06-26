@@ -1,22 +1,20 @@
-"forecast" <- function(varobj, nsteps, A0, shocks, exog.fut)
+"forecast" <- function(varobj, nsteps, A0,
+                       shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
+                       exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)))
 {
     if(inherits(varobj,"VAR")){
         return(forecast.VAR(varobj, nsteps, A0=t(chol(varobj$mean.S)),
-                       shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
-                       exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs))))
+                            shocks=shocks, exog.fut=exog.fut))
     }
 
     if(inherits(varobj, "BVAR")){
         return(forecast.VAR(varobj, nsteps, A0=t(chol(varobj$mean.S)),
-                            shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
-                            exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs))))
-
+                            shocks=shocks, exog.fut=exog.fut))
     }
 
     if(inherits(varobj, "BSVAR")){
-        return(forecast.VAR(varobj, nsteps, A0=t(solve(varobj$A0.mode)),
-                       shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
-                       exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs))))
+        return(forecast.VAR(varobj, nsteps, A0=solve(varobj$A0.mode),
+                       shocks=shocks, exog.fut=exog.fut))
     }
 }
 
@@ -37,7 +35,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
   yhat<-rbind(y,matrix(0,ncol=m,nrow=nsteps))
 
    # Compute the deterministic part of the forecasts (less the intercept!)
-   if(is.na(sum(exog.coefs))==F)
+   if(is.na(sum(varobj$exog.coefs))==F)
      {
        deterministic.VAR <- as.matrix(exog.fut) %*% exog.coefs
      }
@@ -69,7 +67,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
     return(output)
 }
 
-"forecast.BSVAR" <- function(varobj, nsteps, A0=t(solve(varobj$A0.mode)),
+"forecast.BSVAR" <- function(varobj, nsteps, A0=solve(varobj$A0.mode),
                        shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
                        exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)))
 {
@@ -83,14 +81,14 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
     if(inherits(varobj, "VAR"))
     {
         output <- uc.forecast.VAR(varobj, nsteps, burnin, gibbs, exog)
-        attr(output, "class") <- c("uc.forecast.VAR", "mts", "ts")
+        attr(output, "class") <- c("forecast.VAR")
         return(output)
     }
 
     if(inherits(varobj, "BVAR"))
     {
         output <- uc.forecast.VAR(varobj, nsteps, burnin, gibbs, exog)
-        attr(output, "class") <- c("uc.forecast.VAR", "mts", "ts")
+        attr(output, "class") <- c("forecast.VAR")
         return(output)
     }
 
@@ -162,7 +160,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
       epsilon.i <- matrix(rnorm(nsteps*m),nrow=nsteps,ncol=m)
 
       # Then construct a forecast using the innovations
-      ytmp <- forecast.VAR(varobj, nsteps, A0=A0, shocks=epsilon.i, ...)
+      ytmp <- forecast.VAR(varobj, nsteps, A0=A0, shocks=epsilon.i)
 
       # Store draws that are past the burnin in the array
       if(i>burnin)
@@ -269,8 +267,8 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
   cat("Start time : ", starttime, "\n");
   cat("End time   : ", endtime, "\n");
     # Returns a list object
-    output <- list(forecast=yforc, orig.y=y, hyperp=c(mu,prior))
-    attr(output, "class") <- c("uc.forecast.VAR", "mts", "ts")
+    output <- list(forecast=yforc)
+    attr(output, "class") <- c("forecast.VAR")
     return(output)
 }
 
@@ -280,7 +278,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
     {
         output <- hc.forecast.VAR(varobj, yconst, nsteps, burnin,
                                   gibbs, exog)
-        attr(output, "class") <- c("hc.forecast.VAR", "mts", "ts")
+        attr(output, "class") <- c("forecast.VAR")
         return(output)
     }
 
@@ -288,7 +286,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
     {
         output <- hc.forecast.VAR(varobj, yconst, nsteps, burnin,
                                   gibbs, exog)
-        attr(output, "class") <- c("hc.forecast.VAR", "mts", "ts")
+        attr(output, "class") <- c("forecast.VAR")
         return(output)
     }
 
@@ -504,15 +502,16 @@ function(varobj, yconst, nsteps, burnin, gibbs, exog=NULL)
   cat("End time   : ", endtime, "\n");
     # Returns a list object
     output <- list(forecast=yforc, orig.y=y) #llf=ts(llf),hyperp=c(mu,prior)))
+    attr(output, "class") <- c("forecast.VAR")
     return(output)
 }
 
-"plot.forecast" <-
+"plot.forecast.VAR" <-
 function(x,y=NULL,varnames=NULL,
                                start=c(0,1),
                                freq=1, probs=c(0.05,0.95),
                                compare.level=NULL, ylab=NULL, ...)
-  {
+{
     fcasts1 <- x
     fcasts2 <- y
     # compute quantities for ecdf of forecast matrix 1
@@ -536,55 +535,44 @@ function(x,y=NULL,varnames=NULL,
 #       }
 
 
-    par(las=1, mar=c(3,4,2.5,1.5), cex=1)
+    par(las=1, mar=c(1,2,2.5,1))
     for(i in 1:m)
-      { forc1.ci <- ts(fcast1.summary[,,i], start=start, freq=freq)
-        ylim <- c(floor(min(c(forc1.ci, compare.level[i]))),
-                  ceiling(max(c(forc1.ci, compare.level[i]))))
+    {
+        forc1.ci <- ts(fcast1.summary[,,i], start=start)
 
-        if(is.null(fcasts2)==FALSE)
-          { forc2.ci <- ts(fcast2.summary[,,i], start=start, freq=freq)
-            ylim <- c(floor(min(c(forc1.ci,forc2.ci,compare.level[i]))),
-                      ceiling(max(c(forc1.ci,forc2.ci,compare.level[i]))))
-
-        ts.plot(forc1.ci, forc2.ci,
-                 gpars=list(lty=c(1,1,1,2,2,2),
-                            ylim=ylim, xlab="", ylab=varnames[i], axes=FALSE, ... ))
-        axis(2,c(floor(min(c(forc1.ci,forc2.ci))),
-                 ceiling(max(c(forc1.ci,forc2.ci)))))
-
-            axis(1)
-#        mtext(varnames[i], side=2, line=1)
-
-        box();
-#        if(i==1) { mtext(ylab, side=2, line=3, at=c(1.5*mean(ylim))) }
-        abline(h=0)
-
-        # put in the comparison level if one is provided
-        if (is.null(compare.level)==FALSE)
-            { abline(h=compare.level[i], lty=c(2)) }
-
+        if(is.null(fcasts2)==FALSE){
+            forc2.ci <- ts(fcast2.summary[,,i], start=start)
+            forc.list <- c("forc1.ci","forc2.ci")
         } else {
-        ts.plot(forc1.ci,
-                 gpars=list(lty=c(1,1,1),
-                            ylim=ylim, xlab="", ylab=varnames[i], axes=FALSE, ... ))
-        axis(2,c(floor(min(c(forc1.ci))),
-                 ceiling(max(c(forc1.ci)))))
-        axis(1)
-#        mtext(varnames[i], side=2, line=1)
-
-        box();
-#        if(i==1) { mtext(ylab, side=2, line=3, at=c(1.5*mean(ylim))) }
-        abline(h=0)
-
-        # put in the comparison level if one is provided
-        if (is.null(compare.level)==FALSE)
-            { abline(h=compare.level[i], lty=c(2)) }
-
+            forc2.ci <- NULL
+            forc.list <- c("forc1.ci")
         }
-
-    }
-}
 
 #         if(is.null(fcasts3)==FALSE)
 #         { forc3.ci <- ts(fcast3.summary[,,i], start=start) }
+
+        ylim <- c(floor(min(c(forc1.ci,forc2.ci,compare.level[i]))),
+                  ceiling(max(c(forc1.ci,forc2.ci,compare.level[i]))))
+
+        if(length(forc.list)==1){
+            ts.plot(forc1.ci, gpars=list(lty=c(1,2,2), ylim=ylim, xlab="",axes=FALSE, ... ))
+        } else if(length(forc.list==2)){
+            ts.plot(forc1.ci, forc2.ci,
+                    gpars=list(lty=c(1,1,1,2,2,2), ylim=ylim, xlab="",axes=FALSE, ... ))
+        }
+
+        axis(2,c(floor(min(c(forc1.ci,forc2.ci))), ceiling(max(c(forc1.ci,forc2.ci)))))
+        mtext(varnames[i],side=3,line=1)
+
+        box();
+        if(i==1) { mtext(ylab, side=2, line=3, at=c(1.5*mean(ylim))) }
+        abline(h=0)
+
+        # put in the comparison level if one is provided
+        if (is.null(compare.level)==FALSE)
+            { abline(h=compare.level[i], lty=c(2)) }
+
+      }
+#    par(oldpar)
+  }
+

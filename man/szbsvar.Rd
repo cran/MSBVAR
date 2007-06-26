@@ -13,7 +13,8 @@ szbsvar(Y, p, z = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{ \eqn{T \times m}{T x m} time series matrix of endogenous variables for the model }
+  \item{Y}{ \eqn{T \times m}{T x m} multiple time
+    series object created with \code{ts()}.}
   \item{p}{ integer lag length for the model }
   \item{z}{ \eqn{T \times k}{T x k} matrix of exogenous variables (not including an
     intercept)}
@@ -229,17 +230,17 @@ Forecasting, and Policy Analysis". \emph{Political Analysis} 14(1):1-36.
   for computing impulse responses for this model.
   }
 \examples{
-\dontrun{
-# generates "ident" consistent with the help example
+# SZ, B-SVAR model for the Levant data
+data(BCFdata)
 m <- ncol(Y)
 ident <- diag(m)
+ident[1,] <- 1
 ident[2,1] <- 1
-ident[3,2] <- 1
 
 # estimate the model's posterior moments
-szbsvar(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5, mu5,
-        mu6, ident, qm=4)
-}
+model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1, lambda3=1, lambda4=0.1,
+                 lambda5=0.05, mu5=0, mu6=5, ident, qm=12)
+
 }
 \keyword{ ts }% at least one, from doc/KEYWORDS
 \keyword{ regression }% __ONLY ONE__ keyword per line
