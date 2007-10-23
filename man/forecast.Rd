@@ -43,11 +43,11 @@ forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
 }
 \value{
   A matrix time series object, \eqn{((T + nsteps) \times m)}{(T +
-    nsteps) x m} of the original series and forecasts.}
+    nsteps) x m} of the original series and forecasts.
 }
 \references{Waggoner, Daniel F. and Tao Zha. 1999. "Conditional
   Forecasts in Dynamic Multivariate Models" Review of \emph{Economics and
-  Statistics}, 81(4):639-651.}
+  Statistics}, 81(4):639-651.
 }
 \author{ Patrick T. Brandt}
 \note{ The forecasts can be easily plotted by using the \code{window()}

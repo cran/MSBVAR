@@ -23,7 +23,7 @@ forc.ecdf(forecasts, probs = c(0.05, 0.95), start = c(0, 1), ...)
   horizon this function estimates the percentile based confidence
   interval.  It then returns a time series matrix beginning at
   \code{start} of the mean forecast and the limits of the confidence
-  region for each variable in the forecast sample.}
+  region for each variable in the forecast sample.
 }
 \value{
   A multiple time series object is returned where the first column is

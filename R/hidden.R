@@ -16,7 +16,7 @@
 
 "coef.forecast.VAR" <- function(object, intercept, ar.coefs,
                                 exog.coefs, m, p, capT, nsteps,
-                                A0=t(chol(var.obj$mean.S)),
+                                A0=t(chol(object$mean.S)),
                                 shocks=matrix(0,nrow=nsteps,ncol=m),
                                 exog.fut=matrix(0,nrow=nsteps,ncol=nrow(exog.coefs)),
                                 ...)
@@ -44,6 +44,46 @@
      }
    return(ts(yhat))
  }
+
+# list.print function --- used to recursively print the list objects
+# in the printing of the VAR objects for users.
+
+"list.print" <- function(x)
+{
+    if(is.null(x$values)){
+        return
+    } else if(is.list(x$values)){
+        cat("==========================================\n")
+        cat(x$labels[1],"\n")
+        cat("==========================================\n")
+        for(i in 1:length(x$values)) list.print(x$values[[i]])
+    } else {
+        if(length(dim(x$values))==3){
+            cat(x$labels[1],": \n",sep="")
+            for(j in 1:dim(x$values)[3]){
+                cat("B(", j, ")\n", sep="")
+                prmatrix(x$values[,,j])
+                cat("\n")
+            }
+        } else if(length(dim(x$values))==2) {
+            cat(x$labels[1],": \n",sep="")
+            prmatrix(x$values)
+        } else if(is.null(dim(x$values))){
+            if (is.null(x$values)){
+                return
+            } else if ((length(x$values)/length(x$labels))==1){
+                for(i in 1:length(x$values))
+                    cat(x$labels[i], ":    ", x$values[i], "\n")
+            } else {
+                cat(x$labels[1],":\n")
+                for(i in 1:length(x$values)) cat(x$values[i], "\t")
+                cat("\n")
+            }
+        }
+        cat("------------------------------------------\n")
+    }
+}
+
 
 ## # Compute impulse responses using vec(ar.coefs | exog coefs).  This is
 ## # a utility function, since it speeds computation of the VAR IRFs in
@@ -225,7 +265,7 @@ function(capT,m,ncoef,num.exog,nu,H0,S0,Y,X,hstar1,Sh,u, Bh,Sh1)
      #        parameters for each equation
 
     Tinv <- sapply(1:m, function(i)
-                   {chol(szbvar.obj$H0inv.posterior[[i]])/szbvar.obj$df},
+                   {chol(szbvar.obj$H0inv.posterior[[i]]/szbvar.obj$df)},
                    simplify=F)
 
     # UT = m x qi matrix in equation 14 of WZ JEDC --- eqn 14.

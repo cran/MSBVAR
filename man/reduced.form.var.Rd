@@ -57,7 +57,7 @@ reduced.form.var(Y, p, z=NULL)
 data(IsraelPalestineConflict)
 rf.var <- reduced.form.var(IsraelPalestineConflict, p=6)
 plot(irf(rf.var, nsteps=12))
-}
+
 }
 \keyword{ ts}
 \keyword{ models}

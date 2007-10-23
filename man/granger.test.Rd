@@ -58,6 +58,5 @@ data(IsraelPalestineConflict)
 granger.test(IsraelPalestineConflict, p=6)
 
 }
-}
 \keyword{ ts }% at least one, from doc/KEYWORDS
 \keyword{ htest}

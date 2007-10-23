@@ -50,6 +50,8 @@ rmse                    Root mean squared error of a Monte Carlo / MCMC
                         sample of forecasts
 rmultnorm               Multivariate Normal Random Number Generator
 rwishart                Random deviates from a Wishart distribution
+summary                 Summary functions for VAR / BVAR / B-SVAR model
+                        objects
 szbsvar                 Structural Sims-Zha Bayesian VAR model
                         estimation
 szbvar                  Reduced form Sims-Zha Bayesian VAR model

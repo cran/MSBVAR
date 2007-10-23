@@ -1,6 +1,6 @@
 Package: MSBVAR
 Title: Bayesian Vector Autoregression Models
-Version: 0.3.0
+Version: 0.3.1
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>, Justin Appleby <appleby@utdallas.edu>
 Description: Provides methods for estimating frequentist and Bayesian
 Vector Autoregression (VAR) models.  Also includes methods for the
@@ -105,9 +105,12 @@ License: GPL
 	   intercept was the first, when it should be the last
 	   coefficients.
 2007-06-18 C++ implementations added 
+2007-10-23 Bug fixes: corrected summary() methods for VAR, BVAR and
+           BSVAR classes and fixed bugs in gibbs.A0(), the Gibbs
+	   sampler for B-SVAR models
 
 MSBVAR Package
-Copyright (C) 2005-2006 Patrick T. Brandt
+Copyright (C) 2005-2007 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, and SES-0540816)
 

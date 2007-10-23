@@ -26,7 +26,7 @@ plot.irf.BSVAR(x, varnames = NULL, ...)
   Generates a plot in ther current plotting device of the impulse
   responses in \code{irf}.  See below for functions that allow one to
   add error bands and confidence regions to the impulse responses.
-  Impulses or shocks are in the columns and the rows are the responses.}  
+  Impulses or shocks are in the columns and the rows are the responses.
 }
 \value{
   None.  Draws a graph in the current device.

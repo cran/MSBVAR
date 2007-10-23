@@ -7,7 +7,7 @@
     tmp <- sanity.check.gibbs(list(N1=N1, N2=N2, thin=thin, normalization=normalization))
     methodlist <- c("DistanceMLA", "DistanceMLAhat", "Euclidean", "PositiveDiagA", "PositiveDiagAinv")
 
-    if(tmp){ method <- which(methodlist==normalization)-1 } else {method <- which(methodList==tmp)-1}
+    if(tmp){ method <- which(methodlist==normalization)-1 } else {method <- which(methodlist==tmp)-1}
 
     cat("Normalization Method: ", normalization, "(", method,")\n")
 
