@@ -24,13 +24,14 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84),
     Approximation" (Gaussian approximation for interval of width
     \code{probs}), "Sims-Zha1" (Gaussian approximation with linear
     eigendecomposition), "Sims-Zha2" (Percentiles with
-    eigendecomposition for each response function), "Sims-Zha3"
-    (Percentiles with eigendecomposition of the full stacked responses)}
+    eigendecomposition for each impulse response function), "Sims-Zha3"
+    (Percentiles with eigendecomposition of the full stacked impulse responses)}
   \item{component}{ If using one of the eigendecomposition methods, the
-    eigenvector \code{component} to be used for the error band construction}
+    eigenvector \code{component} to be used for the error band
+    construction.  Default is the first or largest eigenvector component.}
   \item{probs}{ \code{probs} is the width of the error bands.  Default
     is \code{c(0.16, 0.84)} which is a 68\% band that is approximately
-    one standard deviation, as suggested by Sims and Zha. }
+    one standard deviation, as suggested by Sims and Zha.}
   \item{varnames}{ List of variable names for labeling the impulse responses.}
   \item{\dots}{ Other graphics parameters}
 }
@@ -67,7 +68,7 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84),
 
   }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{ See Also \code{\link{mc.irf}} for the computation of Monte
   Carlo samples of impulse responses,

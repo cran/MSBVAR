@@ -53,15 +53,21 @@
                             probs=c(0.16,0.84), varnames=NULL,...)
 {
     if(inherits(x, "mc.irf.VAR"))
-    { plot.mc.irf.VAR(x, method, component, probs, varnames) }
+    { plot.mc.irf.VAR(x, method=method, component=component,
+                            probs=probs, varnames=varnames) }
+
     if(inherits(x, "mc.irf.BVAR"))
-    { plot.mc.irf.BVAR(x, method, component, probs, varnames) }
+    { plot.mc.irf.BVAR(x, method=method, component=component,
+                       probs=probs, varnames=varnames) }
+
     if(inherits(x, "mc.irf.BSVAR"))
-    { plot.mc.irf.BSVAR(x, method, component, probs, varnames) }
+    { plot.mc.irf.BSVAR(x, method=method, component=component,
+                        probs=probs, varnames=varnames) }
+
 }
 
-"plot.mc.irf.VAR" <- function(x, method=c("Sims-Zha2"), component=1,
-                            probs=c(0.16,0.84), varnames=NULL,...)
+"plot.mc.irf.VAR" <- function(x, method, component,
+                              probs, varnames=NULL,...)
 { mc.impulse <- x
   m <- sqrt(dim(mc.impulse)[3])
   nsteps <- dim(mc.impulse)[2]
@@ -214,16 +220,17 @@
   invisible(list(responses=irf.ci, eigenvector.fractions=eigen.sum))
 }
 
-"plot.mc.irf.BVAR" <- function(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84),varnames=NULL, ...)
+"plot.mc.irf.BVAR" <- function(x, method, component,
+                               probs, varnames, ...)
 {
-    plot.mc.irf.VAR(x, method=c("Sims-Zha2"), component=1,
-                    probs=c(0.16,0.84), varnames=varnames, ...)
+    plot.mc.irf.VAR(x, method, component,
+                    probs, varnames=varnames, ...)
 }
 
 # This version uses a median, not a mean for the central tendency for
 # the percentile method.  It is based on the plot.mc.irf code.
 
-"plot.mc.irf.BSVAR" <- function(x, method = c("Sims-Zha2"), component = 1, probs = c(0.16, 0.84), varnames = NULL, ...)
+"plot.mc.irf.BSVAR" <- function(x, method, component, probs, varnames, ...)
 {
     m <- sqrt(dim(x)[3])
     nsteps <- dim(x)[2]
@@ -349,113 +356,4 @@
     }
     invisible(list(responses = irf.ci, eigenvector.fractions = eigen.sum))
 }
-
-
-## "mc.irf.BSVAR.DEPRECATED" <- function(varobj, nsteps, A0.posterior)
-## { m<-dim(varobj$ar.coefs)[1]  # Capture the number of variablesbcoefs <- varobj$Bhat
-##   p<-dim(varobj$ar.coefs)[3]    # Capture the number of lags
-##   ncoef <- dim(varobj$B.posterior)[1]
-##   n0 <- varobj$n0
-##   n0cum <- c(0,cumsum(n0))
-##   N2 <- A0.posterior$N2
-
-##   # Get the covar for the coefficients
-##   XXinv <- chol(solve(varobj$Hpinv.posterior[[1]]))
-
-##   # storage for the impulses and the sampled coefficients.
-##   impulse <- matrix(0,nrow=N2, ncol=(m^2*nsteps))
-
-##   # Loop for the impulse responses
-##   for(i in 1:N2)
-##     {
-##       # Set up the A0 for this iteration
-##       A0 <- A0.get(A0.posterior$A0.posterior, i)
-##       A0inv <- solve(A0)
-
-##       bj <- a2b(A0, varobj$Ui)
-
-##       F.draw <- matrix(0, ncoef, m)
-
-##       for(j in 1:m)
-##         { btmp <- bj[(n0cum[j]+1):(n0cum[(j+1)])]
-##           F.draw[,j] <- varobj$P.posterior[[j]]%*%(btmp)
-##         }
-
-##       F.draw <- F.draw + XXinv%*%matrix(rnorm(m*ncoef), ncoef, m)
-##       B.draw <- F.draw%*%(A0inv)
-##       B.draw <- B.draw[1:(m*p),]
-##       dim(B.draw) <- c(m^2*p, 1)
-
-##       # Now compute the irfs
-##       impulse[i,] <- t(irf.var.from.beta(t(A0inv),
-##                                          B.draw,
-##                                          nsteps))
-##       if (i%%1000==0)
-##         { cat("Monte Carlo IRF Iteration = ", i, "\n"); }
-##     }
-
-##   # Put the results into an array of the impulses.
-##   impulse <- array(impulse,c(N2,nsteps,m^2))
-##   attr(impulse, "class") <- c("mc.irf.BSVAR")
-##   return(impulse)
-## }
-
-## "mc.irf.VAR.DEPRECATED" <- function(varobj, nsteps, draws)
-## { m<-dim(varobj$ar.coefs)[1]  # Capture the number of variablesbcoefs <- varobj$Bhat
-##   p<-dim(varobj$ar.coefs)[3]    # Capture the number of lags
-
-##   bcoefs <- t(varobj$Bhat[1:(m*p),])
-##   dim(bcoefs) <- c((m^2*p),1)
-##   capT <- nrow(varobj$Y)
-##   X <- varobj$X[,1:(m*p)]
-##   XXinv <- solve(crossprod(X))
-
-##   # Get the correct moment matrix for the BVAR object
-##   if(is.null(varobj$prior)==FALSE)
-##     { XXinv <- solve(varobj$hstar[1:(m*p),1:(m*p)]) }
-
-##   # Cholesky of the covariance
-##   Sigmat <- chol(varobj$mean.S)
-
-##   # Matrices to hold stuff
-##   impulse <- matrix(0,nrow=draws,ncol=(m^2*nsteps))
-
-##   # Do all the Wishart draws
-##   # DF from Box and Tiao Section 8.5.1 p. 460. and Sims and Zha 1998.
-##   df <- capT - m*p - m - 1
-##   wisharts <- rwishart(draws, df, diag(m))
-##   XXinv <- t(chol(XXinv))
-
-##   # Main loop -- uses antithetic acceleration to cut the number of
-##   # effective draws in half.
-
-##   for(i in 1:draws)
-##   {
-##       # Generate the draws from the Wishart and the Beta
-##       Sigma.Draw <- t(Sigmat)%*%(capT*solve(matrix(wisharts[,,i],m,m)))%*%Sigmat
-##       sqrtwish <- t(chol(Sigma.Draw))
-
-##       # Here we exploit the fact that since there is a Kronecker
-##       # product structure to the covariance mtx of beta.  This means
-##       # we can take the Cholesky of each component in the Kronecker
-##       # product of the VCV matrix of Beta and combine them with random
-##       # normal draws to get a draw from beta.  This is much much easier
-##       # than using a draw from a full MVN pdf
-
-##       bcoefs.covar <- kronecker(sqrtwish, XXinv)
-##       coef.u <- bcoefs.covar%*%matrix(rnorm(m^2*p), ncol=1)
-##       coef.mtx.odd <- bcoefs + coef.u
-##       coef.mtx.even <- bcoefs - coef.u
-
-##       # Now compute the irfs
-##       impulse[i,] <- t(irf.var.from.beta(sqrtwish, coef.mtx.odd, nsteps))
-##       if (i%%1000==0)
-##       { cat("Monte Carlo IRF Iteration = ", i, "\n"); }
-##   }
-
-##   # Put the results into an array of the impulses.
-##   output <- array(impulse,c(draws,nsteps,m^2))
-##   attr(output, "class") <- c("mc.irf.VAR")
-##   return(output)
-## }
 

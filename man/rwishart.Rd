@@ -25,9 +25,9 @@ rwishart(N, df, Sigma)
   Wishart random deviates.  If N=1, it returns a single matrix.
 
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt }
-\note{ }
+%\note{ }
 
 \seealso{ See also as \code{\link{rmultnorm}} for multivariate normal
   deviates and \code{\link{rgamma}} for the univariate analog to drawing
@@ -37,7 +37,6 @@ rwishart(N, df, Sigma)
 x <- matrix(rnorm(100), 50, 2)
 XX <- crossprod(x)
 tmp <- rwishart(1, 50, XX)
-
 }
 \keyword{ distribution}
 

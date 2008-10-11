@@ -28,11 +28,10 @@ summary.dfev(object, latex = F, file = NULL, ...)
 \value{
   None.  
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
 \seealso{ See \code{\link{dfev}} for an example.}
-\examples{
-}
+%\examples{}
 \keyword{ print}
 \keyword{ models}
 \keyword{ manip}

@@ -23,12 +23,11 @@ null.space(x)
   Returns an \eqn{m \times q}{m x q} matrix that is the null space,
   where \eqn{q} is the rank of \eqn{A}.
 }
-\references{  }
+%\references{  }
 \author{ Patrick T. Brandt }
-\note{ }
+%\note{ }
 
 \seealso{ \code{\link{svd}} }
-\examples{
-}
+%\examples{}
 \keyword{ algebra }% at least one, from doc/KEYWORDS
 \keyword{ array }% __ONLY ONE__ keyword per line

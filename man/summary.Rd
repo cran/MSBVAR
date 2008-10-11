@@ -23,8 +23,7 @@
   Prints (posterior) coefficient matrices for each lag and error covariance
   summaries as appropriate.
 }
-\references{
-}
+%\references{}
 \seealso{\code{\link{summary}}
 }
 \examples{

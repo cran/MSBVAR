@@ -46,7 +46,8 @@ dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
   \item{std.err}{ M x k dimension matrix of the forecast standard errors. }
   \item{names}{Variable names}
 }
-\references{ }
+\references{ Brandt, Patrick T. and John T. Williams.  Multiple Time
+  Series Models. Thousand Oaks, CA; Sage Press.}
 \author{ Patrick T. Brandt }
 \note{ The interpretation of the DFEV depends on the decomposition of
   the contemporaneous residuals.  In the default case of a Cholesky

@@ -55,7 +55,7 @@ uc.forecast(varobj, nsteps, burnin, gibbs, exog = NULL)
   Forecasts in Dynamic Multivariate Models" \emph{Review of Economics and
   Statistics}, 81(4):639-651.}
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{ \code{\link{hc.forecast}}}
 \examples{

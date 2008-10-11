@@ -30,12 +30,11 @@ forc.ecdf(forecasts, probs = c(0.05, 0.95), start = c(0, 1), ...)
   the mean estimate followed by the upper and lower bounds of the
   confidence region.
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{}
+%\note{}
 
-\seealso{ }
-\examples{
-}
+%\seealso{ }
+%\examples{}
 \keyword{ ts }% at least one, from doc/KEYWORDS
 

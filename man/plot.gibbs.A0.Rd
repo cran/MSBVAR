@@ -76,7 +76,7 @@ N2 <- 10000
 A0.posterior.obj <- gibbs.A0(model, N1, N2, thin=1)
 
 # Plot the matrix of the densities
-get(getOption("device"))()
+dev.new()
 plot.gibbs.A0(A0.posterior.obj, hpd=0.68, varnames=colnames(Y))
 
 }

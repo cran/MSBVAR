@@ -27,8 +27,8 @@ A02mcmc(x)
 }
 
 \author{ Patrick T. Brandt }
-\note{ 
-}
+
+%\note{ }
 
 \seealso{ 
   \code{\link{gibbs.A0}},\code{\link[coda]{mcmc}}

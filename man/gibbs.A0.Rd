@@ -77,7 +77,8 @@ Normalization in Multiple Equation Models" \emph{Journal of Econometrics},
 114: 329--347}
 
 \author{ Patrick T. Brandt }
-\note{ }
+\note{ You must have called / loaded an \code{\link{szbsvar}} object to
+  use this Gibbs sampler.} 
 
 \seealso{ \code{\link{szbsvar}} for estimation of the
   posterior moments of the B-SVAR model,

@@ -90,11 +90,11 @@ results <- SZ.prior.evaluation(window(Y, start=c(1998, 1), end=c(1998,149)), p=3
 library(lattice)
 
 attach(as.data.frame(results))
-get(getOption("device"))()
+dev.new()
 xyplot(RMSE ~ lambda0 | lambda1 + lambda3)
-get(getOption("device"))()
+dev.new()
 xyplot(logMDD ~ lambda0 | lambda1 + lambda3)
-get(getOption("device"))()
+dev.new()
 xyplot(LLF ~ lambda0 | lambda1 + lambda3)
 }
 \keyword{ models }% at least one, from doc/KEYWORDS

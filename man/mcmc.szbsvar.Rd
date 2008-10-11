@@ -36,7 +36,7 @@ mcmc.szbsvar(varobj, A0.posterior)
   \& Control}. 28:349--366.
  }
 \author{ Patrick T. Brandt }
-\note{ }
+%\note{ }
 
 \seealso{ \code{\link{szbsvar}} }
 \examples{

@@ -28,9 +28,9 @@ print.posterior.fit.BSVAR(x, ...)
 \value{
 None
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{
   \code{\link{szbvar}},

@@ -38,14 +38,12 @@ plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1), freq = 1, probs
 \value{
   None. Plots forecasts on the current display device.
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{}
+%\note{}
 
 \seealso{ \code{\link{plot.forc.ecdf}}, and
   \code{\link{uc.forecast}} for an example.}
-\examples{
-
-}
+%\examples{}
 \keyword{ hplot}
 \keyword{ models}

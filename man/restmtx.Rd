@@ -31,7 +31,6 @@ restmtx(nsteps, m)
 \author{ Patrick T. Brandt}
 
 \seealso{ \code{\link{hc.forecast}}}
-\examples{
-}
+%\examples{}
 \keyword{ models}
 \keyword{ utilities}

@@ -321,6 +321,13 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
       # compute the structural innovations
       structural.innovations <- Y1%*%A0.mode - X1%*%F.posterior
 
+      # reduced form exogenous coefficients
+      if(nexog==0){
+          exog.coefs <- NA
+      } else {
+          exog.coefs <- B.posterior[((m*p)+2):nrow(B.posterior),]
+      }
+
       # Now build an output list / object for the B-SVAR model
       output <- list(XX=XX,                               # data matrix moments with dummy obs
                      XY=XY,
@@ -341,11 +348,12 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
                      B.posterior=B.posterior,
                      ar.coefs=AR.coefs.posterior,
                      intercept=F.posterior[(m*p+1),],
-                     prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,
-                       mu5,mu6),
+                     exog.coefs=exog.coefs,
+                     prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,mu5,mu6),
                      df=capT,
                      n0=n0,
-                     ident=ident
+                     ident=ident,
+                     b=max.obj$par
                      )
       class(output) <- c("BSVAR")
       return(output)

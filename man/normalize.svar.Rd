@@ -72,7 +72,6 @@ Econometrics}. 114: 329--347.
 
 \seealso{ \code{\link{szbsvar}},
   \code{\link{gibbs.A0.BSVAR}} }
-\examples{
-}
+%\examples{}
 \keyword{ ts }% at least one, from doc/KEYWORDS
 \keyword{ models }% __ONLY ONE__ keyword per line

@@ -20,9 +20,9 @@ rmse(m1, m2)
 \value{
   Forecast RMSE.
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{ \code{\link{mae}}, \code{\link{forecast}}}
 \examples{

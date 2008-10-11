@@ -30,7 +30,7 @@ decay.spec(qm, p, lambda)
 \references{ Sims, C.A. and Tao Zha. 1998. "Bayesian Methods for Dynamic
   Multivariate Models." \emph{International Economic Review}. 39(4):949-968.}
 \author{ Patrick T. Brandt}
-\note{}
+%\note{}
 
 \seealso{ \code{\link{szbvar}}}
 \examples{

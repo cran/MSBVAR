@@ -215,7 +215,7 @@ Forecasting, and Policy Analysis". \emph{Political Analysis} 14(1):1-36.
 
 }
 \author{ Patrick T. Brandt }
-\note{ }
+%\note{ }
 
 \section{Warning }{ If you do not understand the model described here,
   you probably want the models described in \code{\link{szbvar}} or

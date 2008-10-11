@@ -36,7 +36,7 @@ extern "C" SEXP irf_var(SEXP ar_coefs, SEXP ar_dims, SEXP nsteps, SEXP A0)
 	Mhat.SubMatrix(1,m,1+m*(i-1),m*i) +
 	(Mhat.SubMatrix(1,m,1+m*(i-j-1),m*(i-j)) *
 	 Bmat.SubMatrix(1,m,1+m*(j-1),m*j));    
-  
+
   // Create R objects 'B' (AR coefs) and 'mhat' (IRF)
   int dims[]={m,m,ns};
   PROTECT(B = C2R3D(Bmat, dims));

@@ -126,14 +126,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
     num.exog <- varobj$num.exog
     qm <- varobj$qm
     ncoef <- nrow(varobj$Bhat)
-#     # build the extended regressions if necessary
-#     if(is.na(sum(exog.fut))==F)
-#       {
-#         z.fut <- rbind(z,exog.fut)
-#       }
-#     else
-#       { z.fut <- NULL
-#       }
+
   # Get some constants we are going to need
     starttime<-date()           # Starting time for simulation
 
@@ -183,8 +176,11 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
       # and then building the lags.  This reuses the code for the lag
       # construction in the szbvar code
 
-      X.update <- matrix(0, nsteps, ncoef)
-      X.update[,ncoef] <- matrix(1, nsteps, 1)
+      # Now build rhs -- start with an empty matrix
+      X.update <- matrix(0, nsteps, m*p+1)
+        # Add in the constant
+      X.update[, (m*p+1)] <- matrix(1, nsteps, 1)
+        # Put in the lagged y's
 
       # Note that constant is put last here when the lags are made
       for(j in 1:p)
@@ -192,8 +188,7 @@ function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
           X.update[1:nsteps,(m*(j-1)+1):(m*j)] <- matrix(Y.update[(p+1-j):(nsteps+p-j),],ncol=m)
         }
 
-      # Put on the exogenous regressors and make the constant the
-      # first exog regressor after the AR coefs
+      # Put in exogenous coefficients if there are any.
       if(is.null(exog)==F)
         {
           X.update<-cbind(X.update,exog);

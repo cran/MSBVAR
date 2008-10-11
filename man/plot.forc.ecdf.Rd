@@ -26,9 +26,9 @@ plot.forc.ecdf(x, probs = c(0.05, 0.95),
 \value{
   None.
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{ \code{\link{plot.forecast}}}
 \examples{

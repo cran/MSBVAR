@@ -25,7 +25,7 @@ rmultnorm(n, mu, vmat, tol = 1e-10)
 \value{
   Matrix of the random draw that is conformable with the input \code{mu}.
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt }
 \note{ Based on code by Jeff Gill. This function is called in the hard
   condition forecasting in \code{\link{hc.forecast}} for simulating

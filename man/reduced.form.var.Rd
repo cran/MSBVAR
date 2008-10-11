@@ -47,7 +47,7 @@ reduced.form.var(Y, p, z=NULL)
   \emph{Econometrica} 48(1): 1-48.
   }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 
 \seealso{ See also \code{\link{szbvar}} for BVAR models with the Sims-Zha
   prior and \code{\link{szbsvar}} for Bayesian SVAR models with the

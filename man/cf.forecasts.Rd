@@ -24,9 +24,9 @@ cf.forecasts(m1, m2)
   \item{rmse }{Forecast RMSE}
   \item{mae }{Forecast MAE}
 }
-\references{ }
+%\references{ }
 \author{ Patrick T. Brandt}
-\note{}
+%\note{}
 
 \seealso{ \code{\link{forecast.VAR}} for forecast computations}
 \examples{

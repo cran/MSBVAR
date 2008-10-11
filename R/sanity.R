@@ -3,8 +3,9 @@
     if(args$lambda0<=0 || args$lambda0>1){
         stop("\n\n\t-- Overall prior tightness (lambda0) must be between 0 and 1\n")
     }
-    else if(args$lambda1<0 || args$lambda1>1){
-        stop("\n\n\t-- Prior tightness around AR(1) parameters (lambda1) must be between 0 and 1\n")
+    else if(args$lambda1<0){
+        stop("\n\n\t--
+        Prior tightness around AR(1) parameters (lambda1) must be greater than 0\n")
     }
     else if(args$lambda3<0){
         stop("\n\n\t-- Order of lag decay (lambda3) must be greater than 0\n")
@@ -13,7 +14,8 @@
         stop("\n\n\t-- Prior tightness around intercept (lambda4) must be greater than 0\n")
     }
     else if(args$lambda5<0){
-        stop("\n\n\t-- Prior tightness around exogenous parameters (lambda5) must be between 0 and 1\n")
+        stop("\n\n\t--
+        Prior tightness around exogenous parameters (lambda5) must be greater than 0\n")
     }
     else if(args$mu5<0){
         stop("\n\n\t-- Prior weight of sum of coefficients must be non-negative\n")
@@ -44,10 +46,10 @@
         m <- ncol(Y)
     }
 
-    # Check time series properties of input z
-    if(is.null(args$z)==FALSE && is.null(tsp(args$z))==TRUE){
-        stop("\n\n\t-- Input data [z] must be NULL, a ts() object, or an mts() object\n")
-    }
+##     # Check time series properties of input z
+##     if(is.null(args$z)==FALSE || is.ts(args$z)==FALSE){
+##         stop("\n\n\t-- Input data [z] must be NULL, a ts() object, or an mts() object\n")
+##     }
 
     # Check if num lags is possible given the amount of data supplied
     if(args$p<=0 || args$p>=T){
@@ -104,7 +106,11 @@
 
     m <- ncol(args[[1]])
 
-    # Check identification
+    # Check identification MATRIX
+
+    if(is.matrix(args$ident)==FALSE) {
+        stop("\n\n\t-- Check Identification: ident argument should be of the class matrix, not list or dataframe\n")
+    }
 
     if(length(which(args$ident==1))>(m*(m+1))/2){
         stop("\n\n\t-- Check Identification: no more than m*(m+1)/2 free parameters allowed\n")
@@ -126,7 +132,7 @@
     methodlist <- c("DistanceMLA", "DistanceMLAhat", "Euclidean", "PositiveDiagA", "PositiveDiagAinv")
 
     if(length(which(methodlist==args$normalization))==0){
-        warning("\n\n\t-- Specified normalization method does not exist: defalut set to 'DistanceMLA'\n")
+        warning("\n\n\t-- Specified normalization method does not exist: default set to 'DistanceMLA'\n")
         return("DistanceMLA")
     }
     else { return(1) }
@@ -151,11 +157,13 @@
     if(args$nsteps<=0) stop("\n\n\t-- 'nsteps' must be greater than 0\n")
 
     if(attr(args$varobj,"class")=="VAR" && !(args$nsteps>0)){
-        stop("\n\n\t-- For VAR models, argument 'nsteps' must be defined and non-negative\n")
+        stop("\n\n\t--
+        For VAR models, argument 'nsteps' must be defined and non-negative integer\n")
     }
 
     if(attr(args$varobj,"class")=="BVAR" && !(args$draws>0)){
-        stop("\n\n\t-- For BVAR models, argument 'draws' must be defined and non-negative\n")
+        stop("\n\n\t--
+        For BVAR models, argument 'draws' must be defined and non-negative integer\n")
     }
 
     if(attr(args$varobj,"class")=="BSVAR" && is.null(args$A0.posterior)){

@@ -20,7 +20,7 @@ mae(m1, m2)
   MAE value
 }
 \author{ Patrick T. Brandt}
-\note{ }
+%\note{ }
 \seealso{ \code{\link{cf.forecasts}}, \code{\link{rmse}}}
 \examples{
 data(IsraelPalestineConflict)
