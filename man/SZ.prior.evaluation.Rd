@@ -69,7 +69,9 @@ SZ.prior.evaluation(Y, p,
 \seealso{ \code{\link{szbvar}}}
 \examples{
 Y <- EuStockMarkets
-results <- SZ.prior.evaluation(window(Y, start=c(1998, 1), end=c(1998,149)), p=3,
+results <- SZ.prior.evaluation(window(Y, start=c(1998, 1),
+                                       end=c(1998,149)),
+                               p=3,
                                lambda0=c(1,0.9),
                                lambda1=c(0.1,0.2),
                                lambda3=c(0,1),
@@ -81,7 +83,6 @@ results <- SZ.prior.evaluation(window(Y, start=c(1998, 1), end=c(1998,149)), p=3
                                prior=0,
                                nstep=20, 
                                y.future=window(Y, start=c(1998,150)))
-
 
 # Now plot the RMSE and marginal posterior of the data for each of the
 # 6 period forecasts as a function of the prior parameters.  This can

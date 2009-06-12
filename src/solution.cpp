@@ -39,7 +39,7 @@ SolutionException::SolutionException(const char* a_what) : BaseException()
    AddMessage("Error detected by solution package\n");
    AddMessage(a_what); AddMessage("\n");
    if (a_what) Tracer::AddTrace();
-};
+}
 
 inline Real square(Real x) { return x*x; }
 

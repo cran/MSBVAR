@@ -2,14 +2,16 @@
 #include <Rinternals.h>
 #include <Rmath.h>
 #include <R_ext/RS.h>
-#include <R_ext/Lapack.h>
-#include <R_ext/Linpack.h>
-#include <R_ext/Applic.h>
+#include <R_ext/Lapack.h>  // LAPACK entry points
+#include <R_ext/Linpack.h> // LINPACK entry points
+#include <R_ext/Applic.h>  
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>        // uint_32t class type
+#include <limits.h>        // POSIX standardization
 
-#include <string>
-#include <vector>
+/* #include <string> */
+/* #include <vector> */
 using namespace std;
 
 #include "newmatap.h"         // matrix apps + newmat.h
@@ -18,15 +20,18 @@ using namespace NEWMAT;
 
 extern "C" {
 
+#define LOG2PI log(2*M_PI)
+
 #include "A0_W.h"          // Class for storing gibbs draws
 #include "QRD.h"           // Class for QR routines
+#include "SS.h"            // State Space Class
 
   // R object creation/manipulation functions
   void setdims(SEXP, int, int*);
   int *getdims(SEXP);
-  void setclass(SEXP, char*);
+  void setclass(SEXP, const char*);
   SEXP makeList(SEXP *, char**);
-  SEXP listElt(SEXP, char*);
+  SEXP listElt(SEXP, const char*);
 
   // R to C object translation
   ReturnMatrix R2CRV(SEXP);
@@ -41,15 +46,16 @@ extern "C" {
   SEXP C2R3D2(const Matrix&, int *);
   SEXP C2Rint(int*);
   SEXP C2Rdouble(double *);
+  SEXP C2Rdoublemat(double *, int, int);
 
   // C <==> FORTRAN object translation
   ReturnMatrix F2C(double *, int, int); 
   double *C2F(const Matrix &);
 
   // Fast, in-place row-major/col-major translation 
-  void rm2cm_double(double *, int, int);
-  void cm2rm_double(double *, int, int);
-  void rm2cm_Matrix(Matrix &mat); 
+/*   void rm2cm_double(double *, int, int); */
+/*   void cm2rm_double(double *, int, int); */
+/*   void rm2cm_Matrix(Matrix &mat);  */
 
   // Simple math util functions for class Matrix 
   ReturnMatrix absmat(const Matrix&);
@@ -59,6 +65,7 @@ extern "C" {
 
   // Extra Matrix Subset Functions
   ReturnMatrix diag(const Matrix&);
+  ReturnMatrix rep(const ColumnVector&, int);
 
   // Matrix Print Function Overloads 
   void printMatrix(const Matrix&);
@@ -72,6 +79,7 @@ extern "C" {
   ReturnMatrix rnorms(int);
   ReturnMatrix rnorms_mat(int, int);
   ReturnMatrix rwish(const Matrix&, int); 
+  ReturnMatrix dmvnorm(Matrix&, Matrix&); 
 
   // C versions of MSBVAR hidden functions
   ReturnMatrix irf_var_from_beta(const Matrix&, const ColumnVector&, const int); 
@@ -93,7 +101,12 @@ extern "C" {
   SEXP gibbsA0(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
   
   // State-Space/Markov-Switching Functions 
-  SEXP SSencode(SEXP); 
-  SEXP SSdecode(SEXP);
+  SEXP SSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+  //  SEXP SSsumR(SEXP);
+  //  SEXP SSmeanR(SEXP, SEXP);
+  //  SEXP SSvarR(SEXP, SEXP);
+  SEXP BHLKR(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+  ReturnMatrix BHLK(SEXP, SEXP, Matrix&, SEXP, int, int, int); 
+  int bingen(Matrix&, Matrix&, int); 
 
 } // end extern "C"

@@ -3,18 +3,19 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Structural Sims-Zha Bayesian VAR model estimation}
 \description{
-  Estimates a Bayesian Structural Vector Autoregression (B-SVAR) model
+  Estimates the posterior mode for a Bayesian Structural Vector
+  Autoregression (B-SVAR) model
   using the prior specified by Sims and Zha (1998)
 }
 \usage{
 szbsvar(Y, p, z = NULL,
-                  lambda0, lambda1, lambda3, lambda4, lambda5,
-                  mu5, mu6, ident, qm = 4)
+        lambda0, lambda1, lambda3, lambda4, lambda5,
+        mu5, mu6, ident, qm = 4)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Y}{ \eqn{T \times m}{T x m} multiple time
-    series object created with \code{ts()}.}
+    series object created with \code{ts()} with no NAs.}
   \item{p}{ integer lag length for the model }
   \item{z}{ \eqn{T \times k}{T x k} matrix of exogenous variables (not including an
     intercept)}
@@ -37,11 +38,11 @@ szbsvar(Y, p, z = NULL,
     quarterly data.  Other values have the same effect as "4"}
 }
 \details{
-  This function estimates Bayesian structural VAR (B-SVAR) model described by
-  Sims and Zha (1998) and Waggoner and Zha (2003).  This B-SVAR model is
-  based a specification of the dynamic simultaneous equation
-  representation of the model.  The prior is constructed for the
-  structural parameters.
+  This function estimates the posterior mode for the Bayesian structural
+  VAR (B-SVAR) model described by Sims and Zha (1998) and Waggoner and
+  Zha (2003).  This B-SVAR model is based a specification of the
+  dynamic simultaneous equation representation of the model.  The prior
+  is constructed for the structural parameters.
 
   The basic SVAR model has the form of Waggoner and Zha (2003):
   \deqn{ y_t^\prime A_0 = \sum_{\ell=1}^p Y_{t-\ell}^\prime A_\ell +
@@ -150,7 +151,9 @@ szbsvar(Y, p, z = NULL,
 }
 
 \value{
-  A list that summarizes the posterior moment of the B-SVAR model
+  A list of the class "BSVAR" that summarizes the posterior mode of the
+  B-SVAR model
+  
   
   \item{XX }{ \eqn{X'X + H_0}{X'X + H_0} crossproduct moment matrix for the predetermined
     variables in the model plus the prior}
@@ -190,12 +193,13 @@ szbsvar(Y, p, z = NULL,
   \item{exog.coefs}{ \eqn{h \times m}{h x m} matrix of the reduced form exogenous
     variable coefficients } 
   \item{prior}{ List of the prior parameter:
-    c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5, mu6)}
+    \code{c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5, mu6)}. }
   \item{df}{ Degrees of freedom for the model: T + number of dummy
-    observations - lag length}
+    observations - lag length. }
   \item{n0}{ \eqn{m} dimensional list of the number of free parameters for the
-  \eqn{A_0}{A(0)} matrix for equation i.}
-  \item{ident}{ \eqn{m \times m}{m x m} identification matrix \code{ident}} 
+  \eqn{A_0}{A(0)} matrix for equation \eqn{i}. }
+  \item{ident}{ \eqn{m \times m}{m x m} identification matrix
+    \code{ident}. } 
 }
 \references{
 Sims, C.A. and Tao A. Zha. 1998. "Bayesian Methods for Dynamic
@@ -238,8 +242,9 @@ ident[1,] <- 1
 ident[2,1] <- 1
 
 # estimate the model's posterior moments
-model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1, lambda3=1, lambda4=0.1,
-                 lambda5=0.05, mu5=0, mu6=5, ident, qm=12)
+model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1,
+                 lambda3=1, lambda4=0.1, lambda5=0.05,
+                 mu5=0, mu6=5, ident, qm=12)
 
 }
 \keyword{ ts }% at least one, from doc/KEYWORDS

@@ -16,12 +16,12 @@ gibbs.A0(varobj, N1, N2, thin=1, normalization="DistanceMLA")
   \item{varobj}{ A structural BVAR object created by
     \code{\link{szbsvar}} }
   \item{N1}{ Number of burn-in iterations for the Gibbs sampler (should
-    probably be greater than or equal to 1000)}
+    probably be greater than or equal to 1000).}
   \item{N2}{ Number of iterations in the posterior sample. }
   \item{thin}{ Thinning parameter for the Gibbs sampler.}
   \item{normalization}{ Normalization rule as defined in
-    \code{\link{normalize.svar}}.  Default is "DistanceMLA" as
-    recommended in Waggoner and Zha (2003b).}
+    \code{\link{normalize.svar}}.  Default is "DistanceMLA"
+     as recommended in Waggoner and Zha (2003b).}
 }
 \details{
   Samples the posterior pdf of an \eqn{A_0}{A(0)} matrix for a Bayesian
@@ -39,7 +39,7 @@ gibbs.A0(varobj, N1, N2, thin=1, normalization="DistanceMLA")
 }
 \value{
   A list of five elements:
-  \item{A0.posterior }{ A list of three elements containing the results
+  \item{A0.posterior}{A list of three elements containing the results
     of the \code{N2} \eqn{A_0}{A(0)} draws.  The list contains a vector
     storing all of the draws, the location of the drawn elements in and
     the dimension of \eqn{A_0}{A(0)}. \code{A0.posterior$A0} is a vector
@@ -99,8 +99,9 @@ ident[2,1] <- 1
 
 # estimate the model's posterior moments
 set.seed(123)
-model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1, lambda3=1, lambda4=0.1,
-                 lambda5=0.05, mu5=0, mu6=5, ident, qm=12)
+model <- szbsvar(Y, p=2, z=z2, lambda0=0.8, lambda1=0.1, lambda3=1,
+                 lambda4=0.1, lambda5=0.05, mu5=0, mu6=5,
+                 ident, qm=12)
 
 # Set length of burn-in and size of posterior.  These are only an
 # example.  Production runs should set these much higher.

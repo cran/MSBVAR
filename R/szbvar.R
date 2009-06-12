@@ -3,8 +3,9 @@
 
 "szbvar" <-
 function(Y, p, z=NULL, lambda0, lambda1, lambda3,
-                 lambda4, lambda5, mu5, mu6, nu=ncol(dat)+1, qm=4, prior=0,
-                 posterior.fit=FALSE){
+                 lambda4, lambda5, mu5, mu6, nu=ncol(Y)+1, qm=4, prior=0,
+                 posterior.fit=FALSE)
+{
 
     sanity.check.bvar(list(Y=Y, p=p, z=z, lambda0=lambda0,
                            lambda1=lambda1, lambda3=lambda3,
@@ -86,8 +87,8 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
 
     # NOW CREATE THE PRIORS
 
-    # create monthly lag decay to match 1/k decay in quarterly
-    #  data where k = quarters
+    # Create monthly lag decay to match 1/k decay in quarterly
+    # data where k = quarters
     ld<-seq(1:p)^-lambda3;			# regular lag decay (note ^-lambda3)
     if(qm==12)
       { j<-ceiling(p/3)^-lambda3;   	# last quarter (rounded up) eg. l2=13=>xx2=5
@@ -142,6 +143,7 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
         S0<-0*S0
         nu <- 0
       }
+
     # Set up some matrices for later
     XX <- crossprod(X)    # Cross product of RHS variables
     hstar1 <- H0 + XX     # Prior + Cross product

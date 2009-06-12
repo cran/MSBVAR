@@ -8,7 +8,7 @@
 }
 \usage{
 szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
-       mu5, mu6, nu = ncol(dat)+1, qm = 4, prior = 0,
+       mu5, mu6, nu = ncol(Y)+1, qm = 4, prior = 0,
        posterior.fit = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -58,7 +58,7 @@ szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
   \item{intercept}{\eqn{m \times 1}{m x 1} row vector of the \eqn{m} intercepts}
   \item{ar.coefs}{ \eqn{m \times m \times p}{m x m x p} array of the AR
     coefficients.  The first \eqn{m \times m}{m x m} array is for lag 1, the p'th array for lag p.}
-  \item{exog.coefs} {\eqn{k \times m}{k x m} matrix of the coefficients for any
+  \item{exog.coefs}{\eqn{k \times m}{k x m} matrix of the coefficients for any
     exogenous variables}
   \item{Bhat }{ \eqn{(mp + k + 1) \times m}{(mp + k + 1) x m} matrix of the coefficients, where the
     columns correspond to the variables in the VAR}
@@ -67,7 +67,7 @@ szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
   \item{vcv.Bh}{Posterior estimate of the parameter covariance that is
     conformable with Bhat. }
   \item{mean.S}{ \eqn{m \times m}{m x m} matrix of the posterior residual covariance.}
-  \item{St} { \eqn{m \times m}{m x m} matrix of the degrees of freedom times the posterior
+  \item{St }{ \eqn{m \times m}{m x m} matrix of the degrees of freedom times the posterior
     residual covariance.}
   \item{hstar}{\eqn{(mp + k + 1) \times (mp + k + 1)}{(mp + k + 1) x (mp
       + k + 1)} prior precision plus right hand side
@@ -90,7 +90,7 @@ szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
     (4 or 12)}
   \item{prior.type}{Numeric code for prior type: 0 = Normal-Wishart, 1
     = Normal-Flat, 2 = Flat-Flat (approximate MLE)}
-  \item{prior} {List of the prior parameter:
+  \item{prior }{List of the prior parameter:
     c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5, mu6, nu)}
   \item{marg.llf}{Value of the in-sample marginal log-likelihood for
     the data, if \code{posterior.fit=T}}

@@ -96,7 +96,7 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
       # Find the prior for A0 conditional prior variances
       A0.prior <- lambda0^2/s2i           # sg0bida
       Aplus.prior <- lambda0^2*lambda1^2*Aplus.prior.cov #sgpbida
-      Aplus.prior[(m*p+1),1] <- lambda0^1*lambda4^2  # prior for intercept
+      Aplus.prior[(m*p+1),1] <- (lambda0*lambda4)^2  # prior for intercept
 
       if(nexog>0)
         { Aplus.prior[(m*p+2):ncoef,1] <- lambda0^2*lambda5^2  # prior for eexog
@@ -347,7 +347,7 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
                      F.posterior=F.posterior,
                      B.posterior=B.posterior,
                      ar.coefs=AR.coefs.posterior,
-                     intercept=F.posterior[(m*p+1),],
+                     intercept=B.posterior[(m*p+1),],
                      exog.coefs=exog.coefs,
                      prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,mu5,mu6),
                      df=capT,

@@ -15,8 +15,11 @@
   parameter uncertainty in the MCMC algorithm.
 }
 \usage{
-hc.forecast(varobj, yconst, nsteps, burnin, gibbs, exog = NULL)
-hc.forecast.VAR(varobj, yconst, nsteps, burnin, gibbs, exog = NULL)
+hc.forecast(varobj, yconst, nsteps, burnin,
+            gibbs, exog = NULL)
+
+hc.forecast.VAR(varobj, yconst, nsteps, burnin,
+                gibbs, exog = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

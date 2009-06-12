@@ -11,8 +11,8 @@
   or Bayesian error bands, as suggested by Sims and Zha (1999).
 }
 \usage{
-plot.mc.irf(x, method=c("Sims-Zha2"), component=1, probs=c(0.16,0.84), 
-            varnames = NULL, ...)
+plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
+            probs=c(0.16,0.84), varnames = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

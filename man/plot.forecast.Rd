@@ -11,8 +11,9 @@
   output of \code{hc.forecast}, \code{forecast}, and \code{uc.forecast}.
 }
 \usage{
-plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1), freq = 1, probs =
-     c(0.05, 0.95), compare.level = NULL, ylab = NULL, ...)
+plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1),
+                  freq = 1, probs = c(0.05, 0.95),
+                  compare.level = NULL, ylab = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,9 +27,10 @@ plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1), freq = 1, probs
     \code{ts}.  Default is 1}
   \item{probs}{ Probability limits for error bands.  Default is 90\% or
     \code{c(0.05,0.95)}}
-  \item{compare.level}{ ~~Describe \code{compare.level} here~~ }
-  \item{ylab}{ ~~Describe \code{ylab} here~~ }
-  \item{\dots}{ ~~Describe \code{\dots} here~~ }
+  \item{compare.level}{ A number.  A horizontal line will be draw on the
+    plot at this value.  Say zero or some other comparison. }
+  \item{ylab}{ y-axis label}
+  \item{\dots}{ other plotting parameters }
 }
 \details{
   Plots the mean forecast and the pointwise empirical confidence region

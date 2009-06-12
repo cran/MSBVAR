@@ -2,7 +2,7 @@
 
 extern "C" { 
 
-  SEXP listElt(SEXP list, char* str)
+  SEXP listElt(SEXP list, const char* str)
   {
     R_len_t i;
     SEXP elmt=R_NilValue, names=getAttrib(list, R_NamesSymbol);
@@ -42,7 +42,7 @@ extern "C" {
   int *getdims(SEXP obj)
   { return INTEGER(getAttrib(obj,R_DimSymbol)); }
 
-  void setclass(SEXP obj, char *name){
+  void setclass(SEXP obj, const char *name){
      SEXP cls;
      PROTECT(cls = allocVector(STRSXP, 1));
      SET_STRING_ELT(cls, 0, mkChar(name));
@@ -59,11 +59,10 @@ extern "C" {
     //    for(i=1;i<=len;i++) vals(i)= Rptr[i-1];
 
     if(ndims==3){ 
-      int x=dims[0], y=dims[1], z=dims[2];
-      Matrix out(z,x*y);
-      for(int i=0; i<z; i++)
-	out.Row(i) = vals.Rows(1+x*y*i,x*y*(i+1));
-      out.Release(); return out.ForReturn();
+      int x=dims[0], y=dims[1], z=dims[2]; 
+      Matrix valmat(z,x*y); valmat=vals.AsMatrix(z,x*y); 
+//       for(i=1; i<=z; i++) out.Row(i) = valmat.Row(i);
+      valmat.Release(); return valmat.ForReturn();
     }
     else if(ndims==2){ 
       vals = vals.AsMatrix(dims[0], dims[1]); 
@@ -187,6 +186,14 @@ extern "C" {
     UNPROTECT(1); return R; 
   }
 
+  SEXP C2Rdoublemat(double *c, int nr, int nc)
+  {
+    int i, j;  SEXP out; double *pout;
+    PROTECT(out=allocMatrix(REALSXP, nr, nc)); pout=REAL(out);
+    for(i=0;i<nc;i++) for(j=0;j<nr;j++) pout[i*nr+j]=c[j*nc+i]; 
+    UNPROTECT(1);  return out; 
+  }
+
   // Convert NEWMAT Matrix to a column-major double* array
   // representation for use with Fortran subroutines 
   //
@@ -210,6 +217,7 @@ extern "C" {
     X.Release(); return X.ForReturn();
   }
   
+
   void printMatrix(const Matrix& mat)
   {
     int i,j;
@@ -268,17 +276,17 @@ extern "C" {
     return z;
   }
 
-  void rm2cm_double(double *m, int nr, int nc)
-  { for(int i=0;i<nc;i++) for(int j=i+1;j<nr;j++) swap(m[i*nr+j],m[j*nc+i]); }
+//   void rm2cm_double(double *m, int nr, int nc)
+//   { for(int i=0;i<nc;i++) for(int j=i+1;j<nr;j++) swap(m[i*nr+j],m[j*nc+i]); }
 
-  void cm2rm_double(double *m, int nr, int nc)
-  { for(int i=0;i<nr;i++) for(int j=i+1;j<nc;j++) swap(m[i*nr+j],m[j*nc+i]); }
+//   void cm2rm_double(double *m, int nr, int nc)
+//   { for(int i=0;i<nr;i++) for(int j=i+1;j<nc;j++) swap(m[i*nr+j],m[j*nc+i]); }
 
-  void rm2cm_Matrix(Matrix &mat)
-  { 
-    double *m=mat.Store(); int i, j, nr=mat.Nrows(), nc=mat.Ncols();
-    for(i=1;i<=nc;i++) for(j=i+1;j<=nr;j++) swap(m[i*nr+j],m[j*nc+i]);
-  }
+//   void rm2cm_Matrix(Matrix &mat)
+//   { 
+//     double *m=mat.Store(); int i, j, nr=mat.Nrows(), nc=mat.Ncols();
+//     for(i=1;i<=nc;i++) for(j=i+1;j<=nr;j++) swap(m[i*nr+j],m[j*nc+i]);
+//   }
 
   ReturnMatrix cumprod(const Matrix& mat)
   {

@@ -47,16 +47,20 @@
    the time of the next constitutionally mandated election.
 } 
    \source{Brandt, Patrick T., Michael Colaresi, and John
-     R. Freeman. 2007. "Reciprocity, Accountability and Credibility In
+     R. Freeman. 2007.
+     "Reciprocity, Accountability and Credibility In
      International Relations"
+     
      \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
  }
  
  \references{
 
    Brandt, Patrick T., Michael Colaresi, and John
-   R. Freeman. 2007. "Reciprocity, Accountability and Credibility In
+   R. Freeman. 2007.
+   "Reciprocity, Accountability and Credibility In
    International Relations"
+
    \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
    
    Goldstein, Joshua. S. 1992. "A Conflict-Cooperation Scale for WEIS

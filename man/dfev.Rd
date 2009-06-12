@@ -7,8 +7,8 @@
 \title{ Decompositions of Forecast Error Variance (DFEV) for VAR/BVAR/BSVAR models }
 \description{
   Computes the m dimensional decomposition of forecast error variance
-  (DFEV) for a VAR/BVAR/BSVAR model.  User can specify the decomposition of the
-  contemporaneous innovations.  }
+  (DFEV) for a VAR, BVAR, and BSVAR models.  User can specify the
+  decomposition of the contemporaneous innovations.  }
 \usage{
 dfev(varobj, A0 = NULL, k)
 dfev.VAR(varobj, A0 = t(chol(varobj$mean.S)), k)

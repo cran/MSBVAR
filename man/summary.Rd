@@ -12,7 +12,7 @@
         summary.BSVAR(object, ...)
 }
 \arguments{
-  \item{object}{ Fitted VAR / BVAR / B-SVAR model from either
+  \item{object}{ Fitted VAR, BVAR, or B-SVAR model from either
     \code{reduced.form.var}, \code{szbvar}, or \code{szbsvar}
   }
   \item{...}{other arguments}

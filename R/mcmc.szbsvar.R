@@ -14,7 +14,7 @@
   # storage for the sampled coefficients.
     B.sample <- matrix(0, nrow=N2, ncol=ncoef*m)
 
-  # Loop for the impulse responses
+  # Loop for the sampling
     for(i in 1:N2)
     {
       # Set up the A0 for this iteration

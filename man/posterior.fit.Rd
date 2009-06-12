@@ -19,10 +19,10 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{varobj}{ Bayesian BVAR or BSVAR object from fitting a model with
+  \item{varobj}{ BVAR or BSVAR object from fitting a model with
     \code{\link{szbsvar}} or \code{\link{szbvar}} }
   
-  \item{A0.posterior.obj}{ MCMC Gibbs sample object for the B-SVAR model \eqn{A_0}{A(0)}
+  \item{A0.posterior.obj}{MCMC Gibbs object for the B-SVAR model \eqn{A_0}{A(0)}
     from \code{\link{gibbs.A0.BSVAR}} }
 }
 \details{
@@ -45,7 +45,8 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
   \item{data.marg.llf}{Log marginal density, the probability of the
     data after integrating out the parameters in the model.}
   \item{data.marg.post}{Predictive marginal posterior density}
-  \item{Coefficient log likelihood}
+  \item{coefficient.post}{Contribution to the posterior fit from the pdf
+    of the coefficients.}
   
   BSVAR:
   

@@ -227,8 +227,8 @@
                     probs, varnames=varnames, ...)
 }
 
-# This version uses a median, not a mean for the central tendency for
-# the percentile method.  It is based on the plot.mc.irf code.
+
+# BSVAR model IRFs
 
 "plot.mc.irf.BSVAR" <- function(x, method, component, probs, varnames, ...)
 {
@@ -241,7 +241,7 @@
         for (i in 1:m^2) {
             irf.bands <- t(apply(x[, , i], 2, quantile,
                 probs))
-            irf.mean <- apply(x[, , i], 2, median)
+            irf.mean <- apply(x[, , i], 2, mean)
             irf.ci[, , i] <- cbind(irf.bands, irf.mean)
         }
     }

@@ -19,7 +19,7 @@ irf.BSVAR(varobj, nsteps, A0=solve(varobj$A0.mode))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{varobj}{VAR/BVAR/BSVAR objects for a fitted VAR/BVAR/BSVAR model
+  \item{varobj}{VAR, BVAR, or BSVAR objects for a fitted VAR, BVAR, or BSVAR model
     from \code{szbvar()}, \code{szbsvar} or \code{reduced.form.var}}
     \item{nsteps}{ Number or steps, or the horizon over which to compute
     the IRFs (typically 1.5 to 2 times the lag length used in estimation}

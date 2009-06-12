@@ -11,19 +11,27 @@
 }
 \usage{
 forecast.VAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
-         shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
+         shocks = matrix(0, nrow = nsteps,
+                         ncol = dim(varobj$ar.coefs)[1]),
+         exog.fut = matrix(0, nrow = nsteps,
+                           ncol = nrow(varobj$exog.coefs)))
+
 forecast.BVAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
-         shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
+         shocks = matrix(0, nrow = nsteps,
+                         ncol = dim(varobj$ar.coefs)[1]),
+         exog.fut = matrix(0, nrow = nsteps,
+                           ncol = nrow(varobj$exog.coefs)))
+
 forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
-         shocks = matrix(0, nrow = nsteps, ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps, ncol = nrow(varobj$exog.coefs)))
+         shocks = matrix(0, nrow = nsteps,
+                         ncol = dim(varobj$ar.coefs)[1]),
+         exog.fut = matrix(0, nrow = nsteps,
+                           ncol = nrow(varobj$exog.coefs)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{varobj}{ Fitted VAR model of the class VAR/BVAR/BSVAR produced by
-    \code{reduced.form.var}, \code{szbvar} or \code{szbsvar}}
+  \item{varobj}{ Fitted VAR model of the class VAR, BVAR, or BSVAR
+    produced by \code{reduced.form.var}, \code{szbvar}, or \code{szbsvar}}
   \item{nsteps}{ Number of periods in the forecast horizon}
   \item{A0}{ \eqn{m \times m}{m x m} matrix of the decomposition of the
     contemporaneous endogenous forecast innovations}
@@ -72,8 +80,11 @@ forecasts <- forecast(fit.bvar, nsteps=nrow(Y.sample2))
 forecasts.only <- forecasts[(nrow(Y.sample1)+1):nrow(forecasts),]
 
 # Plot forecasts and actual data
-i2p <- ts(cbind(Y.sample2[,1], forecasts.only[,1]), start=c(2003,1), freq=52)
-p2i <- ts(cbind(Y.sample2[,2], forecasts.only[,2]), start=c(2003,1), freq=52)
+i2p <- ts(cbind(Y.sample2[,1], forecasts.only[,1]),
+          start=c(2003,1), freq=52)
+
+p2i <- ts(cbind(Y.sample2[,2], forecasts.only[,2]),
+          start=c(2003,1), freq=52)
 
 par(mfrow=c(2,1))
 plot(i2p, plot.type=c("single"))
