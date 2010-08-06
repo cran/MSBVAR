@@ -11,13 +11,13 @@ msbvar <- function(y, z=NULL, p, h,
                    alpha.prior=100*diag(h) + matrix(2, h, h),
                    prior=0, max.iter=40)
 {
-
+    # Get the number of equations
     m <- ncol(y)
 
     # This should be part of a sanity.check.msbvar
     if(h==1)
     {
-        stop("\n\n\t -- For MSBVAR models, h>1\n")
+        stop("\n\n\t -- For MSBVAR models, h>1.  Otherwise, just for a BVAR or VAR!\n")
     }
 
     # Before the loop this is all initialization for the EM
@@ -174,8 +174,6 @@ hregime.reg <- function(h, m, p, TT, fp, Y, X, init.model)
     return(list(Bk=Bk, Sigmak=Sigmak, df=df, e=e, moment=tmp))
 }
 
-
-
 # Regime weighted regression function for msbvar() -- this does the
 # M-step for the regimes-dependent MSBVARs.  This version lets
 # everything vary (intercepts, AR, Sigma).  Need to later implement
@@ -188,7 +186,7 @@ hregime.reg2 <- function(h, m, p, TT, fp, init.model)
     tmp <- vector(mode="list", length=h)
     Bk <- array(0, c(m*p+1, m, h))
     Sigmak <- array(0, c(m,m,h))
-    df <- colSums(fp)
+    df <- apply(fp, 2, sum)
     e <- array(0, c(TT, m, h))
     Y <- init.model$Y[(m+1):nrow(init.model$Y),]
     X <- init.model$X[(m+1):nrow(init.model$X),]
@@ -212,9 +210,6 @@ hregime.reg2 <- function(h, m, p, TT, fp, init.model)
 
         # Compute residuals and Sigma (based on Krolzig)
 
-##         Sigmak[,,i] <- (init.model$S0 + Syy + init.model$H0[1:m,1:m] -
-##                         t(Bk[,,i])%*%hstar%*%Bk[,,i])/(df[i])
-
         # Get the full residuals -- need these for filtering
         e[,,i] <- Y - X%*%Bk[,,i]
 
@@ -227,57 +222,7 @@ hregime.reg2 <- function(h, m, p, TT, fp, init.model)
     return(list(Bk=Bk, Sigmak=Sigmak, df=df, e=e, moment=tmp))
 }
 
-hregime.reg3 <- function(h, m, p, TT, fp, init.model, hold)
-{
-
-    # Storage
-    tmp <- vector(mode="list", length=h)
-    Bk <- hold$Bk
-    Sigmak <- hold$Sigmak
-    e <- hold$e
-
-    df <- hold$df
-    Y <- init.model$Y[(m+1):nrow(init.model$Y),]
-    X <- init.model$X[(m+1):nrow(init.model$X),]
-
-    # Loops to compute
-    # 1) sums of squares for X and Y
-    # 2) B(k) matrices
-    # 3) Residuals
-    # 4) Sigma(k) matrices
-
-    for(i in 1:h)
-    {
-        # Note how the dummy obs. are appended to the moment matrices
-        Sxy <- crossprod(X, diag(fp[,i]))%*%Y + crossprod(init.model$X[1:(m+1),], init.model$Y[1:(m+1),])
-        Sxx <- crossprod(X, diag(fp[,i]))%*%X + crossprod(init.model$X[1:(m+1),])
-
-        # Compute the regression coefficients
-        hstar <- Sxx + init.model$H0
-##         Bk[,,i] <- solve(hstar,
-##                          (Sxy + init.model$H0[,1:m]))
-
-        Bk[,,i] <- solve(hstar, (Sxy + init.model$H0[,1:m]))
-
-        # Compute residuals and Sigma (based on Krolzig)
-
-##         Sigmak[,,i] <- (init.model$S0 + Syy + init.model$H0[1:m,1:m] -
-##                         t(Bk[,,i])%*%hstar%*%Bk[,,i])/(df[i])
-
-        # Get the full residuals -- need these for filtering
-        e[,,i] <- Y - X%*%Bk[,,i]
-
-        Sigmak[,,i] <- (init.model$S0 + crossprod(e[,,i],diag(fp[,i]))%*%e[,,i])/df[i]
-
-#        Sigmak[[i]] <- (init.model$S0 + crossprod(e[[i]],diag(fp[,i]))%*%e[[i]])/df[i]
-        # Save the moments
-        tmp[[i]] <- list(Sxy=Sxy, Sxx=Sxx) #, ytmp=ytmp, xtmp=xtmp)
-    }
-
-    return(list(Bk=Bk, Sigmak=Sigmak, df=df, e=e, moment=tmp))
-}
-
-# cut this later!
+# Cut this later since we handle it on the C side now.
 count.transitions <- function(s)
   { M <- ncol(s)
     TT <- nrow(s)

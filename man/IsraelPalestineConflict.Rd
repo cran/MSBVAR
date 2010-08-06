@@ -8,10 +8,10 @@
    are dyadic or directed actions from one party towards the other.  Data
    are weekly starting April 15, 1979.  Positive values indicate
    cooperation, negative values indicate aggression.  These are a subset
-   of the Levant dataset from the Kansas Event Data System (KEDS) Levant
+   of the Levant dataset from the Kansas / Penn State Event Data System Levant
    dataset.  The data are from Reuters and AFP news sources and encoded
    into the World Event Interaction Survey (WEIS) coding system and
-   Goldstein scalings using the Kansas Event Data System (KEDS) TABARI
+   Goldstein scalings using the Penn State Event Data System TABARI
    program.  Source data can be found on the KEDS site below.
  }
  \usage{data(IsraelPalestineConflict)}
@@ -34,7 +34,7 @@
    Goldstein, Joshua. S. 1992. "A Conflict-Cooperation Scale for WEIS
    Event Data" \emph{Journal of Conflict Resolution}. 36:369-385.
    
-   Kansas Event Data System \url{http://www.ku.edu/~keds}
+   Penn State Event Data Project \url{http://eventdata.psu.edu}
 }
  
 \keyword{datasets}

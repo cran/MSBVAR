@@ -18,7 +18,7 @@ class QRD{
   //  double *_x;    // Column major input matrix 
   
  public:
-  QRD(); ~QRD();            
+  QRD(); //~QRD();            
 
   // A=QR decomp via LINPACK subroutine dqrdc2
   QRD(const Matrix&, const double); 

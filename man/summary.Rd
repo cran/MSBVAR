@@ -1,15 +1,16 @@
 \name{summary}
 \alias{summary}
-\alias{summary.VAR}
-\alias{summary.BVAR}
-\alias{summary.BSVAR}
+%\alias{summary.VAR}
+%\alias{summary.BVAR}
+%\alias{summary.BSVAR}
 \title{ Summary functions for VAR / BVAR / B-SVAR model objects}
 \description{ Prints a summary of the coefficient matrices for various
   VAR / BVAR / B-SVAR model objects to standard output.
 }
-\usage{ summary.VAR(object, ...)
-        summary.BVAR(object, ...)
-        summary.BSVAR(object, ...)
+\usage{ summary(object, ...)
+%	summary.VAR(object, ...)
+%        summary.BVAR(object, ...)
+%        summary.BSVAR(object, ...)
 }
 \arguments{
   \item{object}{ Fitted VAR, BVAR, or B-SVAR model from either

@@ -8,7 +8,7 @@
 \title{Summary measures and plots for MS-B(S)VAR state-spaces}
 \description{
   Provides a summary and plotting methods for the \code{SS} class
-  objects produced from sampling the posterior of an MSBSVAR model.
+  objects produced from sampling the posterior of an MSBVAR model.
   These functions provide the mean regime probabilities and a plotting
   method for them. 
 }
@@ -30,8 +30,8 @@ plot.SS(x, ylab="State Probabilities", ...)
   The first two provide the sum and mean of the number of
   time periods in each state of Markov-process.  The last produces a
   time series plot of the regime or state probabilities. These are
-  computed from the Markov Chain Monte Carlo sample computed from either
-  \code{gibbs.msbsvar} or \code{gibbs.msbvar}
+  computed from the Markov Chain Monte Carlo sample computed from 
+  \code{\link{gibbs.msbvar}}
 }
 \value{
  Mean and sum are \eqn{T \times h}{T x h} matrices for the first
@@ -44,11 +44,11 @@ plot.SS(x, ylab="State Probabilities", ...)
 \author{ Patrick T. Brandt}
 %\note{ }
 
-%\seealso{ }
-\examples{
-\dontrun{
-}
-}
+\seealso{ \code{\link{gibbs.msbvar}}, \code{\link{msbvar}}}
+% \examples{
+% \dontrun{
+% }
+% }
 \keyword{ models}
 \keyword{ hplot}
 

@@ -1,8 +1,9 @@
 \name{posterior.fit}
 \alias{posterior.fit}
 %\alias{posterior.fit.VAR}
-\alias{posterior.fit.BVAR}
-\alias{posterior.fit.BSVAR}
+%\alias{posterior.fit.BVAR}
+%\alias{posterior.fit.BSVAR}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Estimates the marginal likelihood and posterior probability for
   VAR, BVAR, and BSVAR models}
@@ -14,8 +15,8 @@
 \usage{
 posterior.fit(varobj, A0.posterior.obj=NULL)
 %posterior.fit.VAR(varobj)
-posterior.fit.BVAR(varobj)
-posterior.fit.BSVAR(varobj, A0.posterior.obj)
+%posterior.fit.BVAR(varobj)
+%posterior.fit.BSVAR(varobj, A0.posterior.obj)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,7 +24,7 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
     \code{\link{szbsvar}} or \code{\link{szbvar}} }
   
   \item{A0.posterior.obj}{MCMC Gibbs object for the B-SVAR model \eqn{A_0}{A(0)}
-    from \code{\link{gibbs.A0.BSVAR}} }
+    from \code{\link{gibbs.A0}} }
 }
 \details{
   Estimates the marginal log likelihood, log prior, log posterior for
@@ -95,7 +96,7 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
 \seealso{ 
   \code{\link{szbvar}},
   \code{\link{szbsvar}},
-  \code{\link{gibbs.A0.BSVAR}},
+  \code{\link{gibbs.A0}},
   \code{\link{mc.irf}},
   \code{\link{print.posterior.fit}}
 }
@@ -104,7 +105,7 @@ posterior.fit.BSVAR(varobj, A0.posterior.obj)
 \dontrun{
 varobj <- szbsvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4,
                   lambda5, mu5, mu6, ident, qm = 4)
-A0.posterior <- gibbs.A0.BSVAR(varobj, N1, N2)
+A0.posterior <- gibbs.A0(varobj, N1, N2)
 fit <- posterior.fit(varobj, A0.posterior)
 print(fit)
 }

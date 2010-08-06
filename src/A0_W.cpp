@@ -10,63 +10,106 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Empty Constructor initialization
-A0obj::A0obj(){ _m=0; _nident=0; _ndraw=0; _cdraw=0; }
+A0obj::A0obj(){ eqnCount=0; idRltnshpCount=0; numDraws=0; currentDraw=0; }
 
-// Free allocated memory on destruction of object
-A0obj::~A0obj(){Free(_str); Free(_val); Free(_fpidx); Free(_xidx);}
+//Deconstruction handled by R
 
 A0obj::A0obj(SEXP A0)
 {
-  int i, ct=0, *str; 
-  SEXP mR, strR, valsR; 
+  int i, ct=0, *structPtr;//*str; 
+  SEXP eqnListR, structR, valsR;//mR 
   double *vals; 
 
-//   Rprintf("--- Setting _m...\n"); 
+//   Rprintf("--- Setting eqnCount...\n"); 
 
-  PROTECT(mR=coerceVector(listElt(A0,"m"),INTSXP));
-  _m=INTEGER(mR)[0]; 
+  PROTECT(eqnListR=coerceVector(listElt(A0,"m"),INTSXP));
+  eqnCount=INTEGER(eqnListR)[0]; 
   UNPROTECT(1); 
   
-//   Rprintf("--- Setting _fpidx, strR...\n"); 
+//   Rprintf("--- Setting freeParamIDX, strR...\n"); 
 
-  PROTECT(strR=coerceVector(listElt(A0,"struct"),INTSXP)); 
-  _nident=length(strR); str=INTEGER(strR);
-  _fpidx=(int*)Calloc(_nident,int); 
-  for(i=0;i<_nident;i++) _fpidx[i]=str[i]-1;
+  PROTECT(structR=coerceVector(listElt(A0,"struct"),INTSXP)); 
+
+  idRltnshpCount=length(structR); 
+  structPtr=INTEGER(structR);
+  freeParamIDX=(int*)R_alloc(idRltnshpCount,sizeof(int)); 
+
+  for(i=0;i<idRltnshpCount;i++) 
+	freeParamIDX[i]=structPtr[i]-1;
+
   UNPROTECT(1); 
 
-//   Rprintf("--- Setting _str...\n"); 
+//   Rprintf("--- Setting A0Struct...\n"); 
 
-  _str=(int*)Calloc(_m*_m,int); 
-  _xidx=(int*)Calloc(_m*_m-_nident,int);
-  for(i=0;i<_m*_m;i++) 
-    if(_fpidx[ct]==i){_str[i]=1; ct++;}else{_str[i]=0; _xidx[i-ct]=i;}
+  A0Struct=(int*)R_alloc(eqnCount*eqnCount,sizeof(int)); 
+  restrictionIDX=(int*)R_alloc(eqnCount*eqnCount-idRltnshpCount,sizeof(int));
+
+  for(i=0;i<eqnCount*eqnCount;i++) 
+  {  
+    if(freeParamIDX[ct]==i)
+    {
+	A0Struct[i]=1; 
+	ct++;
+    }
+    else
+    {
+	A0Struct[i]=0; 
+	restrictionIDX[i-ct]=i;
+    }
+  }
 
 //   Rprintf("--- Setting valsR...\n"); 
 
   PROTECT(valsR=coerceVector(listElt(A0,"A0"),REALSXP)); 
-  _ndraw=length(valsR)/_nident; _cdraw=0; vals=REAL(valsR);
 
-//   Rprintf("--- Setting _val...\n"); 
+  numDraws=length(valsR)/idRltnshpCount; 
+  currentDraw=0; 
+  vals=REAL(valsR);
 
-  _val=(double*)Calloc(_ndraw*_nident,double); 
-  for(i=0;i<_ndraw*_nident;i++) _val[i]=vals[i]; 
+//   Rprintf("--- Setting A0Values...\n"); 
+
+  A0Values=(double*)R_alloc(numDraws*idRltnshpCount,sizeof(double)); 
+
+  for(i=0;i<numDraws*idRltnshpCount;i++) 
+	A0Values[i]=vals[i]; 
+
   UNPROTECT(1); 
 }
 
 A0obj::A0obj(const Matrix &ident, const int ndraw)
 {
-  _m=ident.Nrows(); _ndraw=ndraw; _cdraw=0; _str=(int*)Calloc(_m*_m,int); 
+  eqnCount=ident.Nrows(); 
+  numDraws=ndraw; 
+  currentDraw=0; 
+  A0Struct=(int*)R_alloc(eqnCount*eqnCount,sizeof(int)); 
 
-  int i, ct=0; double *str=C2F(ident); _nident=0; 
-  for(i=0;i<_m*_m;i++) if(str[i]){_str[i]=1; _nident++;}else{_str[i]=0;} 
-  Free(str); 
+  int i, ct=0; 
+  double *structPtr=C2F(ident); 
+  idRltnshpCount=0; 
+
+  for(i=0;i<eqnCount*eqnCount;i++) 
+  {
+    if(structPtr[i])
+    {
+	A0Struct[i]=1; 
+	idRltnshpCount++;
+    }
+    else
+    	A0Struct[i]=0; 
+  }
 
   // Allocate memory to store values/indices
-  _val=(double*)Calloc(_nident*_ndraw,double); 
-  _fpidx=(int*)Calloc(_nident,int); 
-  _xidx=(int*)Calloc(_m*_m-_nident,int); 
-  for(i=0;i<_m*_m;i++) if(_str[i]){_fpidx[ct++]=i;}else{_xidx[i-ct]=i;}
+  A0Values=(double*)R_alloc(idRltnshpCount*numDraws,sizeof(double)); 
+  freeParamIDX=(int*)R_alloc(idRltnshpCount,sizeof(int)); 
+  restrictionIDX=(int*)R_alloc(eqnCount*eqnCount-idRltnshpCount,sizeof(int)); 
+  
+  for(i=0;i<eqnCount*eqnCount;i++)
+  { 
+    if(A0Struct[i])
+	freeParamIDX[ct++]=i;
+    else
+	restrictionIDX[i-ct]=i;
+  }
 }
 
 ///////////////////////////////////////
@@ -75,13 +118,17 @@ A0obj::A0obj(const Matrix &ident, const int ndraw)
 
 void A0obj::setA0(const Matrix &mat, const int index)
 {
-  int i, st=(index-1)*_nident; double *A0=C2F(mat); 
-  for(i=0;i<_nident;i++) _val[st++]=A0[_fpidx[i]]; Free(A0);
+  int i, st=(index-1)*idRltnshpCount; 
+  double *A0=C2F(mat); 
+
+  for(i=0;i<idRltnshpCount;i++) 
+	A0Values[st++]=A0[freeParamIDX[i]]; 
+  //Free(A0);
 }
 
-int A0obj::fpidx(const int i) const { return _fpidx[i]; }
-int A0obj::xidx(const int i) const { return _xidx[i]; }
-int A0obj::numfp() const { return _nident; }
+int A0obj::fpidx(const int i) const { return freeParamIDX[i]; }
+int A0obj::xidx(const int i) const { return restrictionIDX[i]; }
+int A0obj::numfp() const { return idRltnshpCount; }
 
 //////////////////////////////////////
 // Store A0 matrix at current index //
@@ -89,8 +136,12 @@ int A0obj::numfp() const { return _nident; }
 
 void A0obj::setA0c(const Matrix &mat) 
 {
-  double *A0=mat.Store(); int i, st=_cdraw*_nident;
-  for(i=0;i<_m*_m;i++) if(_str[i]!=0) _val[st++]=A0[i]; 
+  double *A0=mat.Store(); 
+  int i, st=currentDraw*idRltnshpCount;
+
+  for(i=0;i<eqnCount*eqnCount;i++) 
+    if(A0Struct[i]!=0) 
+	A0Values[st++]=A0[i]; 
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -99,9 +150,14 @@ void A0obj::setA0c(const Matrix &mat)
 
 ReturnMatrix A0obj::structure() const
 {
-  Matrix out(_m,_m); out=0; double *pout=out.Store();
-  for(int i=0; i<_m*_m; i++) pout[i]=_str[i]; 
-  out.Release(); return out.ForReturn(); 
+  Matrix out(eqnCount,eqnCount); 
+  out=0; 
+  double *pout=out.Store();
+
+  for(int i=0; i<eqnCount*eqnCount; i++) 
+	pout[i]=A0Struct[i]; 
+
+  return out.ForReturn(); 
 }
 
 /////////////////////////////////////////
@@ -110,20 +166,29 @@ ReturnMatrix A0obj::structure() const
 
 double* A0obj::getA0vals() const
 {
-  double* out; out=(double*)Calloc(_nident*_ndraw,double);  
-  for(int i=0;i<_nident*_ndraw;i++) out[i]=_val[i]; return out; 
+  double* out; 
+  out=(double*)R_alloc(idRltnshpCount*numDraws,sizeof(double));  
+
+  for(int i=0;i<idRltnshpCount*numDraws;i++) 
+	out[i]=A0Values[i]; 
+
+  return out; 
 }
 
 ////////////////////////////////////////////////////////////
-// Returns the A0 matrix at the supplied index [1:_ndraw] //
+// Returns the A0 matrix at the supplied index [1:numDraws] //
 ////////////////////////////////////////////////////////////
 
 ReturnMatrix A0obj::getA0(const int idx) const
 {
-  int i, st=idx*_nident; double *pmat=(double*)Calloc(_m*_m,double); 
-  for(i=0;i<_m*_m;i++) pmat[i]=(_str[i])?_val[st++]:0; 
-  Matrix mat=F2C(pmat,_m,_m); Free(pmat); 
-  mat.Release(); return mat.ForReturn(); 
+  int i, st=idx*idRltnshpCount; 
+  double *pmat=(double*)R_alloc(eqnCount*eqnCount,sizeof(double)); 
+
+  for(i=0;i<eqnCount*eqnCount;i++) 
+	pmat[i]=(A0Struct[i])?A0Values[st++]:0; 
+  Matrix mat=F2C(pmat,eqnCount,eqnCount); 
+
+  return mat.ForReturn(); 
 }
 
 ///////////////////////////////////////////////
@@ -132,10 +197,14 @@ ReturnMatrix A0obj::getA0(const int idx) const
 
 ReturnMatrix A0obj::getA0c() const
 {
-  int i, st=_cdraw*_nident; 
-  Matrix mat(_m,_m); double *pmat=mat.Store(); 
-  for(i=0;i<_m*_m;i++) pmat[i]=(_str[i]!=0)?_val[st++]:0; 
-  mat.Release(); return mat.ForReturn(); 
+  int i, st=currentDraw*idRltnshpCount; 
+  Matrix mat(eqnCount,eqnCount); 
+  double *pmat=mat.Store(); 
+
+  for(i=0;i<eqnCount*eqnCount;i++) 
+	pmat[i]=(A0Struct[i]!=0)?A0Values[st++]:0;
+
+  return mat.ForReturn(); 
 }
 
 //////////////////////////////////////////////////////
@@ -144,21 +213,34 @@ ReturnMatrix A0obj::getA0c() const
 
 SEXP A0obj::toR() const 
 {
-  int i, A0len = _nident*_ndraw; 
-  SEXP out; PROTECT(out=allocVector(VECSXP,3)); 
-  SEXP names; PROTECT(names=allocVector(STRSXP,3));
-  SEXP A0; PROTECT(A0=allocVector(REALSXP, A0len));
-  SEXP m; PROTECT(m=allocVector(INTSXP,1)); INTEGER(m)[0]=_m; 
-  SEXP str; PROTECT(str=allocVector(INTSXP,_nident)); 
+  int i, A0len = idRltnshpCount*numDraws; 
+
+  SEXP out; 
+  PROTECT(out=allocVector(VECSXP,3)); 
+  SEXP names; 
+  PROTECT(names=allocVector(STRSXP,3));
+  SEXP A0; 
+  PROTECT(A0=allocVector(REALSXP, A0len));
+  SEXP m; 
+  PROTECT(m=allocVector(INTSXP,1)); 
+  INTEGER(m)[0]=eqnCount; 
+  SEXP str; 
+  PROTECT(str=allocVector(INTSXP,idRltnshpCount)); 
 
   // Copy member data to SEXP objects
-  double *pA0=REAL(A0); for(i=0;i<A0len;i++) pA0[i]=_val[i]; 
-  int *pstr=INTEGER(str); for(i=0;i<_nident;i++) pstr[i]=_fpidx[i]+1; 
+  double *pA0=REAL(A0); 
+  for(i=0;i<A0len;i++) 
+	pA0[i]=A0Values[i]; 
+  
+  int *pstr=INTEGER(str); 
+  for(i=0;i<idRltnshpCount;i++) 
+	pstr[i]=freeParamIDX[i]+1; 
 
   SET_VECTOR_ELT(out, 0, A0); SET_STRING_ELT(names, 0, mkChar("A0"));
   SET_VECTOR_ELT(out, 1, str); SET_STRING_ELT(names, 1, mkChar("struct"));
   SET_VECTOR_ELT(out, 2, m); SET_STRING_ELT(names, 2, mkChar("m"));
   setAttrib(out, R_NamesSymbol, names); UNPROTECT(5); 
+
   return out;
 }
 
@@ -166,63 +248,113 @@ SEXP A0obj::toR() const
 // Wobj functions //
 ////////////////////
 
-Wobj::Wobj(){ _m=0; _nval=0; }
+Wobj::Wobj(){ eqnCount=0; numVals=0; }
 
 // Allocate memory and assign values from SEXP W
 Wobj::Wobj(SEXP W)
 {
-  int i, j, ct=0, len, *dW; double *pW; SEXP Welt; 
+  int i, j, ct=0, len, *dimsW; 
+  double *pW; 
+  SEXP Welt; 
 
-  // Allocate and populate _idx
-  _m=length(W); _nval=0; _idx=(int*)Calloc(_m,int);
-  for(i=0;i<_m;i++){
+  // Allocate and populate WMatIDX
+  eqnCount=length(W); 
+  numVals=0; 
+  WMatIDX=(int*)R_alloc(eqnCount,sizeof(int));
+
+  for(i=0;i<eqnCount;i++)
+  {
     PROTECT(Welt=VECTOR_ELT(W,i)); 
-    dW=getdims(Welt); _idx[i]=_nval+dW[0]*dW[1]; _nval=_idx[i];
+
+    dimsW=getdims(Welt); 
+    WMatIDX[i]=numVals+dimsW[0]*dimsW[1]; 
+    numVals=WMatIDX[i];
+
     UNPROTECT(1); 
   }
 
-  // Allocate and populate _val
-  _val=(double*)Calloc(_nval,double); ct=0;
-  for(i=0;i<_m;i++){
-    PROTECT(Welt=VECTOR_ELT(W,i)); pW=REAL(Welt); len=_idx[i]-ct; 
-    for(j=ct;j<len+ct;j++) _val[j]=pW[j-ct]; ct=_idx[i];  
+  // Allocate and populate flatWVals
+  flatWVals=(double*)R_alloc(numVals,sizeof(double)); 
+  ct=0;
+
+  for(i=0;i<eqnCount;i++)
+  {
+    PROTECT(Welt=VECTOR_ELT(W,i)); 
+
+    pW=REAL(Welt); 
+    len=WMatIDX[i]-ct; 
+
+    for(j=ct;j<len+ct;j++) 
+	flatWVals[j]=pW[j-ct]; 
+
+    ct=WMatIDX[i];  
+
     UNPROTECT(1);
   }
-  UNPROTECT(1);
+  //I'm pretty sure this is an extra unprotect.
+  //As in, it's unprotecting something it should not.
+  //If something breaks around A0 this is probably the culprit.
+  //UNPROTECT(1);
 }
 
 // Populate Wobj from flat vector, indicies, and number of equations. 
 Wobj::Wobj(int m, double *vals, int *idx)
 { 
-  // Set _idx (W's _m indices) and _val (W's vals) 
-  _m=m; _nval=0; _idx=(int*)Calloc(_m,int); 
-  for(int i=0;i<_m;i++){_idx[i]=idx[i]; _nval+=idx[i];}
-  _val=(double*)Calloc(_nval,double); 
-  for(int i=0;i<_nval;i++) _val[i]=vals[i]; 
-}
+  // Set WMatIDX (W's eqnCount indices) and flatWVals (W's vals) 
+  eqnCount=m; 
+  numVals=0; 
+  WMatIDX=(int*)R_alloc(eqnCount,sizeof(int)); 
 
-// Free allocated memory on destruction of object
-Wobj::~Wobj(){Free(_idx); Free(_val);}
+  for(int i=0;i<eqnCount;i++)
+  {
+	WMatIDX[i]=idx[i]; 
+	numVals+=idx[i];
+  }
+
+  flatWVals=(double*)R_alloc(numVals,sizeof(double)); 
+
+  for(int i=0;i<numVals;i++) 
+	flatWVals[i]=vals[i]; 
+}
 
 // Fill Wobj with values from SEXP W
 void Wobj::setW(SEXP W)
 {
-  int i, j, len, ct=0, *dW; double *pW; SEXP Welt; 
-  _m=length(W); _nval=0;
+  int i, j, len, ct=0, *dimsW; 
+  double *pW; 
+  SEXP Welt; 
+  eqnCount=length(W); 
+  numVals=0;
 
-  // Allocate and populate _idx
-  _idx=(int*)Calloc(_m,int);
-  for(i=0;i<_m;i++){
-    PROTECT(Welt=VECTOR_ELT(W,i)); dW=getdims(Welt); 
-    _idx[i]=_nval+dW[0]*dW[1]; _nval=_idx[i];
+  // Allocate and populate WMatIDX
+  WMatIDX=(int*)R_alloc(eqnCount,sizeof(int));
+
+  for(i=0;i<eqnCount;i++)
+  {
+    PROTECT(Welt=VECTOR_ELT(W,i)); 
+
+    dimsW=getdims(Welt); 
+    WMatIDX[i]=numVals+dimsW[0]*dimsW[1]; 
+    numVals=WMatIDX[i];
+
     UNPROTECT(1); 
   }
   
-  // Allocate and populate _val
-  _val=(double*)Calloc(_nval,double); ct=0;
-  for(i=0;i<_m;i++){
-    PROTECT(Welt=VECTOR_ELT(W,i)); pW=REAL(Welt); len=_idx[i]-ct; 
-    for(j=ct;j<len+ct;j++) _val[j]=pW[j-ct]; ct=_idx[i];  
+  // Allocate and populate flatWVals
+  flatWVals=(double*)R_alloc(numVals,sizeof(double)); ct=0;
+
+  for(i=0;i<eqnCount;i++)
+  {
+    PROTECT(Welt=VECTOR_ELT(W,i)); 
+
+    pW=REAL(Welt); 
+    len=WMatIDX[i]-ct; 
+
+    for(j=ct;j<len+ct;j++) 
+	flatWVals[j]=pW[j-ct]; 
+
+    ct=WMatIDX[i];  
+
     UNPROTECT(1);
   }
 }
@@ -230,30 +362,55 @@ void Wobj::setW(SEXP W)
 // Populate Wobj from flat vector, indicies, and number of equations. 
 void Wobj::setWflat(int m, double *vals, int *idx)
 {
-  // Set _idx (W's _m indices) and _val (W's vals) 
-  _m=m; _nval=0; _idx=(int*)Calloc(_m,int); 
-  for(int i=0;i<_m;i++){_idx[i]=idx[i]; _nval+=idx[i];}
-  _val=(double*)Calloc(_nval,double); 
-  for(int i=0;i<_nval;i++) _val[i]=vals[i]; 
+  // Set WMatIDX (W's eqnCount indices) and flatWVals (W's vals) 
+  eqnCount=m; 
+  numVals=0; 
+  WMatIDX=(int*)R_alloc(eqnCount,sizeof(int)); 
+
+  for(int i=0;i<eqnCount;i++)
+  {
+	WMatIDX[i]=idx[i]; 
+	numVals+=idx[i];
+  }
+
+  flatWVals=(double*)R_alloc(numVals,sizeof(double)); 
+
+  for(int i=0;i<numVals;i++) 
+	flatWVals[i]=vals[i]; 
 }
 
 // Fill W[[idx]] with input Matrix
 void Wobj::setWelt(const Matrix &Wmat, const int idx)
 {
-  SEXP tmp; PROTECT(tmp=C2Rmat(Wmat)); double *ptmp=REAL(tmp);
+  SEXP tmp; 
+  PROTECT(tmp=C2Rmat(Wmat)); 
+
+  double *ptmp=REAL(tmp);
 
   // Get/Update size/index information 
-  int i, len=Wmat.Storage(); _idx[idx-1]=_nval+len; 
+  int i, len=Wmat.Storage(); 
+  WMatIDX[idx-1]=numVals+len; 
 
-  // alloc valtmp, _val==>valtmp, realloc _val, valtmp==>_val, free valtmp
-  if(_nval){
-    double *valtmp=(double*)Calloc(_nval,double); for(i=0;i<_nval;i++) valtmp[i]=_val[i]; 
-    _val=(double*)Realloc(_val,_nval+len,double); for(i=0;i<_nval;i++) _val[i]=valtmp[i]; 
-    Free(valtmp); 
-  } else { _val=(double*)Calloc(len,double); }
+  // alloc valtmp, flatWVals==>valtmp, realloc flatWVals, valtmp==>flatWVals, free valtmp
+  if(numVals)
+  {
+    double *valtmp=(double*)R_alloc(numVals,sizeof(double)); 
 
-  // Copy new element values to _val[_nval:_nval+len]
-  for(i=_nval;i<_nval+len;i++) _val[i]=ptmp[i-_nval]; _nval+=len; 
+    for(i=0;i<numVals;i++) 
+	valtmp[i]=flatWVals[i]; 
+
+    flatWVals=(double*)R_alloc(numVals+len,sizeof(double)); 
+    for(i=0;i<numVals;i++) 
+	flatWVals[i]=valtmp[i];
+  } 
+  else 
+  	flatWVals=(double*)R_alloc(len,sizeof(double));
+
+  // Copy new element values to flatWVals[numVals:numVals+len]
+  for(i=numVals;i<numVals+len;i++) 
+	flatWVals[i]=ptmp[i-numVals]; 
+  numVals+=len; 
+
   UNPROTECT(1); 
 }
 
@@ -261,143 +418,238 @@ void Wobj::setWelt(const Matrix &Wmat, const int idx)
 SEXP Wobj::getW() const
 {
   Rprintf("Wobj::getW() called...\n");
-  int i, j, ct=0, len;  double *pWelt;
-  SEXP W, Welt; PROTECT(W=allocVector(VECSXP,_m));
-  
-  Rprintf("Looping over %d W elements\n",_m); 
-  for(i=0;i<_m;i++){
-    len=_idx[i]-ct; 
 
-    PROTECT(Welt=allocVector(REALSXP,len)); pWelt=REAL(Welt); 
-    for(j=ct;j<ct+len;j++) *pWelt++=_val[j]; ct=_idx[i]; 
-    int n=(int)sqrt(len), dims[]={n,n}; setdims(Welt,2,dims); 
-    SET_VECTOR_ELT(W,i,Welt); UNPROTECT(1);
+  int i, j, ct=0, len;  
+  double *pWelt;
+  SEXP W, Welt; 
+  PROTECT(W=allocVector(VECSXP,eqnCount));
+
+  Rprintf("Looping over %d W elements\n",eqnCount); 
+
+  for(i=0;i<eqnCount;i++)
+  {
+    len=WMatIDX[i]-ct; 
+
+    PROTECT(Welt=allocVector(REALSXP,len)); 
+ 
+    pWelt=REAL(Welt); 
+
+    for(j=ct;j<ct+len;j++) 
+	*pWelt++=flatWVals[j]; 
+
+    ct=WMatIDX[i]; 
+    int n=(int)sqrt((double)len);
+    int dims[]={n,n}; 
+    setdims(Welt,2,dims); 
+
+    SET_VECTOR_ELT(W,i,Welt); 
+    UNPROTECT(1);
   }
   UNPROTECT(1); 
+
   return W;
 }
 
 // Return W as flattened vector 
 double* Wobj::getWvals() const
 {
-  int i; double *out=(double*)Calloc(_nval,double); 
-  for(i=0;i<_nval;i++) out[i]=_val[i]; return out; 
+  int i; 
+  double *out=(double*)R_alloc(numVals,sizeof(double)); 
+
+  for(i=0;i<numVals;i++) 
+	out[i]=flatWVals[i]; 
+
+  return out; 
 }
 
 // Return W indicies for reconstruction from the flattened vector
 int* Wobj::getWindex() const
-{ int i, *idx=(int*)Calloc(_m,int); for(i=0;i<_m;i++) idx[i]=_idx[i]; return idx; }
+{ 
+  int i, *idx=(int*)R_alloc(eqnCount,sizeof(int)); 
+
+  for(i=0;i<eqnCount;i++) 
+	idx[i]=WMatIDX[i]; 
+
+  return idx; 
+}
 
 // Return W[[idx]] as a Matrix
 ReturnMatrix Wobj::getWelt(int idx) const
 {
   // Get start/end of index range
-  idx-=1; int i, st=0, end, n; 
-  if(idx) for(i=0;i<idx;i++) st+=_idx[i]; end=st+_idx[idx]; n=(int)sqrt(end-st); 
-//   Rprintf("Wobj::getWelt ---- W[%d](%dx%d)==>_val[%d:%d] \n",idx,n,n,st,end);
+  idx-=1; 
+  int i, st=0, end, n; 
 
-  double *tmp=(double*)Calloc(end-st,double); for(i=st;i<end;i++) tmp[i-st]=_val[i]; 
-  Matrix W=F2C(tmp,n,n); Free(tmp); W.Release(); return W.ForReturn(); 
+  if(idx) 
+	for(i=0;i<idx;i++) 
+		st+=WMatIDX[i]; 
+
+  end=st+WMatIDX[idx]; 
+  n=(int)sqrt((double)end-st); 
+//   Rprintf("Wobj::getWelt ---- W[%d](%dx%d)==>flatWVals[%d:%d] \n",idx,n,n,st,end);
+
+  double *tmp=(double*)R_alloc(end-st,sizeof(double)); 
+
+  for(i=st;i<end;i++) 
+	tmp[i-st]=flatWVals[i]; 
+
+  Matrix W=F2C(tmp,n,n); 
+
+  return W.ForReturn(); 
 }
 
-void Wobj::clear(){_m=0; _nval=0; Free(_val); Free(_idx);}
+void Wobj::clear()
+{
+	eqnCount=0; 
+	numVals=0; 
+}
 
 /////////////////////
 // Wlist functions //
 /////////////////////
 
-Wlist::Wlist(){_m=0; _n=0; _cdraw=0; _nval=0;}
+Wlist::Wlist(){eqnCount=0; numDraws=0; currentDraw=0; numVals=0;}
 
 Wlist::Wlist(SEXP Wpost, int num_draws)
 {
-//  Rprintf("Creating Wlist object with %d draws\n",num_draws); 
   // Initialize draw count variables
-  _n=num_draws; _cdraw=0;
+  numDraws=num_draws; 
+  currentDraw=0;
 
   // Allocate memory and populate index and value arrays 
-  SEXP W, Widx, m; int i; 
+  SEXP W, Widx, m; 
+  int i; 
 
-  // Put W$W.posterior values in _val
-//  Rprintf("W$W.posterior...\n"); 
-  PROTECT(W=listElt(Wpost,"W")); double *pW=REAL(W); 
-  _nval=length(W); _val=(double*)Calloc(_nval,double); 
-  for(i=0;i<_nval;i++) _val[i]=pW[i];
+  // Put W$W.posterior values in flatWValList
+  PROTECT(W=listElt(Wpost,"W")); 
+
+  double *pW=REAL(W); 
+  numVals=length(W); 
+  flatWValList=(double*)R_alloc(numVals,sizeof(double)); 
+
+  for(i=0;i<numVals;i++) 
+	flatWValList[i]=pW[i];
+
   UNPROTECT(1); 
 
-  // Put W$W.index values in _idx
-//  Rprintf("W$W.index...\n"); 
-  PROTECT(Widx=listElt(Wpost,"W.index")); int *pWidx=INTEGER(Widx); 
-  _nidx=length(Widx);  _idx=(int*)Calloc(_nidx,int);
-  for(i=0;i<_nidx;i++) _idx[i]=pWidx[i]; 
+  // Put W$W.index values in arrayIDX
+  PROTECT(Widx=listElt(Wpost,"W.index")); 
+
+  int *pWidx=INTEGER(Widx); 
+  IDXcount=length(Widx);  
+  arrayIDX=(int*)R_alloc(IDXcount,sizeof(int));
+
+  for(i=0;i<IDXcount;i++) 
+	arrayIDX[i]=pWidx[i]; 
+
   UNPROTECT(1); 
 
-  // Put W$m (number of equations) in _m
-  PROTECT(m=listElt(Wpost,"m")); _m=INTEGER(m)[0]; UNPROTECT(1); 
+  // Put W$m (number of equations) in eqnCount
+  PROTECT(m=listElt(Wpost,"m")); 
+  eqnCount=INTEGER(m)[0]; 
+  UNPROTECT(1); 
 }
 
 Wlist::Wlist(const int num_draws, const int num_eq)
 {
-  _n=num_draws; _m=num_eq; _cdraw=0; _nidx=_n*_m; _nval=0;
-  _idx=(int*)Calloc(_nidx,int); _val=(double*)Calloc(_n*_m*_m*(_m-1),double); 
+  numDraws=num_draws; 
+  eqnCount=num_eq; 
+  currentDraw=0; 
+  IDXcount=numDraws*eqnCount; 
+  numVals=0;
+
+  arrayIDX=(int*)R_alloc(IDXcount+8,sizeof(int)); 
+  flatWValList=(double*)R_alloc(numDraws*eqnCount*eqnCount*eqnCount,sizeof(double)); 
 }
 
-Wlist::~Wlist(){Free(_idx); Free(_val);}
+//R handles deconstruction
 
 void Wlist::setWobj(Wobj &W, const int idx)
 {
-  int i, st=_nval, *Widx=W.getWindex(); double *pW=W.getWvals(); 
-  for(i=0;i<_m;i++){_nval+=Widx[i]; _idx[(idx-1)*_m+i]=_nval;} 
-  for(i=st;i<_nval;i++) _val[i]=pW[i-st]; Free(pW); Free(Widx); 
+  int i, st=numVals, *Widx=W.getWindex(); 
+  double *pW=W.getWvals(); 
+
+  for(i=0;i<eqnCount;i++)
+  {
+	numVals+=Widx[i]; 
+	arrayIDX[(idx-1)*eqnCount+i]=numVals;
+  } 
+
+  for(i=st;i<numVals;i++) 
+	flatWValList[i]=pW[i-st]; 
 }
 
 void Wlist::getWobj(Wobj& W, int idx) const 
 {
-  idx-=1; int i;
+  idx-=1; 
+  int i;
 
   // Find start/end index, # vals 
-  int stidx=idx*_m, endidx=idx*_m+_m-1;
-  int stval=(idx>0)?_idx[stidx-1]:0, endval=_idx[endidx];
+  int stidx=idx*eqnCount;
+  int endidx=idx*eqnCount+eqnCount-1;
+  int stval; 
+  int endval=arrayIDX[endidx];
+  if(idx>0)
+	stval=arrayIDX[stidx-1];
+  else
+	stval=0;
 
   // Get index array
-  int *idxs=(int*)Calloc(_m,int), ctidx=stval; 
-  for(i=0;i<_m;i++){idxs[i]=_idx[i+stidx]-ctidx; ctidx+=idxs[i];}
+  int *idxs=(int*)R_alloc(eqnCount,sizeof(int));
+  int ctidx=stval; 
+
+  for(i=0;i<eqnCount;i++)
+  {
+	idxs[i]=arrayIDX[i+stidx]-ctidx; 
+	ctidx+=idxs[i];
+  }
 
   // Get values array
-  double *vals=(double*)Calloc(endval-stval,double); 
-  for(i=stval;i<endval;i++) vals[i-stval]=_val[i];
+  double *vals=(double*)R_alloc(endval-stval,sizeof(double)); 
 
-//   Rprintf("Wlist::getWobj(%d)--vals[%d:%d]\n",idx,stval,endval); 
-//   Rprintf("--idxs[1:%d]:    ",_m);  for(i=0;i<_m;i++) Rprintf("  %d  ",idxs[i]); Rprintf("\n");
+  for(i=stval;i<endval;i++) 
+	vals[i-stval]=flatWValList[i];
 
-  // Set Wobj W, free allocated memory 
-  W.setWflat(_m,vals,idxs); Free(vals); Free(idxs); 
+  // Set Wobj W
+  W.setWflat(eqnCount,vals,idxs); 
 }
 
-int Wlist::num_eq() const {return _m;} 
-int Wlist::num_draws() const {return _n;}
+int Wlist::num_eq() const {return eqnCount;} 
+int Wlist::num_draws() const {return numDraws;}
 
 SEXP Wlist::toR() const 
 {
-  SEXP out, names, W, Widx, m; int i, *pidx; double *pW; 
+  SEXP out, names, W, Widx, m; int i, *pidx; 
+  double *pW; 
+  
   PROTECT(out=allocVector(VECSXP,3)); 
   PROTECT(names=allocVector(STRSXP,3)); 
 
-  PROTECT(W=allocVector(REALSXP,_nval)); 
-  pW=REAL(W); for(i=0;i<_nval;i++) pW[i]=_val[i]; 
-  SET_VECTOR_ELT(out,0,W); SET_STRING_ELT(names,0,mkChar("W")); 
+  PROTECT(W=allocVector(REALSXP,numVals)); 
+  pW=REAL(W); 
+  for(i=0;i<numVals;i++) 
+	pW[i]=flatWValList[i]; 
+  SET_VECTOR_ELT(out,0,W); 
+  SET_STRING_ELT(names,0,mkChar("W")); 
   UNPROTECT(1); 
 
-  PROTECT(Widx=allocVector(INTSXP,_nidx)); 
-  pidx=INTEGER(Widx); for(i=0;i<_nidx;i++) pidx[i]=_idx[i]; 
-  SET_VECTOR_ELT(out,1,Widx); SET_STRING_ELT(names,1,mkChar("W.index")); 
+  PROTECT(Widx=allocVector(INTSXP,IDXcount)); 
+  pidx=INTEGER(Widx); 
+  for(i=0;i<IDXcount;i++) 
+	pidx[i]=arrayIDX[i]; 
+  SET_VECTOR_ELT(out,1,Widx); 
+  SET_STRING_ELT(names,1,mkChar("W.index")); 
   UNPROTECT(1); 
   
-  PROTECT(m=allocVector(INTSXP,1)); INTEGER(m)[0]=_m; 
-  SET_VECTOR_ELT(out,2,m); SET_STRING_ELT(names,2,mkChar("m")); 
+  PROTECT(m=allocVector(INTSXP,1)); INTEGER(m)[0]=eqnCount; 
+  SET_VECTOR_ELT(out,2,m); 
+  SET_STRING_ELT(names,2,mkChar("m")); 
   UNPROTECT(1); 
 
   setAttrib(out, R_NamesSymbol, names); 
-  UNPROTECT(2); return out; 
+  UNPROTECT(2); 
+
+  return out; 
 }
 
 
@@ -405,67 +657,106 @@ SEXP Wlist::toR() const
 // UTobj functions //
 /////////////////////
 
-UTobj::UTobj(){_m=0;}
+UTobj::UTobj(){eleCount=0;}
 
 UTobj::UTobj(SEXP UT)
 {
-  int i, j, ct; double *pUTi; SEXP UTi;
+  int i, j, ct; 
+  double *pUTi; SEXP UTi;
 
-  _m=length(UT); _dim=(int*)Calloc(_m,int); _nval=0; 
-  for(i=0;i<_m;i++) {
+  eleCount=length(UT); 
+  dimensionList=(int*)R_alloc(eleCount,sizeof(int)); numVals=0; 
+  
+  for(i=0;i<eleCount;i++) 
+  {
     PROTECT(UTi=VECTOR_ELT(UT,i)); 
-    _dim[i]=INTEGER(getAttrib(UTi,R_DimSymbol))[1]; _nval+=_m*_dim[i]; 
+    dimensionList[i]=INTEGER(getAttrib(UTi,R_DimSymbol))[1]; numVals+=eleCount*dimensionList[i]; 
     UNPROTECT(1); 
   }
 
-  _val=(double*)Calloc(_nval,double); ct=0;
-  for(i=0;i<_m;i++){
-    PROTECT(UTi=VECTOR_ELT(UT,i)); pUTi=REAL(UTi); 
-    for(j=0;j<_m*_dim[i];j++) _val[ct++]=pUTi[j]; 
+  objVals=(double*)R_alloc(numVals,sizeof(double)); ct=0;
+
+  for(i=0;i<eleCount;i++)
+  {
+    PROTECT(UTi=VECTOR_ELT(UT,i)); 
+    pUTi=REAL(UTi); 
+
+    for(j=0;j<eleCount*dimensionList[i];j++) 
+	objVals[ct++]=pUTi[j]; 
     UNPROTECT(1); 
   }
 }
-
-UTobj::~UTobj(){Free(_dim); Free(_val);}
 
 void UTobj::setUTelt(Matrix &UT, const int idx)
 {
   int i;
-  if(!_m && idx-1){ 
+
+  if(!eleCount && idx-1)
+  { 
     Rprintf("Error in UTobj::setUTelt - index must be zero for uninitialized objects");
     return;
   } 
-  else if(!_m) {
-    _m=UT.Nrows();  _dim=(int*)Calloc(_m,int); 
-    _nval=0; _val=(double*)Calloc(_m*_m*_m,double); 
+  else if(!eleCount) 
+  {
+    eleCount=UT.Nrows();  
+    dimensionList=(int*)R_alloc(eleCount,sizeof(int)); 
+    numVals=0;
+    objVals=(double*)R_alloc(eleCount*eleCount*eleCount,sizeof(double)); 
   }
 
   // Set dimension/value information 
-  _dim[idx-1]=UT.Ncols(); double *pUT=UT.Store(); 
-  for(i=_nval;i<_nval+UT.Storage();i++) _val[i]=pUT[i-_nval]; 
-  _nval+=UT.Storage(); 
+  dimensionList[idx-1]=UT.Ncols(); 
+  double *pUT=UT.Store(); 
+
+  for(i=numVals;i<numVals+UT.Storage();i++) 
+	objVals[i]=pUT[i-numVals]; 
+  numVals+=UT.Storage(); 
 }
 
 ReturnMatrix UTobj::getUTelt(int idx) const 
 {
-  idx-=1; int i, st=0; for(i=0;i<idx;i++) st+=_m*_dim[i]; 
-  double *UT=(double*)Calloc(_m*_dim[idx],double);
-  for(i=st;i<st+_m*_dim[idx];i++) UT[i-st]=_val[i]; 
-  Matrix UTi=F2C(UT,_m,_dim[idx]); Free(UT); 
-//   Matrix UTi(_m,_dim[idx]); UTi<<UT; 
-  UTi.Release(); return UTi.ForReturn(); 
+  idx-=1; 
+  int i, st=0; 
+
+  for(i=0;i<idx;i++) 
+	st+=eleCount*dimensionList[i]; 
+
+  double *UT=(double*)R_alloc(eleCount*dimensionList[idx],sizeof(double));
+
+  for(i=st;i<st+eleCount*dimensionList[idx];i++) 
+	UT[i-st]=objVals[i]; 
+  Matrix UTi=F2C(UT,eleCount,dimensionList[idx]); 
+
+  return UTi.ForReturn(); 
 }
 
 SEXP UTobj::toR() const
 {
-  int i, j, len, ct=0; SEXP out, tmp; double *ptmp; 
-  PROTECT(out=allocVector(VECSXP,_m)); 
-  for(i=0;i<_m;i++){
-    len=_m*_dim[i]; 
-    PROTECT(tmp=allocVector(REALSXP,len)); ptmp=REAL(tmp); 
-    for(j=ct;j<ct+len;j++){ptmp[j-ct]=_val[j];} ct+=len; 
-    int dUT[]={_m,_dim[i]}; setdims(tmp,2,dUT); SET_VECTOR_ELT(out,i,tmp); 
+  int i, j, len, ct=0; 
+  SEXP out, tmp; 
+  double *ptmp; 
+
+  PROTECT(out=allocVector(VECSXP,eleCount)); 
+
+  for(i=0;i<eleCount;i++)
+  {
+    len=eleCount*dimensionList[i]; 
+
+    PROTECT(tmp=allocVector(REALSXP,len)); 
+
+    ptmp=REAL(tmp); 
+
+    for(j=ct;j<ct+len;j++)
+	ptmp[j-ct]=objVals[j]; 
+    ct+=len; 
+    int dUT[]={eleCount,dimensionList[i]}; 
+    setdims(tmp,2,dUT); 
+    SET_VECTOR_ELT(out,i,tmp); 
+
     UNPROTECT(1); 
   }
-  UNPROTECT(1); return out;
+
+  UNPROTECT(1); 
+
+  return out;
 }

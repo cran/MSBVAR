@@ -1,8 +1,8 @@
 \name{plot.mc.irf}
 \alias{plot.mc.irf}
-\alias{plot.mc.irf.VAR}
-\alias{plot.mc.irf.BVAR}
-\alias{plot.mc.irf.BSVAR}
+%\alias{plot.mc.irf.VAR}
+%\alias{plot.mc.irf.BVAR}
+%\alias{plot.mc.irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plotting posteriors of Monte Carlo simulated impulse responses}
 \description{
@@ -36,7 +36,7 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
   \item{\dots}{ Other graphics parameters}
 }
 \details{
- This function plots the output of a Monte Carlo simulation of VAR
+ This function plots the output of a Monte Carlo simulation of (B)(BS)VAR
  impulse response functions produced by \code{mc.irf}.  The function
  allows the user to choose among a variety of frequentist (normal
  appproximation and percentile) and Bayesian (eigendecomposition)
@@ -74,7 +74,7 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
   Carlo samples of impulse responses,
   \code{\link{szbsvar}} for estimation of the posterior
   moments of the B-SVAR model,
-  \code{\link{gibbs.A0.BSVAR}} for Gibbs sampling the
+  \code{\link{gibbs.A0}} for Gibbs sampling the
   posterior of the \eqn{A_0}{A(0)} for the model, and 
 }
 \examples{

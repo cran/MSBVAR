@@ -1,8 +1,8 @@
 \name{mc.irf}
 \alias{mc.irf}
-\alias{mc.irf.VAR}
-\alias{mc.irf.BVAR}
-\alias{mc.irf.BSVAR}
+%\alias{mc.irf.VAR}
+%\alias{mc.irf.BVAR}
+%\alias{mc.irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Monte Carlo Integration / Simulation of Impulse Response
   Functions }
@@ -19,12 +19,6 @@
 \usage{
 mc.irf(varobj, nsteps, draws=0, A0.posterior=NULL,
        sign.list=rep(1, ncol(varobj$Y)))
-
-mc.irf.VAR(varobj, nsteps, draws)
-
-mc.irf.BVAR(varobj, nsteps, draws)
-
-mc.irf.BSVAR(varobj, nsteps, A0.posterior, sign.list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,18 +56,24 @@ mc.irf.BSVAR(varobj, nsteps, A0.posterior, sign.list)
   0.3.0.  See the package source code for details about the
   implementation.
   
+  MSBVAR:
+
+  At present these are not implemented in the package.  Email the
+  package maintainer if you are interest in this feature.
+  
 }
 \value{
   VAR/BVAR:
   
-  An mc.irf.VAR/mc.irf.BVAR class object object that is the array of
+  An \code{mc.irf.VAR} or \code{mc.irf.BVAR} class
+  object object that is the arrayof
   impulse response samples for the Monte Carlo samples
 
   \item{impulse}{\eqn{draws \times nsteps \times m^2}{ draws X nsteps X
       (m*m)} array of the impulse responses }
 
   B-SVAR:
-  mc.irf.BSVAR object which is an \eqn{(N2, nsteps, m^2)} array of the impulse
+  \code{mc.irf.BSVAR} object which is an \eqn{(N2, nsteps, m^2)} array of the impulse
   responses for the associated B-SVAR model in \code{varobj} and the posterior
   \eqn{A_0}{A(0)}.
   
@@ -93,7 +93,6 @@ mc.irf.BSVAR(varobj, nsteps, A0.posterior, sign.list)
   Waggoner, Daniel F. and Tao A. Zha.  2003. "A Gibbs sampler for
   structural vector autoregressions" \emph{Journal of Economic Dynamics
   \& Control}. 28:349--366.
-
 }
 \author{ Patrick T. Brandt }
 \note{ Users need to think carefully about the number of steps and the
@@ -143,6 +142,9 @@ A0.posterior <- gibbs.A0(varobj, N1=1000, N2=1000)
 # in the following call for R to find it in the namespace!
 
 impulse.sample <- mc.irf(varobj, nsteps=12, A0.posterior=A0.posterior)
+
+plot(impulse.sample, varnames=colnames(IsraelPalestineConflict),
+     probs=c(0.16,0.84))
 }
 \keyword{ ts}
 \keyword{ models}

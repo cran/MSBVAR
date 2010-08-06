@@ -1,6 +1,5 @@
 \name{hc.forecast}
 \alias{hc.forecast}
-\alias{hc.forecast.VAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Forecast density estimation of hard condition forecasts for VAR
   models via MCMC }
@@ -17,9 +16,6 @@
 \usage{
 hc.forecast(varobj, yconst, nsteps, burnin,
             gibbs, exog = NULL)
-
-hc.forecast.VAR(varobj, yconst, nsteps, burnin,
-                gibbs, exog = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

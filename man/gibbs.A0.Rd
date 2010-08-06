@@ -1,6 +1,5 @@
 \name{gibbs.A0}
 \alias{gibbs.A0}
-\alias{gibbs.A0.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Gibbs sampler for posterior of Bayesian structural vector
   autoregression models}

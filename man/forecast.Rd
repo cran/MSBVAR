@@ -1,8 +1,8 @@
 \name{forecast}
 \alias{forecast}
-\alias{forecast.VAR}
-\alias{forecast.BVAR}
-\alias{forecast.BSVAR}
+%\alias{forecast.VAR}
+%\alias{forecast.BVAR}
+%\alias{forecast.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Generate forecasts for fitted VAR objects}
 \description{
@@ -10,28 +10,15 @@
   and exogenous shocks.
 }
 \usage{
-forecast.VAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
-         shocks = matrix(0, nrow = nsteps,
-                         ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps,
-                           ncol = nrow(varobj$exog.coefs)))
-
-forecast.BVAR(varobj, nsteps, A0 = t(chol(varobj$mean.S)),
-         shocks = matrix(0, nrow = nsteps,
-                         ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps,
-                           ncol = nrow(varobj$exog.coefs)))
-
-forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
-         shocks = matrix(0, nrow = nsteps,
-                         ncol = dim(varobj$ar.coefs)[1]),
-         exog.fut = matrix(0, nrow = nsteps,
-                           ncol = nrow(varobj$exog.coefs)))
+forecast(varobj, nsteps, A0=t(chol(varobj$mean.S)),
+         shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
+         exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{varobj}{ Fitted VAR model of the class VAR, BVAR, or BSVAR
-    produced by \code{reduced.form.var}, \code{szbvar}, or \code{szbsvar}}
+    produced by \code{\link{reduced.form.var}}, \code{\link{szbvar}}, or
+    \code{\link{szbsvar}} (Not yet implemented for \code{\link{msbvar}}.)}
   \item{nsteps}{ Number of periods in the forecast horizon}
   \item{A0}{ \eqn{m \times m}{m x m} matrix of the decomposition of the
     contemporaneous endogenous forecast innovations}
@@ -42,10 +29,10 @@ forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
 }
 \details{
   This function computes forecasts for both classical and Bayesian
-  VARs.  Users can specify shocks to the system over the forecast
+  (S)VARs.  Users can specify shocks to the system over the forecast
   horizon (both structural and exogenous shocks).  The forecasting model
   is that described by Waggoner and Zha (1999) and can be used to
-  construct conditional and unconditional forecasts based on thes
+  construct unconditional forecasts based on thes
   structural shocks and the contemporaneous decomposition of the
   innovation variance, A0.
 }
@@ -58,7 +45,7 @@ forecast.BSVAR(varobj, nsteps, A0 = solve(varobj$A0.mode),
   Statistics}, 81(4):639-651.
 }
 \author{ Patrick T. Brandt}
-\note{ The forecasts can be easily plotted by using the \code{window()}
+\note{ The forecasts can be easily plotted by using the \code{plot.forecast()}
   command to select the appropriate sample-forecast horizon}
 
 \seealso{ \code{\link{reduced.form.var}}, \code{\link{szbvar}} and

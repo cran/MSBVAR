@@ -1,7 +1,7 @@
 \name{uc.forecast}
 \alias{uc.forecast}
-\alias{uc.forecast.VAR}
-\alias{uc.forecast.BVAR}
+%\alias{uc.forecast.VAR}
+%\alias{uc.forecast.BVAR}
 %\alias{uc.forecast.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Forecast density estimation unconditional forecasts for VAR/BVAR/BSVAR

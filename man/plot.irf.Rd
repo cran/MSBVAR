@@ -1,8 +1,8 @@
 \name{plot.irf}
 \alias{plot.irf}
-\alias{plot.irf.VAR}
-\alias{plot.irf.BVAR}
-\alias{plot.irf.BSVAR}
+%\alias{plot.irf.VAR}
+%\alias{plot.irf.BVAR}
+%\alias{plot.irf.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plots impulse responses }
 \description{
@@ -11,9 +11,9 @@
 }
 \usage{
 plot.irf(x, varnames = NULL, ...)
-plot.irf.VAR(x, varnames = NULL, ...)
-plot.irf.BVAR(x, varnames = NULL, ...)
-plot.irf.BSVAR(x, varnames = NULL, ...)
+%plot.irf.VAR(x, varnames = NULL, ...)
+%plot.irf.BVAR(x, varnames = NULL, ...)
+%plot.irf.BSVAR(x, varnames = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,6 +22,7 @@ plot.irf.BSVAR(x, varnames = NULL, ...)
     \code{c("name1","name2",...)} }
   \item{...}{other plot arguments}
 }
+%Improve details to reflect VAR/BVAR/BSVAR availability
 \details{
   Generates a plot in ther current plotting device of the impulse
   responses in \code{irf}.  See below for functions that allow one to

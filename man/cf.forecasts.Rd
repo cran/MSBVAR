@@ -28,7 +28,7 @@ cf.forecasts(m1, m2)
 \author{ Patrick T. Brandt}
 %\note{}
 
-\seealso{ \code{\link{forecast.VAR}} for forecast computations}
+\seealso{ \code{\link{forecast}} for forecast computations}
 \examples{
 data(IsraelPalestineConflict)
 Y.sample1 <- window(IsraelPalestineConflict, end=c(2002, 52))
@@ -40,7 +40,7 @@ fit.bvar <- szbvar(Y.sample1, p=6, lambda0=0.6, lambda1=0.1, lambda3=2,
 
 # Forecast -- this gives back the sample PLUS the forecasts!
 
-forecasts <- forecast.VAR(fit.bvar, nsteps=nrow(Y.sample2))
+forecasts <- forecast(fit.bvar, nsteps=nrow(Y.sample2))
 
 # Compare forecasts to real data
 cf.forecasts(forecasts[(nrow(Y.sample1)+1):nrow(forecasts),], Y.sample2)

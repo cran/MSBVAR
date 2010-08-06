@@ -144,7 +144,11 @@ szbsvar(Y, p, z = NULL,
   The prior means of
   \eqn{a_i}{a(i)} are zero in the structural model, while the "random walk"
   component is in \eqn{\bar{P}_i a_i}{P(i) a(i)}.  
-
+  
+  The prior covariance matrix of the errors, \eqn{\bar{S}_i}{S(i)}, is
+  initially estimated using a VAR(p) model via OLS, with an intercept
+  and no demeaning of the data.
+  
   The Bayesian prior is constructed for the unrestricted VAR model and
   then mapped into the restricted prior parameter space, as discussed in
   Waggoner and Zha (2003a).

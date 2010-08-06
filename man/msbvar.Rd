@@ -104,7 +104,8 @@ msbvar(y, z = NULL, p, h, lambda0, lambda1, lambda3, lambda4,
 
 \author{ Patrick T. Brandt}
 \note{ Users should consult the reference papers and the (coming)
-  package vignette to see how this function is used to setup an MSBVAR model.}
+  package vignette to see how this function is used to setup an MSBVAR
+  model. An example is currently in \code{\link{gibbs.msbvar}}.}
 
 \seealso{ \code{\link{gibbs.msbvar}}, \code{\link{szbvar}}}
 % \examples{

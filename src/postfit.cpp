@@ -21,7 +21,7 @@ extern "C" SEXP log_marg_A0k(SEXP WpostR, SEXP A0R, SEXP N2R, SEXP consttermR,
   N2=INTEGER(N2R)[0]; df=INTEGER(dfR)[0]; m=INTEGER(coerceVector(listElt(WpostR,"m"),INTSXP))[0]; 
 
   double *pbfi, *lpa0, *cterm, lN2, tol, maxvlog, lqlog;  
-  lN2=log(N2); tol=1E-12; cterm=REAL(consttermR); //Rprintf("m: %d\nN2: %d\ndf: %d\n",m,N2,df);
+  lN2=log((double)N2); tol=1E-12; cterm=REAL(consttermR); //Rprintf("m: %d\nN2: %d\ndf: %d\n",m,N2,df);
 
   // Initialize Tinv/b.free/vlog variables 
   SEXP Ti, bfi; Matrix Tinv; ColumnVector bfree, vlog(N2), qlog; 

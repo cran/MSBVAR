@@ -17,11 +17,11 @@
   Positive values indicate an average of more cooperation and less
   conflict and negative values indicate an average with more conflict
   than cooperation.  These are a subset
-  of the Levant dataset from the Kansas Event Data System (KEDS) Levant
+  of the Levant dataset from the Kansas / Penn State Event Data Project Levant
   dataset.  The data are from AFP news sources and encoded
   into the World Event Interaction Survey (WEIS) coding system and
-  Goldstein scalings using the Kansas Event Data System (KEDS) TABARI
-  program.  Source data can be found on the KEDS site below.
+  Goldstein scalings using the Penn State Event Data Project TABARI
+  program.  Source data can be found on the site below.
  }
  \usage{data(BCFdata)}
  \format{Two matrices containing 108 observations.  The first matrix "Y"
@@ -46,27 +46,21 @@
    value 1 in the month after each Israeli election and increases until
    the time of the next constitutionally mandated election.
 } 
-   \source{Brandt, Patrick T., Michael Colaresi, and John
-     R. Freeman. 2007.
-     "Reciprocity, Accountability and Credibility In
-     International Relations"
-     
-     \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
+\source{Brandt, Patrick T., Michael P. Colaresi and John R. Freeman.
+  2008. ``The Dynamics of Reciprocity, Accountability and
+  Credibility.'' \emph{Journal of Conflict Resolution}. 52(3): 343-374.
+  
+  Replication materials at
+  \url{http://www.utdallas.edu/~pbrandt/pbrandt/Replication_files/BrandtColaresiFreemanJCR08.tar.gz} 
+  
  }
  
  \references{
 
-   Brandt, Patrick T., Michael Colaresi, and John
-   R. Freeman. 2007.
-   "Reciprocity, Accountability and Credibility In
-   International Relations"
-
-   \url{http://www.utdallas.edu/~pbrandt/working/BCF20060531.pdf}
-   
    Goldstein, Joshua. S. 1992. "A Conflict-Cooperation Scale for WEIS
    Event Data" \emph{Journal of Conflict Resolution}. 36:369-385.
    
-   Kansas Event Data System \url{http://www.ku.edu/~keds}
+   Penn State Event Data Project \url{http://eventdata.psu.edu}
 }
 
 \keyword{datasets}

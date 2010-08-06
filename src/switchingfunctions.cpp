@@ -1,4 +1,5 @@
 #include "MSBVARcpp.h"
+#include <Rdefines.h>
 
 ////////////////////////////////////////////////////////////////////
 // 2008-11-29 : PTB updated bingen() and SSdraw so that it correctly does
@@ -9,50 +10,92 @@
 // SSdraw() : Draws State-Spaces for MSBVAR models in C
 ////////////////////////////////////////////////////////////////////
 
-extern "C" SEXP SSdraw(SEXP SSe, SEXP Xik, SEXP QR, SEXP SQR, SEXP TTR, SEXP hR, SEXP mR)
+//New generation function to perform FFBS 
+//to replace SSGenerate
+extern "C" SEXP newSSdraw(SEXP SSe, SEXP Xik, SEXP QR, SEXP SQR, SEXP TTR, SEXP hR, SEXP mR)
 {
+  GetRNGstate();	//Necessary to avoid inconsistency
+
   // Allocations / declarations
   int TT=INTEGER(TTR)[0], h=INTEGER(hR)[0], m=INTEGER(mR)[0];
   Matrix Q = R2Cmat(QR, h, h);
 
   Matrix fp = BHLK(SSe, Xik, Q, SQR, TT, h, m);   // filtering step
 
-  //  Rprintf("Data have been filtered\n");
-  SSobj ss(fp.Ncols(), fp.Nrows());  
-  SEXP ssout, out, names, tmap;; 
-  int *sstmp;
+  //Allocate SS object and associated variables
+  //out is the return object, names are $SS and such
+  //ssout holds SS, tmap holds the trans map.
+  SEXP ssout, out, names, tmap;
+  //T is observations, i is an index variable
+  //h2 is a regime storage variable, state holds current iterative state
+  int T, i, h2, state;
+  Matrix tmp;	//Used for 'coinflip'
 
-  ss.SSgenerate(fp,Q);    // smoothing and sampling step
-  //  Rprintf("State-space has been simulated!\n");
+  newSSobj ss(fp.Ncols(), fp.Nrows());	//Declare our ss object, manipulated in do-while
+  do
+  {
+	ss.reset();		//Zero out ss and trans
+	T=ss.countSSObs();	//T holds observation count
+	tmp = fp.Row(T);	//Allocate tmp matrix
+	h2=Q.Nrows();		//h2 holds regime count
+	state=-1;		//state defaults to -1 for later if statement
+  	
+	//Pre-bingen run
+  	for(i=1; i<=h2-1; i++) //Iterate across regimes
+  	{
+	    //"Coinflip" happens here
+  	    Real pp = tmp.Column(i).AsScalar()/tmp.Columns(i,h2).Sum();
+  	    double u = runif(0,1);
+  	    if(pp<=u) 
+  	    {
+		state=i-1; 
+	      	break; 
+	    }   
+	}
+	if(state>-1)	//If we found a state
+	  ss.setFirst(T, state); //setFirst used to avoid extra transition
+	else		//Otherwise, default to final regime
+	  ss.setFirst(T, h2-1); 
+	  
+	// Now back-sample from T-1:1
+	for(int t=T-1; t>0; t--)
+	{ 
+	   // Get the filter probability and smooth it and sample it
+	   tmp=fp.Row(t); 
+	   ss.setRegime(t-1, bingen(tmp, Q, ss.getRegime(t)-1)); 
+	}
+  }
+  while(!ss.hasEachObs());	//Do it again until all states have an observation.
 
-  // format the output of the 0-1 matrix
-  PROTECT(ssout=allocMatrix(INTSXP, TT, h));
-  sstmp = INTEGER(ssout);
-  int i, j, tmp=0; 
-  for(i=0; i<TT; i++) { 
-    for(j=0; j<h; j++) {
-      tmp=ss.getregime(i)-1;  // Get the regime
-      sstmp[i + TT*j] = 0;    // Zero things out
-    }
-    sstmp[i + TT*tmp] = 1;    // Fill in the 1
-}
+  PROTECT(tmap=ss.getTransMapR());  	// get the transition matrix
+  PROTECT(ssout=ss.getSSMapR());	// and the state space matrix
+  PROTECT(out=allocVector(VECSXP, 2));	// Prepare a vector to receive the matrices
+  PROTECT(names=allocVector(STRSXP, 2));// And another one to hold their names
 
-  PROTECT(tmap=ss.getSSmapR());  // get the transition matrix
+  SET_VECTOR_ELT(out, 0, ssout);	//Give out the state space matrix
+  SET_STRING_ELT(names, 0, mkChar("SS"));//And name it $SS
+  SET_VECTOR_ELT(out, 1, tmap);		//Then give it the trans map
+  SET_STRING_ELT(names, 1, mkChar("transitions"));//And name it $transitions
 
-  PROTECT(out=allocVector(VECSXP, 2));
-  PROTECT(names=allocVector(STRSXP, 2));
-  
-  SET_VECTOR_ELT(out, 0, ssout);
-  SET_STRING_ELT(names, 0, mkChar("SS"));
-  SET_VECTOR_ELT(out, 1, tmap);
-  SET_STRING_ELT(names, 1, mkChar("transitions"));
+  setAttrib(out, R_NamesSymbol, names);//Tie the names and out together
 
-  setAttrib(out, R_NamesSymbol, names);
+  PutRNGstate();	//Put the RNG state(DO THIS BEFORE YOU UNPROTECT)
 
   UNPROTECT(4);
 
+  //In case the garbage collector gives us more trouble,
+  //The following code can be used with newSS's getSEXP
+  //Function to pile SS and Trans into a large integer array.
+  /*int reg = ss.countSSReg();
+  int obs = ss.countSSObs();
+  PROTECT(out = NEW_INTEGER(reg*obs*reg*reg));
+  out = ss.getSEXP(out);
+  PutRNGstate();
+  UNPROTECT(1);*/
+
   return(out);
 }
+
 
 ////////////////////////////////////////////////////////////////////
 // Function to generate the regime of the state    
@@ -67,19 +110,24 @@ int bingen(Matrix &p, Matrix &Q, int st0)
 {
   int i=1, h=Q.Nrows(); 
   Matrix sp=SP(Q.Column(st0+1),p.t());  // one-step prediction t|t
-  //sp=sp/sp.Sum();
 
   int state=-1;
-  //  Rprintf("Predicted Probs\n");
-  // printMatrix(sp);
   for(i=1; i<=h-1; i++) 
-    {
+  {
       Real pp = sp.Row(i).AsScalar()/sp.Rows(i,h).Sum(); // cumsum for state i
+
       double u = runif(0,1);
-      //      Rprintf("Value of pp %f\n", pp);
-      if(pp>u) state=i-1; break;    // sampled value
-    }
-  if(state>-1) {return state; }else{ return h-1;}
+
+      if(pp>u) 
+      {
+	state=i-1; 
+      	break; 
+      }   // sampled value
+  }
+  if(state>-1) 
+    return state;
+  else
+    return h-1;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -108,13 +156,16 @@ ReturnMatrix BHLK(SEXP uR, SEXP sigmaR, Matrix& Q, SEXP SQR, int TT, int h, int 
   // Compute the likelihood for each obs. in each regime 
   for(i=1; i<=h; i++)
   {
-    x=u.Column(i).AsMatrix(TT,m);  xcov=sigma.Column(i).AsMatrix(m,m); 
+    x=u.Column(i).AsMatrix(TT,m);  
+    xcov=sigma.Column(i).AsMatrix(m,m); 
     pYSt.Column(i) = dmvnorm(x,xcov); 
   }
   
   // Combat the threat of underflow
-  double *pYStptr = pYSt.Store(), pYStmin=pow(10,-30); 
-  for(i=0;i<pYSt.Storage();i++) if(pYStptr[i]<pYStmin) pYStptr[i]=pYStmin;
+  double *pYStptr = pYSt.Store(), pYStmin=pow(10.0,-30); 
+  for(i=0;i<pYSt.Storage();i++) 
+    if(pYStptr[i]<pYStmin) 
+      pYStptr[i]=pYStmin;
 
 
   // Set up past state
@@ -131,7 +182,7 @@ ReturnMatrix BHLK(SEXP uR, SEXP sigmaR, Matrix& Q, SEXP SQR, int TT, int h, int 
   }
 
   pfilter = pfilter.t();
-  pfilter.Release(); return pfilter.ForReturn();
+  return pfilter.ForReturn();
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -149,93 +200,70 @@ SEXP BHLKR(SEXP uR, SEXP SigmaR, SEXP QR, SEXP SQR, SEXP TR, SEXP hR, SEXP mR)
   return C2Rmat(filtered); 
 }
 
-// ////////////////////////////////////////////////////////////////////
-// // Repeat each element of x 'each' times 
-// // -------------------------------------
-// // x: Vector of values to repeat
-// // each: num of times to repeat each value in x
-// ////////////////////////////////////////////////////////////////////
-
-// ReturnMatrix rep(const ColumnVector& x, int each)
-// {
-//   int i, j, nrows=x.Storage(); ColumnVector repx(nrows*each); 
-//   for(i=1;i<=nrows;i++) for(j=1;j<=each;j++) repx((i-1)*nrows+j)=x(i);
-//   repx.Release(); return repx.ForReturn(); 
-// }
-
 ////////////////////////////////////////////////////////////////////
 // Multivariate normal density function
 ////////////////////////////////////////////////////////////////////
 
 ReturnMatrix dmvnorm(Matrix &x, Matrix &sigma)
 {
-  int i, n=x.Nrows();  ColumnVector dist(n); 
-  Matrix xsigmai=x*sigma.i();  xsigmai=SP(xsigmai,x); 
+  int i, n=x.Nrows();  
+  ColumnVector dist(n); 
+  Matrix xsigmai=x*sigma.i();  
+  xsigmai=SP(xsigmai,x); 
   double dtmp = x.Ncols()*LOG2PI+sigma.LogDeterminant().LogValue();
-  for(i=1;i<=n;i++) dist(i)=exp(-(dtmp+xsigmai.Row(i).Sum())/2.0); 
-  dist.Release(); return dist.ForReturn();
+  for(i=1;i<=n;i++) 
+    dist(i)=exp(-(dtmp+xsigmai.Row(i).Sum())/2.0); 
+  return dist.ForReturn();
 }
 
 
-// ////////////////////////////////////////////////////////////////////
-// // SSsumR
-// ////////////////////////////////////////////////////////////////////
-// SEXP SSsumR(SEXP SSsampleR)
-// {
-//   int i, j;  SSlist SSsample(SSsampleR); SEXP out; 
-//   PROTECT(out=allocMatrix(INTSXP, SSsample._T, SSsample._h));
-//    int *pout=INTEGER(out), **tmp=SSsample.SSsum(); 
-//    for(i=0;i<SSsample._h;i++) {
-//      for(j=0;j<SSsample._T;j++) {
-//        pout[i*SSsample._T+j]=tmp[i][j];
-//      }}
+//Should be removed in the immediate future.
+/*extern "C" SEXP SSdraw(SEXP SSe, SEXP Xik, SEXP QR, SEXP SQR, SEXP TTR, SEXP hR, SEXP mR)
+{
+  // Allocations / declarations
+  int TT=INTEGER(TTR)[0], h=INTEGER(hR)[0], m=INTEGER(mR)[0];
+  Matrix Q = R2Cmat(QR, h, h);
 
-//   UNPROTECT(1);
-//   Free(tmp);
-//   return out;
-// }
+  Matrix fp = BHLK(SSe, Xik, Q, SQR, TT, h, m);   // filtering step
 
-// ////////////////////////////////////////////////////////////////////
-// // SSmeanR
-// ////////////////////////////////////////////////////////////////////
+  //  Rprintf("Data have been filtered\n");
+  SSobj ss(fp.Ncols(), fp.Nrows());  
+  SEXP ssout, out, names, tmap;
+  int *sstmp;
 
-// SEXP SSmeanR(SEXP SSsampleR, SEXP method)
-// {
-//   int i, j, m;  double **means, *pout; 
-//   SSlist SSsample(SSsampleR); SEXP out;  
+  ss.SSgenerate(fp,Q);    // smoothing and sampling step for the SS class
   
-//   m=INTEGER(method)[0]; 
-//   Rprintf("m=%d\t_T=%d\t_h=%d\n",m,SSsample._T,SSsample._h);
-//   means=SSsample.SSmean(m); 
+  // format the output of the 0-1 matrix
+  PROTECT(ssout=allocMatrix(INTSXP, TT, h));
+  sstmp = INTEGER(ssout);
 
-//   switch(m){
-//   default:
-//   case 1: {
-//     PROTECT(out=allocMatrix(REALSXP, SSsample._T, SSsample._h));
-//     pout=REAL(out); 
-//     for(i=0;i<SSsample._h;i++) 
-//       for(j=0;j<SSsample._T;j++) 
-// 	pout[i*SSsample._T+j]=means[i][j];
-//     break;
-//   }
+  int i, j, tmp=0; 
 
-// //   case 2: {
-// //     PROTECT(out=C2Rdoublemat(means));
-// //     break;
-// //   }
-//   }
+  for(i=0; i<TT; i++) 
+  { 
+    for(j=0; j<h; j++) 
+    {
+      tmp=ss.getregime(i)-1;  // Get the regime
+      //Rprintf("Regime :%d\n", tmp);
+      
+      sstmp[i + TT*j] = 0;    // Zero things out
+    }
+    sstmp[i + TT*tmp] = 1;    // Fill in the 1
+  }
 
-//   Free(means);  UNPROTECT(1);  
-//   return out;
-// }
+  PROTECT(tmap=ss.getSSmapR());  // get the transition matrix
 
-// SEXP SSvarR(SEXP SSsampleR, SEXP method)
-// {
-//   int i, j, m, h; 
-//   SSlist SSsample(SSsampleR); 
-//   m=INTEGER(method)[0]; h=SSsample._h;
-//   SEXP out;  PROTECT(out=allocVector(REALSXP, h)); 
-//   double **var=SSsample.SSvar(m), *pout=REAL(out); 
-//   for(i=0;i<SSsample._h;i++) for(j=0;j<SSsample._T;j++) pout[i*SSsample._T+j]=var[i][j];
-//   UNPROTECT(1); return out;
-// }
+  PROTECT(out=allocVector(VECSXP, 2));
+  PROTECT(names=allocVector(STRSXP, 2));
+  
+  SET_VECTOR_ELT(out, 0, ssout);
+  SET_STRING_ELT(names, 0, mkChar("SS"));
+  SET_VECTOR_ELT(out, 1, tmap);
+  SET_STRING_ELT(names, 1, mkChar("transitions"));
+
+  setAttrib(out, R_NamesSymbol, names);
+
+  UNPROTECT(4);
+
+  return(out);
+}*/

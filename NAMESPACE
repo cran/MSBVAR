@@ -4,9 +4,9 @@ import(KernSmooth)
 import(coda)
 
 export(dfev,
-       dfev.VAR,
-       dfev.BVAR,
-       dfev.BSVAR,
+#       dfev.VAR,
+#       dfev.BVAR,
+#       dfev.BSVAR,
        print.dfev,
        summary.dfev,
        granger.test,
@@ -21,50 +21,63 @@ export(dfev,
        normalize.svar,
        A02mcmc,
        irf,
-       irf.VAR,
-       irf.BVAR,
-       irf.BSVAR,
-       irf.msbsvar,
+#       irf.VAR,
+#       irf.BVAR,
+#       irf.BSVAR,
+#       irf.msbsvar,
        mc.irf,
-       mc.irf.VAR,
-       mc.irf.BVAR,
-       mc.irf.BSVAR,
+#       mc.irf.VAR,
+#       mc.irf.BVAR,
+#       mc.irf.BSVAR,
        null.space,
        mae,
        restmtx,
        rmse,
        rmultnorm,
+       ldwishart,
        rwishart,
        cf.forecasts,
        forc.ecdf,
        forecast,
-       forecast.VAR,
-       forecast.BVAR,
-       forecast.BSVAR,
+#       forecast.VAR,
+#       forecast.BVAR,
+#       forecast.BSVAR,
        hc.forecast,
-       hc.forecast.VAR,
+#       hc.forecast.VAR,
        uc.forecast,
-       uc.forecast.VAR,
+#       uc.forecast.VAR,
        posterior.fit,
-       posterior.fit.BVAR,
-       posterior.fit.BSVAR,
+#       posterior.fit.BVAR,
+#       posterior.fit.BSVAR,
+#       posterior.fit.MSBVAR,
        mountains,
        plot.gibbs.A0,
-       plot.irf.VAR,
-       plot.irf.BVAR,
-       plot.irf.BSVAR,
-       plot.mc.irf.VAR,
-       plot.mc.irf.BVAR,
-       plot.mc.irf.BSVAR,
-       plot.forecast.VAR,
+       plot.irf,
+#       plot.irf.VAR,
+#       plot.irf.BVAR,
+#       plot.irf.BSVAR,
+       plot.mc.irf,
+#       plot.mc.irf.VAR,
+#       plot.mc.irf.BVAR,
+#       plot.mc.irf.BSVAR,
+       plot.forecast,
+#       plot.forecast.VAR,
+#       plot.forecast.BVAR,
+#       plot.forecast.BSVAR,
        plot.forc.ecdf,
-       print.posterior.fit.BVAR,
-       print.posterior.fit.BSVAR,
-       summary.VAR,
-       summary.BVAR,
-       summary.BSVAR,
+       print.posterior.fit,
+#       print.posterior.fit.BVAR,
+#       print.posterior.fit.BSVAR,
+       summary,
+#       summary.VAR,
+#       summary.BVAR,
+#       summary.BSVAR,
+       summary.forecast,
+#       summary.forecast.VAR,
+#       summary.forecast.BVAR,
+#       summary.forecast.BSVAR,
        list.print,
-#       SS.draw,
+       SS.draw,
        sum.SS,
        mean.SS,
        plot.SS,
@@ -76,8 +89,8 @@ export(dfev,
        ddirichlet,
        rdirichlet,
 #       hregime.SS,
-       msbsvar,
-       gibbs.msbsvar,
+#       msbsvar,
+#       gibbs.msbsvar,   # Leave out until we update.
        msbvar,
        gibbs.msbvar
 #       hregime.reg
@@ -87,21 +100,29 @@ export(dfev,
 
 S3Method(print, posterior.fit.BVAR)
 S3Method(print, posterior.fit.BSVAR)
+S3Method(print, posterior.fit.MSBVAR)
 S3Method(print, dfev)
 
 S3Method(summary, dfev)
+
+S3Method(summary, forecast.VAR)
+S3Method(summary, forecast.BVAR)
+S3Method(summary, forecast.BSVAR)
+
+S3Method(plot, forecast)
 
 S3Method(summary, VAR)
 S3Method(summary, BVAR)
 S3Method(summary, BSVAR)
 
-S3Method(plot, irf.VAR)
-S3Method(plot, irf.BVAR)
-S3Method(plot, irf.BSVAR)
+S3Method(plot, irf)
+#S3Method(plot, irf.BVAR)
+#S3Method(plot, irf.BSVAR)
 
-S3Method(plot, mc.irf.VAR)
-S3Method(plot, mc.irf.BVAR)
-S3Method(plot, mc.irf.BSVAR)
+S3Method(plot, mc.irf)
+#S3Method(plot, mc.irf.VAR)
+#S3Method(plot, mc.irf.BVAR)
+#S3Method(plot, mc.irf.BSVAR)
 
 S3Method(plot, forecast.VAR)
 

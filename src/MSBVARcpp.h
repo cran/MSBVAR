@@ -6,7 +6,7 @@
 #include <R_ext/Linpack.h> // LINPACK entry points
 #include <R_ext/Applic.h>  
 #include <math.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 #include <stdint.h>        // uint_32t class type
 #include <limits.h>        // POSIX standardization
 
@@ -24,7 +24,8 @@ extern "C" {
 
 #include "A0_W.h"          // Class for storing gibbs draws
 #include "QRD.h"           // Class for QR routines
-#include "SS.h"            // State Space Class
+//#include "SS.h"            // State Space Class
+#include "newSS.h"	   // New State Space Class
 
   // R object creation/manipulation functions
   void setdims(SEXP, int, int*);
@@ -101,7 +102,8 @@ extern "C" {
   SEXP gibbsA0(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
   
   // State-Space/Markov-Switching Functions 
-  SEXP SSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+  //SEXP SSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+  SEXP newSSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
   //  SEXP SSsumR(SEXP);
   //  SEXP SSmeanR(SEXP, SEXP);
   //  SEXP SSvarR(SEXP, SEXP);

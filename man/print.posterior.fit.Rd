@@ -1,8 +1,10 @@
 \name{print.posterior.fit}
 \alias{print.posterior.fit}
 %\alias{print.posterior.fit.VAR}
-\alias{print.posterior.fit.BVAR}
-\alias{print.posterior.fit.BSVAR}
+%\alias{print.posterior.fit.BVAR}
+%\alias{print.posterior.fit.BSVAR}
+%\alias{print.posterior.fit.MSBVAR}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Print method for posterior fit measures}
 \description{
@@ -12,8 +14,9 @@
 \usage{
 print.posterior.fit(x, ...)
 %print.posterior.fit.VAR(x, ...)
-print.posterior.fit.BVAR(x, ...)
-print.posterior.fit.BSVAR(x, ...)
+%print.posterior.fit.BVAR(x, ...)
+%print.posterior.fit.BSVAR(x, ...)
+%print.posterior.fit.MSBVAR(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +39,7 @@ None
   \code{\link{szbvar}},
   \code{\link{szbsvar}},
   \code{\link{gibbs.A0}},
+  \code{\link{gibbs.msbvar}},
   \code{\link{mc.irf}},
   \code{\link{posterior.fit}}
 }

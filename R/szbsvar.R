@@ -57,8 +57,8 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
     s2i<-matrix(0,nrow=m,ncol=1)
     for(i in 1:m)
     {
-        s2i[i,1] <- ar(Y[,i], aic=FALSE,order.max=p,
-                       intercept=TRUE,demean=FALSE)$var.pred
+        s2i[i,1] <- ar.ols(Y[,i], aic=FALSE,order.max=p,
+                           intercept=TRUE,demean=FALSE)$var.pred
     }
 
       # Prior scale for A0 -- Si in the Waggoner and Zha notation

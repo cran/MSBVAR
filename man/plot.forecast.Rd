@@ -1,51 +1,36 @@
 \name{plot.forecast}
 \alias{plot.forecast}
-\alias{plot.forecast.VAR}
-\alias{plot.forecast.BVAR}
-\alias{plot.forecast.BSVAR}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Plots competing sets of VAR forecasts or a single set of VAR forecasts}
-\description{
-  Produces a high level plot of two sets of VAR forecasts computed from
-  a Markov Chain Monte Carlo (MCMC) posterior sample.  Forecasts are the
-  output of \code{hc.forecast}, \code{forecast}, and \code{uc.forecast}.
-}
-\usage{
-plot.forecast.VAR(x, y = NULL, varnames = NULL, start = c(0, 1),
-                  freq = 1, probs = c(0.05, 0.95),
-                  compare.level = NULL, ylab = NULL, ...)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{ First sample of forecasts }
-  \item{y}{ Second sample of forecasts, default = \code{NULL}}
-  \item{varnames}{ m x 1 list of variable names, e.g.,
-    \code{c("name1","name2",\dots)}}
-  \item{start}{ Start date for the forecast period time series, default
-    = \code{c(0,1)}}
-  \item{freq}{ Time series frequency, in format consistent with
-    \code{ts}.  Default is 1}
-  \item{probs}{ Probability limits for error bands.  Default is 90\% or
-    \code{c(0.05,0.95)}}
-  \item{compare.level}{ A number.  A horizontal line will be draw on the
-    plot at this value.  Say zero or some other comparison. }
-  \item{ylab}{ y-axis label}
-  \item{\dots}{ other plotting parameters }
-}
-\details{
-  Plots the mean forecast and the pointwise empirical confidence region
-  for a posterior sample of VAR forecasts.  Overlays a second set of
-  forecasts and error bands if requested in \code{fcasts2}
-}
-\value{
-  None. Plots forecasts on the current display device.
-}
-%\references{ }
-\author{ Patrick T. Brandt}
-%\note{}
+%\alias{plot.forecast.VAR}
+%\alias{plot.forecast.BVAR}
+%\alias{plot.forecast.BSVAR}
+\title{Plot function for forecasts}
+\description{ Generates simple plots of forecasts obtained from
+  forecast.VAR / forecast.BVAR / forecast.B-SVAR}
 
-\seealso{ \code{\link{plot.forc.ecdf}}, and
-  \code{\link{uc.forecast}} for an example.}
-%\examples{}
-\keyword{ hplot}
+\usage{ plot.forecast(x, ...)
+}
+\arguments{
+  \item{x}{ Plots generated from forecast genrated through fitted VAR,
+    BVAR, or B-SVAR model from \code{\link{forecast}}}.
+  \item{...}{ Other graphics parameters}
+}
+
+\details{
+  Generates a plot in the current graphics device for the m time series
+  in the respective (B)VAR model.
+}
+
+
+\value{ None.  Generates a plot in the current graphics device.}
+%\references{}
+\author{ Patrick T. Brandt}
+\seealso{\code{\link{summary}}
+}
+\examples{
+\dontrun{
+plot(x)
+}
+}
+\keyword{ print}
 \keyword{ models}
+\keyword{ manip}

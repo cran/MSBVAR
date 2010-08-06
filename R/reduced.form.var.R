@@ -1,7 +1,7 @@
 "reduced.form.var" <- function(Y, p, z=NULL)
   {
       sanity.check.var(list(Y=Y, p=p, z=z))
-
+      y <- Y
       dat<-as.matrix(Y);
       n<-nrow(dat);	 	# of observations in data set
       m<-ncol(dat);	 	# of variables in data set
@@ -62,7 +62,7 @@
                      hstar=XX,
                      X=X,
                      Y=Y,  # the VAR Y
-                     y=dat, # original y
+                     y=y, # original y
                      pfit=pfit)
       class(output) <- c("VAR")
       return(output)
@@ -78,7 +78,7 @@
                     values=c(nrow(object$Y), nrow(object$Y)-nrow(object$Bhat)))
     constants.list <- list(labels=c("Constants"),
                            values=round(object$intercept,6))
-    ar.list <- list(labels=c("Autoregressive Matricies"),
+    ar.list <- list(labels=c("Autoregressive Matrices"),
                     values=round(object$ar,6))
     if(is.na(object$exog[1])==FALSE){
         exog.list <- list(labels=c("Exogenous variable posterior coefficients"),

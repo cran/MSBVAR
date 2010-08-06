@@ -1,7 +1,10 @@
 Package: MSBVAR
-Title: Bayesian Vector Autoregression Models
-Version: 0.4.0
+Version: 0.5.0
+Date: 2010-08-06
+Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
+Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
+Depends: R (>= 2.11.0), KernSmooth, xtable, coda, bit, mvtnorm
 Description: Provides methods for estimating frequentist and 
   Bayesian Vector Autoregression (VAR) models.  Functions for reduced
   form and structural VAR models are also available. Includes 
@@ -10,10 +13,11 @@ Description: Provides methods for estimating frequentist and
   and forecast error decompositions.  Also includes utility functions 
   for plotting forecasts and impulse responses, and generating draws 
   from Wishart and singular multivariate normal densities.  Current 
-  version includes some limited functionality to build models with
-  Markov switching.
-Maintainer: Patrick T. Brandt  <pbrandt@utdallas.edu>
-License: GPL
+  version includes functionality to build models with
+  Markov switching. 
+LazyLoad: yes
+License: GPL (>= 2)
+URL: http://www.utdallas.edu/~pbrandt/
 
 
 /* Revisions and History */
@@ -145,11 +149,28 @@ License: GPL
 	   msbvar() and related functions.  This will handle the 2
 	   state MS case with random permutation sampling.  Added
 	   documentation for the new functions as well.
+2010-02-24 Added classing mechanism to the forecast() function.  It
+	   can now handle VAR, BVAR and BSVAR models.  Related summary()
+	   and plot() methods have been added for forecast().  Also
+	   updated the msbvar() and gibbs.msbvar() functions to handle
+	   h>2 states.  New C backend for the state-space sampling has
+	   been implemented and is much faster and more robust (i.e.,
+	   it will not segfault like the old one).
+2010-03-29 Implemented a set of posterior fit measures (llf, logMDD,
+	   etc.) for the MSBVAR models.
+2010-06-10 Changed prior variance computation of szbvar() and
+           szbsvar() to used OLS and estimate an intercept.  This
+	   better cover the case of non-stationary data or data that
+	   are not demeaned, since we are not forcing the prior
+	   intercepts to zero when computing the variance of the
+	   prior. Thanks to Gareth Thomas for comments on this.
+2010-06-23 Added full documentation for the MSBVAR model gibbs
+           sampler.  Example included for gibbs.msbvar(). 
 
 MSBVAR Package
-Copyright (C) 2005-2009 Patrick T. Brandt
+Copyright (C) 2005-2010 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
-(Grants SES-0351179, SES-0351205, and SES-0540816)
+(Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 
 Patrick T. Brandt
 School of Economic, Political and Policy Sciences

@@ -11,7 +11,7 @@
 SZ.prior.evaluation(Y, p,
                     lambda0, lambda1, lambda3, lambda4, lambda5,
                     mu5, mu6, z = NULL, nu = ncol(Y) + 1, qm,
-                    prior = 0, nstep, y.future)
+                    prior = 0, nsteps, y.future)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,7 +38,7 @@ SZ.prior.evaluation(Y, p,
     quarterly data.  Other values have the same effect as "4"}
   \item{prior}{ One of three values: 0 = Normal-Wishart prior, 1 =
     Normal-flat prior, 2 = flat-flat prior (i.e., akin to MLE)}
-  \item{nstep}{ Number of periods in the forecast horizon }
+  \item{nsteps}{ Number of periods in the forecast horizon }
   \item{y.future}{ Future values of the series, nsteps x m for computing
     the root mean squared error and mean absolute error for the fit}
 }

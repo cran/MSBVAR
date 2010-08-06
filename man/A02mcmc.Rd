@@ -12,7 +12,7 @@ A02mcmc(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ \eqn{N2 \times }{N2 x} number of free parameters in A(0) MCMC Gibbs
+  \item{x}{ \eqn{N2 \,\times }{N2 x} number of free parameters in A(0) MCMC Gibbs
     sample object for the B-SVAR model \eqn{A_0}{A(0)}
     from \code{\link{gibbs.A0}}.  This matrix is a column major to row
     major version of A(0) that can be used to diagnose covergence and

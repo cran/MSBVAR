@@ -17,13 +17,17 @@
 }
 
 "mc.irf.VAR" <- function(varobj, nsteps, draws)
-{ .Call("mc.irf.var.cpp", varobj, as.integer(nsteps), as.integer(draws)) }
+{ output <- .Call("mc.irf.var.cpp", varobj, as.integer(nsteps),
+                  as.integer(draws))
+  attr(output, "class") <- c("mc.irf", "mc.irf.VAR")
+  return(output)
+}
 
 
 "mc.irf.BVAR" <- function(varobj, nsteps, draws)
 {
     output <- mc.irf.VAR(varobj, nsteps, draws)
-    attr(output, "class") <- c("mc.irf.BVAR")
+    attr(output, "class") <- c("mc.irf", "mc.irf.BVAR")
     return(output)
 }
 
@@ -42,32 +46,34 @@
   # storage for the impulses and the sampled coefficients.
   impulse <- matrix(0,nrow=N2, ncol=(m^2*nsteps))
 
-  .Call("mc.irf.bsvar.cpp", A0.posterior$A0.posterior,
-        as.integer(nsteps), as.integer(N2), as.integer(m),
-        as.integer(p), as.integer(ncoef), as.integer(n0),
-        as.integer(n0cum), XXinv, varobj$Ui, varobj$P.posterior,
-        sign.list)
+  output <- .Call("mc.irf.bsvar.cpp", A0.posterior$A0.posterior,
+                  as.integer(nsteps), as.integer(N2), as.integer(m),
+                  as.integer(p), as.integer(ncoef), as.integer(n0),
+                  as.integer(n0cum), XXinv, varobj$Ui, varobj$P.posterior,
+                  sign.list)
+  attr(output, "class") <- c("mc.irf", "mc.irf.BSVAR")
+  return(output)
 }
 
 "plot.mc.irf" <- function(x, method=c("Sims-Zha2"), component=1,
-                            probs=c(0.16,0.84), varnames=NULL,...)
-{
-    if(inherits(x, "mc.irf.VAR"))
-    { plot.mc.irf.VAR(x, method=method, component=component,
-                            probs=probs, varnames=varnames) }
-
-    if(inherits(x, "mc.irf.BVAR"))
-    { plot.mc.irf.BVAR(x, method=method, component=component,
+                          probs=c(0.16,0.84), varnames=NULL,...)
+ {
+     if(inherits(x, "mc.irf.VAR"))
+     { plot.mc.irf.VAR(x, method=method, component=component,
                        probs=probs, varnames=varnames) }
 
-    if(inherits(x, "mc.irf.BSVAR"))
-    { plot.mc.irf.BSVAR(x, method=method, component=component,
+     if(inherits(x, "mc.irf.BVAR"))
+     { plot.mc.irf.BVAR(x, method=method, component=component,
                         probs=probs, varnames=varnames) }
 
-}
+     if(inherits(x, "mc.irf.BSVAR"))
+     { plot.mc.irf.BSVAR(x, method=method, component=component,
+                         probs=probs, varnames=varnames) }
 
-"plot.mc.irf.VAR" <- function(x, method, component,
-                              probs, varnames=NULL,...)
+ }
+
+"plot.mc.irf.VAR" <- function(x, method=c("Sims-Zha2"), component=1,
+                              probs=c(0.16,0.84), varnames=NULL,...)
 { mc.impulse <- x
   m <- sqrt(dim(mc.impulse)[3])
   nsteps <- dim(mc.impulse)[2]
@@ -220,8 +226,8 @@
   invisible(list(responses=irf.ci, eigenvector.fractions=eigen.sum))
 }
 
-"plot.mc.irf.BVAR" <- function(x, method, component,
-                               probs, varnames, ...)
+"plot.mc.irf.BVAR" <- function(x, method=c("Sims-Zha2"), component=1,
+                              probs=c(0.16,0.84), varnames=NULL, ...)
 {
     plot.mc.irf.VAR(x, method, component,
                     probs, varnames=varnames, ...)
@@ -230,7 +236,8 @@
 
 # BSVAR model IRFs
 
-"plot.mc.irf.BSVAR" <- function(x, method, component, probs, varnames, ...)
+"plot.mc.irf.BSVAR" <- function(x, method=c("Sims-Zha2"), component=1,
+                                probs=c(0.16,0.84), varnames=NULL, ...)
 {
     m <- sqrt(dim(x)[3])
     nsteps <- dim(x)[2]

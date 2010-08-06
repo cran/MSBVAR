@@ -1,9 +1,12 @@
 \name{rwishart}
 \alias{rwishart}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Random deviates from a Wishart distribution }
 \description{
   Draws random deviates from a Wishart pdf.
+  
+
 }
 \usage{
 rwishart(N, df, Sigma)
@@ -15,7 +18,7 @@ rwishart(N, df, Sigma)
   \item{Sigma}{ Mean of the Wishart from which to draw the deviates }
 }
 \details{
-  Draws N matrices of drawss from a Wishart with mean Sigma.  This is
+  Draws N matrices of draws from a Wishart with mean Sigma.  This is
   used to draw error covariances for the VAR and BVAR models which are
   distributed inverse Wisharts deviates.
 }
@@ -30,8 +33,9 @@ rwishart(N, df, Sigma)
 %\note{ }
 
 \seealso{ See also as \code{\link{rmultnorm}} for multivariate normal
-  deviates and \code{\link{rgamma}} for the univariate analog to drawing
-  Wishart deviates.}
+  deviates, \code{\link{rgamma}} for the univariate analog to drawing
+  Wishart deviates, and \code{\link{ldwishart}} for computing the log
+  density for a Wishart variate.}
 
 \examples{
 x <- matrix(rnorm(100), 50, 2)

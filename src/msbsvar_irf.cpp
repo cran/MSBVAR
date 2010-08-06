@@ -21,7 +21,7 @@ SEXP msbsvar_irf(SEXP gibbs, SEXP msbsvar, SEXP nsteps)
 //   Rprintf("Gibbs Objects and Dimensions Assigned\n"); 
   
   // Reconstruct constants
-  N2=db[0]; h=(int)sqrt(dQ[1]); n0max=db[1]/h; m=dxi[1]/h; p=((dF[1]/(h*m))-1)/m;
+  N2=db[0]; h=(int)sqrt((double)dQ[1]); n0max=db[1]/h; m=dxi[1]/h; p=((dF[1]/(h*m))-1)/m;
   N210pct=N2/10; 
 
 //   Rprintf("N2=%d\nh=%d\nm=%d\np=%d\nn0max=%d\n",N2,h,m,p,n0max); 

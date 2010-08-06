@@ -43,8 +43,12 @@ szbvar(Y, p, z = NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
   Sims and Zha (1998).  This BVAR model is based a specification of the
   dynamic simultaneous equation representation of the model.  The prior
   is constructed for the structural parameters.  The basic SVAR model
-  used here is
+  used here is documented in \code{\link{szbsvar}}.
   
+  The prior covariance matrix of the errors, \eqn{\bar{S}_i}{S(i)}, is
+  initially estimated using a VAR(p) model via OLS, with an intercept
+  and no demeaning of the data.
+
 }
 \value{
   Returns a list of multiple elements.  This is a workhorse function to

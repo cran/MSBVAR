@@ -103,8 +103,8 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
     s2<-matrix(0,nrow=m,ncol=1)
     for(i in 1:m)
       {
-        s2[i,1] <- ar(dat[,i], aic=FALSE, order.max=p,
-                     intercept=TRUE, demean=FALSE)$var.pred
+        s2[i,1] <- ar.ols(dat[,i], aic=FALSE, order.max=p,
+                          intercept=TRUE, demean=FALSE)$var.pred
       }
     #  Prior scale matrix for Sigma:  Sigma ~ IW(H0,v) @
     S0 <- diag(m)

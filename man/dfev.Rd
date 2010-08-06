@@ -1,8 +1,8 @@
 \name{dfev}
 \alias{dfev}
-\alias{dfev.VAR}
-\alias{dfev.BVAR}
-\alias{dfev.BSVAR}
+%\alias{dfev.VAR}
+%\alias{dfev.BVAR}
+%\alias{dfev.BSVAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Decompositions of Forecast Error Variance (DFEV) for VAR/BVAR/BSVAR models }
 \description{
@@ -11,9 +11,6 @@
   decomposition of the contemporaneous innovations.  }
 \usage{
 dfev(varobj, A0 = NULL, k)
-dfev.VAR(varobj, A0 = t(chol(varobj$mean.S)), k)
-dfev.BVAR(varobj, A0 = t(chol(varobj$mean.S)), k)
-dfev.BSVAR(varobj, A0 = solve(varobj$A0.mode), k)
 }
 
 %- maybe also 'usage' for other objects documented here.

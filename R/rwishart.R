@@ -16,6 +16,24 @@ function(N, df, Sigma)
     else
       {
         return(tmp)
-      } 
+      }
   }
 
+# log density for a Wishart
+# Based on code from MCMCpack
+
+"ldwishart" <- function(W, v, S)
+{
+    k <- nrow(S)
+    lgammapart <- 0
+    for (i in 1:k) {
+        lgammapart <- lgammapart + lgamma((v + 1 - i)/2)
+    }
+    denom <- lgammapart + (v * k/2)*log(2) + (k * (k - 1)/4)*log(pi)
+    detS <- determinant(S)$modulus[1]
+    detW <- determinant(W)$modulus[1]
+    hold <- solve(S) %*% W
+    tracehold <- sum(hold[row(hold) == col(hold)])
+    num <- detS*(-v/2) + detW*((v - k - 1)/2) + (-1/2 * tracehold)
+    return(num-denom)
+}

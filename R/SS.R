@@ -1,47 +1,37 @@
-## SS.R:  R-side functions for the SS C++ compressed state space class
-## Date:  2007-11-15 -- Initial version
-##        2008-10-14 -- Revised to use the bit package for storage.
+## SS.R:  R-side functions for the SS class objects that describe the
+##        state-space for an MSBVAR model
 ##
+## Date:  20071115 : Initial version
+##        20081014 : Revised to use the bit package for storage.
+##        20100617 : Updated to move sampler to gibbs.msbvar.  This
+##                   file only now handles the posterior
+##                   post-processing of the SS classed objects.
 ## Description:
 ##
-## Functions to draw samples of the state space for a model with filter
-## probabilities 'fp'.  State spaces computed and stored in compressed
+## State spaces computed and stored in compressed
 ## form to reduce the computation and memory overhead involved in
 ## computing and storing state space draws.  R side storage of these
-## state-spaces is done using the bit package.
+## state spaces is done using the bit package.  Functions here are
+## used to summarize and plot the posterior state spaces.
 
 
-# Draws a Markov state-space for a Markov-switching model.  This
-# function does it all: filters, smoothes and samples the 0-1 elements
-# of the state-space.
-SS.draw <- function(xi, b, Q, m, h, n0, init.model, fp)
-{
-    SS <- hregime.SS(h, m, fp, b, xi, n0, init.model, method="update.Q")
-    TT <- nrow(fp)
-    SSe <- matrix(0, TT*m, h); Xik <- matrix(0, m*m, h)
+######################################################################
+# Summary functions for MS state-spaces from the BHLK filter or other
+# estimators for the state-space
+######################################################################
 
-    xi.tmp <- matrix(xi^2, m, h);
-    for(i in 1:h){
-        Xik[,i] <- as.vector(diag(1/xi.tmp[,i]))
-        SSe[,i] <- as.vector(SS$e[,,i])
-    }
-
-    SQ <- steady.Q(Q)
-    # Call C side SS draw function
-    out <- .Call("SS.draw.cpp", SSe, Xik, Q, SQ, as.integer(TT),
-                 as.integer(h), as.integer(m))
-    return(out);
-}
-
-# Summary functions for MS state-spaces.
+######################################################################
+# Sums of the number of draws in each state as a function of the number
+# of periods TT
+######################################################################
 
 sum.SS <- function(x, ...)
 {
     h <- x$h
     N <- length(x$ss.sample)
     ss <- x$ss.sample
-    TT <- attributes(x$ss.sample[[1]])$n
-    TTh <- TT*(h-1)
+    TTh <- virtual(x$ss.sample[[1]])$Length
+    TT <- TTh/(h-1)
 
     # Now find the sums
     sums <- apply(matrix(unlist(lapply(x$ss.sample, as.integer)), nrow=TTh, ncol=N), 1, sum)
@@ -50,37 +40,19 @@ sum.SS <- function(x, ...)
     return(sums)
 }
 
-sum.SS1 <- function(x, c, ...)
-{
-    h <- x$h
-    N <- length(x$ss.sample)
-    ss <- x$ss.sample
-    TT <- attributes(x$ss.sample[[1]])$n
-    TTh <- TT*(h-1)
-    sums <- matrix(0, TT, h)
 
-    # Now find the sums
-    tmp <- matrix(unlist(lapply(x$ss.sample, as.integer)), nrow=TTh,
-                  ncol=N)
-
-
-    for(i in 1:N)
-    {
-        tmp2 <- matrix(0, TT, h)
-        tmp3 <- -1*(tmp[,i]-1)
-        tmp2[,seq(c$cluster[i], by=ifelse(c$cluster[i]>1, -1, 1),
-                  length.out=2)] <- cbind(tmp[,i], tmp3)
-        sums <- sums + tmp2
-    }
-    return(sums)
-}
-
+######################################################################
+# Mean regime probability for each state
+######################################################################
 mean.SS <- function(x, ...){
     sums <- sum.SS(x)
     N <- length(x$ss.sample)
     return(sums/N)
 }
 
+######################################################################
+# Plot the mean posterior regime probabilities
+######################################################################
 
 plot.SS <- function(x, ylab="State Probabilities", ...)
 {
@@ -88,9 +60,10 @@ plot.SS <- function(x, ylab="State Probabilities", ...)
     plot(ts(tmp), plot.type="single", col=1:ncol(tmp),
          ylim=c(0,1), ylab=ylab, ...)
     abline(h=0.5, lty=2, ...)
-
 }
 
+# Legacy R code version of some state-space generation functions --
+# for legacy and exposition purposes.
 
 # Function to generate the vector of binary indicators of the state
 # space.  This is a state-space generation function for one

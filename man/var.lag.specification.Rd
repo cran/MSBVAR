@@ -34,7 +34,7 @@ var.lag.specification(y, lagmax = 20)
 \references{
 Lutkepohl, Helmut 2004."Vector Autoregressive and Vector Error
 Correction Models", Chapter 3. In Applied Time Series
-Econometrics. Lutkepohl,, Helmut and Markus Krtzig eds. Cambridge: CUP.
+Econometrics. Lutkepohl,, Helmut and Markus Kratzig eds. Cambridge: CUP.
 }
 \author{ Patrick T. Brandt }
 \note{ Sizes of p-values are uncorrected for multiple testing.  Use cautiously. }

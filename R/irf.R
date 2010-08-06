@@ -11,27 +11,32 @@
     }
 }
 
-"irf.msbsvar" <- function(gibbs, msbsvar, nsteps){
-    .Call("irf.msbsvar.cpp", gibbs, msbsvar, as.integer(nsteps))
-}
+## "irf.msbsvar" <- function(gibbs, msbsvar, nsteps){
+##     .Call("irf.msbsvar.cpp", gibbs, msbsvar, as.integer(nsteps))
+## }
+
+
+# 2010-08-06 : corrected classing mechanisms
 
 "irf.VAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S)){
-    .Call("irf.var.cpp", as.double(varobj$ar.coefs),
+    output <- .Call("irf.var.cpp", as.double(varobj$ar.coefs),
           as.integer(dim(varobj$ar.coefs)), as.integer(nsteps),
           A0)
+    attr(output, "class") <- c("irf", "irf.VAR")
+    return(output)
 }
 
 "irf.BVAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S))
 {
     output <- irf.VAR(varobj, nsteps, A0=A0)
-    attr(output, "class") <- c("irf.BVAR")
+    attr(output, "class") <- c("irf", "irf.BVAR")
     return(output)
 }
 
 "irf.BSVAR" <- function(varobj, nsteps, A0=solve(varobj$A0.mode))
 {
     output <- irf.VAR(varobj, nsteps, A0=A0)
-    attr(output, "class") <- c("irf.BSVAR")
+    attr(output, "class") <- c("irf", "irf.BSVAR")
     return(output)
 }
 
@@ -42,7 +47,19 @@
 
 "plot.irf" <- function(x, varnames = NULL, ...)
 {
-    plot.irf.VAR(x, varnames = NULL, ...)
+    #plot.irf.VAR(x, varnames = NULL, ...)
+    if(inherits(x, "irf.VAR"))
+    {
+	plot.irf.VAR(x, varnames = varnames, ...)
+    }
+    if(inherits(x, "irf.BVAR"))
+    {
+	plot.irf.BVAR(x, varnames = varnames, ...)
+    }
+    if(inherits(x, "irf.BSVAR"))
+    {
+	plot.irf.BSVAR(x, varnames = varnames, ...)
+    }
 }
 
 "plot.irf.VAR" <- function (x, varnames = NULL, ...)
