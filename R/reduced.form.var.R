@@ -1,6 +1,7 @@
 "reduced.form.var" <- function(Y, p, z=NULL)
   {
       sanity.check.var(list(Y=Y, p=p, z=z))
+
       y <- Y
       dat<-as.matrix(Y);
       n<-nrow(dat);	 	# of observations in data set
@@ -52,6 +53,9 @@
 
       pfit <- list(capT=capT, ncoef=ncoef, num.exog=num.exog,
                    Sh1=Sh1)
+
+
+
       output <- list(intercept = intercept,
                      ar.coefs=ar.coefs,
                      Bhat = Bh,
@@ -65,6 +69,7 @@
                      y=y, # original y
                      pfit=pfit)
       class(output) <- c("VAR")
+      attr(output, "eqnames") <- colnames(y) # Get variable names for attr
       return(output)
       }
 

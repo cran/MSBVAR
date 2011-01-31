@@ -129,7 +129,7 @@ function(den,falpha)
 }
 
 
-"plot.gibbs.A0" <- function(x, hpd=0.68, varnames=NULL, ...)
+"plot.gibbs.A0" <- function(x, hpd=0.68, varnames=attr(x, "eqnames"), ...)
 {
     # Get constants
     m <- ncol(x$ident)

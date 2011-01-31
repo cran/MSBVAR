@@ -20,9 +20,12 @@
 
 "irf.VAR" <- function(varobj, nsteps, A0=chol(varobj$mean.S)){
     output <- .Call("irf.var.cpp", as.double(varobj$ar.coefs),
-          as.integer(dim(varobj$ar.coefs)), as.integer(nsteps),
-          A0)
+                    as.integer(dim(varobj$ar.coefs)),
+                    as.integer(nsteps),
+                    A0)
+
     attr(output, "class") <- c("irf", "irf.VAR")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -30,6 +33,7 @@
 {
     output <- irf.VAR(varobj, nsteps, A0=A0)
     attr(output, "class") <- c("irf", "irf.BVAR")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -37,6 +41,7 @@
 {
     output <- irf.VAR(varobj, nsteps, A0=A0)
     attr(output, "class") <- c("irf", "irf.BSVAR")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -45,7 +50,7 @@
 
 # updated 2006-02-24 to use correct ranges for plots
 
-"plot.irf" <- function(x, varnames = NULL, ...)
+"plot.irf" <- function(x, varnames = attr(x, "eqnames"), ...)
 {
     #plot.irf.VAR(x, varnames = NULL, ...)
     if(inherits(x, "irf.VAR"))

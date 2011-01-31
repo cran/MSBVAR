@@ -54,6 +54,7 @@ function(varobj, nsteps, A0, shocks, exog.fut)
      }
   output <- ts(yhat, start = start(varobj$y), frequency = frequency(varobj$y), names = colnames(varobj$y))
   attr(output, "class") <- c("forecast.VAR", "mts", "ts")
+  attr(output, "eqnames") <- attr(varobj, "eqnames")
   return(output)
 }
 
@@ -61,6 +62,7 @@ function(varobj, nsteps, A0, shocks, exog.fut)
 {
     output <- forecast.VAR(varobj, nsteps, A0, shocks, exog.fut)
     attr(output, "class") <- c("forecast.BVAR", "mts", "ts")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -68,6 +70,7 @@ function(varobj, nsteps, A0, shocks, exog.fut)
 {
     output <- forecast.VAR(varobj, nsteps, A0, shocks, exog.fut)
     attr(output, "class") <- c("forecast.BSVAR", "mts", "ts")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 

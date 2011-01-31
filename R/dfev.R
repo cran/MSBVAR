@@ -13,6 +13,7 @@
 {
     output <- dfev.VAR(varobj,A0,k)
     attr(output, "class") <- c("dfev")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -20,6 +21,7 @@
 {
     output <- dfev.VAR(varobj,A0,k)
     attr(output, "class") <- c("dfev")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -52,16 +54,16 @@
     # Scale into percentages
     errors <- 100*impulses
     # Output object
-    output <- list(errors=errors, std.err=sqrt(var.imp),
-                   names=colnames(varobj$y))
+    output <- list(errors=errors, std.err=sqrt(var.imp))
     attr(output, "class") <- c("dfev")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
 "print.dfev" <- function(x, latex=F, file=NULL, ...)
 {   dfev.obj <- x
     errors <- dfev.obj$errors
-    names <- dfev.obj$names
+    names <- attr(dfev.obj, "eqnames")
     std.err <- dfev.obj$std.err
     k <- dim(errors)[1]
     m <- dim(errors)[2]

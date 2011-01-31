@@ -20,6 +20,7 @@
 { output <- .Call("mc.irf.var.cpp", varobj, as.integer(nsteps),
                   as.integer(draws))
   attr(output, "class") <- c("mc.irf", "mc.irf.VAR")
+  attr(output, "eqnames") <- attr(varobj, "eqnames")
   return(output)
 }
 
@@ -28,6 +29,7 @@
 {
     output <- mc.irf.VAR(varobj, nsteps, draws)
     attr(output, "class") <- c("mc.irf", "mc.irf.BVAR")
+    attr(output, "eqnames") <- attr(varobj, "eqnames")
     return(output)
 }
 
@@ -52,24 +54,28 @@
                   as.integer(n0cum), XXinv, varobj$Ui, varobj$P.posterior,
                   sign.list)
   attr(output, "class") <- c("mc.irf", "mc.irf.BSVAR")
+  attr(output, "eqnames") <- attr(varobj, "eqnames")
   return(output)
 }
 
 "plot.mc.irf" <- function(x, method=c("Sims-Zha2"), component=1,
-                          probs=c(0.16,0.84), varnames=NULL,...)
+                          probs=c(0.16,0.84),
+                          varnames=attr(x, "eqnames"),...)
  {
      if(inherits(x, "mc.irf.VAR"))
-     { plot.mc.irf.VAR(x, method=method, component=component,
+     { tmp <- plot.mc.irf.VAR(x, method=method, component=component,
                        probs=probs, varnames=varnames) }
 
      if(inherits(x, "mc.irf.BVAR"))
-     { plot.mc.irf.BVAR(x, method=method, component=component,
+     { tmp <- plot.mc.irf.BVAR(x, method=method, component=component,
                         probs=probs, varnames=varnames) }
 
      if(inherits(x, "mc.irf.BSVAR"))
-     { plot.mc.irf.BSVAR(x, method=method, component=component,
+     { tmp <- plot.mc.irf.BSVAR(x, method=method, component=component,
                          probs=probs, varnames=varnames) }
 
+     # Get the eigen-fractions, if relevant and available.
+     return(invisible(tmp))
  }
 
 "plot.mc.irf.VAR" <- function(x, method=c("Sims-Zha2"), component=1,
@@ -222,8 +228,8 @@
   if(method == "Sims-Zha3")
   { names(eigen.sum) <- c(paste("Component", seq(1:m^2*nsteps))) }
 
-  # Invisible return
-  invisible(list(responses=irf.ci, eigenvector.fractions=eigen.sum))
+  # Return
+  return(list(responses=irf.ci, eigenvector.fractions=eigen.sum))
 }
 
 "plot.mc.irf.BVAR" <- function(x, method=c("Sims-Zha2"), component=1,
@@ -361,6 +367,7 @@
         names(eigen.sum) <- c(paste("Component", seq(1:m^2 *
             nsteps)))
     }
-    invisible(list(responses = irf.ci, eigenvector.fractions = eigen.sum))
+
+    return(list(responses = irf.ci, eigenvector.fractions = eigen.sum))
 }
 

@@ -3,7 +3,7 @@
 \alias{BCFdata}
 \alias{Y}
 \alias{z2}
-\title{Subset of Data from Brandt, Colaresi, and Freeman (2007)}
+\title{Subset of Data from Brandt, Colaresi, and Freeman (2008)}
 \description{
   This data set in two matrices about the Israeli-Palestinian conflict.
   The first matrix is a set of endogenous variables that gives 1)

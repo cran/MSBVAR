@@ -6,8 +6,8 @@
     date <- date()
     x <- regexpr("[0-9]{4}", date)
     yr <- substr(date, x[1], x[1] + attr(x, "match.length") - 1)
-    cat("##\n## MSBVAR Package v.0.5.0\n")
-    cat("## 2010-07-01\n")
+    cat("##\n## MSBVAR Package v.0.6-0\n")
+    cat("## 2011-01-31\n")
     cat("## Copyright (C) 2005-", yr, ", Patrick T. Brandt\n", sep="")
     cat("## Written by Patrick T. Brandt\n")
     cat("##\n## Support provided by the U.S. National Science Foundation\n")
@@ -17,6 +17,7 @@
     require(coda, quietly=TRUE)
     require(bit, quietly=TRUE)
     require(mvtnorm, quietly=TRUE)
+    require(lattice, quietly=TRUE)
 }
 
 .onUnload <- function(libpath) {

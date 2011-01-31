@@ -8,7 +8,7 @@
   \code{gibbs.A0}, with associated highest posterior density (HPD) regions.
 }
 \usage{
-plot.gibbs.A0(x, hpd = 0.68, varnames=NULL, ...)
+plot.gibbs.A0(x, hpd = 0.68, varnames=attr(x, "eqnames"), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,11 @@ plot.gibbs.A0(x, hpd = 0.68, varnames=NULL, ...)
   default is 0.68 or approximately one standard deviation around the
   mode of the parameter}
   \item{varnames}{ List of variable names for labeling the equations
-      and variables.}
+      and variables.  Default are the names of the variables for the
+      input data to \code{\link{szbsvar}} as fed through
+      \code{\link{gibbs.A0}}.  For an SVAR, users often want to relabel
+      these as economic sectors or groups of actors for the time series
+      and this is the place this can be done.} 
   \item{\dots}{ optional graphics arguments }
 }
 

@@ -85,6 +85,8 @@ msbvar <- function(y, z=NULL, p, h,
                    alpha.prior=alpha.prior)
 
     class(output) <- c("MSVARsetup")
+    attr(output, "eqnames") <- colnames(y) # Get variable names for
+                                           # attr
     return(output)
 }
 

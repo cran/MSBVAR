@@ -355,8 +355,11 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
                      ident=ident,
                      b=max.obj$par
                      )
-      class(output) <- c("BSVAR")
-      return(output)
+    class(output) <- c("BSVAR")
+    attr(output, "eqnames") <- colnames(Y) # Get variable names for
+                                           # attr
+
+    return(output)
 }
 
 

@@ -1,12 +1,9 @@
 useDynLib(MSBVAR, .registration=TRUE)
-
 import(KernSmooth)
 import(coda)
 
-export(dfev,
-#       dfev.VAR,
-#       dfev.BVAR,
-#       dfev.BSVAR,
+export(
+       dfev,
        print.dfev,
        summary.dfev,
        granger.test,
@@ -21,14 +18,7 @@ export(dfev,
        normalize.svar,
        A02mcmc,
        irf,
-#       irf.VAR,
-#       irf.BVAR,
-#       irf.BSVAR,
-#       irf.msbsvar,
        mc.irf,
-#       mc.irf.VAR,
-#       mc.irf.BVAR,
-#       mc.irf.BSVAR,
        null.space,
        mae,
        restmtx,
@@ -39,94 +29,58 @@ export(dfev,
        cf.forecasts,
        forc.ecdf,
        forecast,
-#       forecast.VAR,
-#       forecast.BVAR,
-#       forecast.BSVAR,
        hc.forecast,
-#       hc.forecast.VAR,
        uc.forecast,
-#       uc.forecast.VAR,
        posterior.fit,
-#       posterior.fit.BVAR,
-#       posterior.fit.BSVAR,
-#       posterior.fit.MSBVAR,
        mountains,
        plot.gibbs.A0,
        plot.irf,
-#       plot.irf.VAR,
-#       plot.irf.BVAR,
-#       plot.irf.BSVAR,
        plot.mc.irf,
-#       plot.mc.irf.VAR,
-#       plot.mc.irf.BVAR,
-#       plot.mc.irf.BSVAR,
        plot.forecast,
-#       plot.forecast.VAR,
-#       plot.forecast.BVAR,
-#       plot.forecast.BSVAR,
        plot.forc.ecdf,
+       plotregimeid,
        print.posterior.fit,
-#       print.posterior.fit.BVAR,
-#       print.posterior.fit.BSVAR,
-       summary,
-#       summary.VAR,
-#       summary.BVAR,
-#       summary.BSVAR,
        summary.forecast,
-#       summary.forecast.VAR,
-#       summary.forecast.BVAR,
-#       summary.forecast.BSVAR,
        list.print,
        SS.draw,
        sum.SS,
        mean.SS,
        plot.SS,
        BHLK.filter,
-#       BHLK.filter.R,
-#       bingen,
-#       bingen.R,
-#       generate.states,
        ddirichlet,
        rdirichlet,
-#       hregime.SS,
-#       msbsvar,
-#       gibbs.msbsvar,   # Leave out until we update.
        msbvar,
-       gibbs.msbvar
-#       hregime.reg
+       gibbs.msbvar,
+       summary
        )
 
 # Declare S3 methods
 
-S3Method(print, posterior.fit.BVAR)
-S3Method(print, posterior.fit.BSVAR)
-S3Method(print, posterior.fit.MSBVAR)
-S3Method(print, dfev)
+S3method(print, posterior.fit.BVAR)
+S3method(print, posterior.fit.BSVAR)
+S3method(print, posterior.fit.MSBVAR)
+S3method(print, dfev)
 
-S3Method(summary, dfev)
+S3method(summary, dfev)
 
-S3Method(summary, forecast.VAR)
-S3Method(summary, forecast.BVAR)
-S3Method(summary, forecast.BSVAR)
+S3method(summary, forecast.VAR)
+S3method(summary, forecast.BVAR)
+S3method(summary, forecast.BSVAR)
 
-S3Method(plot, forecast)
+S3method(plot, forecast)
 
-S3Method(summary, VAR)
-S3Method(summary, BVAR)
-S3Method(summary, BSVAR)
+S3method(summary, VAR)
+S3method(summary, BVAR)
+S3method(summary, BSVAR)
 
-S3Method(plot, irf)
-#S3Method(plot, irf.BVAR)
-#S3Method(plot, irf.BSVAR)
+S3method(plot, irf)
 
-S3Method(plot, mc.irf)
-#S3Method(plot, mc.irf.VAR)
-#S3Method(plot, mc.irf.BVAR)
-#S3Method(plot, mc.irf.BSVAR)
+S3method(plot, mc.irf)
 
-S3Method(plot, forecast.VAR)
+S3method(plot, forecast.VAR)
 
-S3Method(summary, SS)
-S3Method(sum, SS)
-S3Method(mean, SS)
-S3Method(plot, SS)
+#S3method(summary, SS)
+S3method(sum, SS)
+S3method(mean, SS)
+S3method(plot, SS)
+

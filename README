@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.5.0
-Date: 2010-08-06
+Version: 0.6.0
+Date: 2011-01-31
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
@@ -166,9 +166,29 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   prior. Thanks to Gareth Thomas for comments on this.
 2010-06-23 Added full documentation for the MSBVAR model gibbs
            sampler.  Example included for gibbs.msbvar(). 
+2010-11-28 Updated NAMESPACE and DESCRIPTION to comply with R 2.12.0.
+	   Update BCF citations in documentation.
+	   Update BCFdata files to fit documentation and published
+	   papers.
+	   Updated version to 0.5.1.
+2011-01-13 Added attribute objects to VAR, BVAR, MSBVAR models so we
+           have sensible variable names to use in the plots and
+	   analyses. 
+2011-01-27 Added plotregimeid() function to plot post-posterior
+	   sampling clustered draws from the Gibbs random permutation
+	   sampler. This can be used for graphic identification of the
+	   Markov-switching regimes based on intercepts and variances
+	   of the VAR equations.  Since there are h! orderings of the
+	   regimes (and identical posterior modes) such a function
+	   helps identify a single posterior mode for refined
+	   sampling. 
+2011-01-31 Updated package to version 0.6-0 to reflect milestones in
+	   MSBVAR development.  Added initial documentation for
+	   plotregimeid(). 
+
 
 MSBVAR Package
-Copyright (C) 2005-2010 Patrick T. Brandt
+Copyright (C) 2005-2011 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 

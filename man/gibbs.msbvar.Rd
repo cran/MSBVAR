@@ -24,11 +24,18 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
   \item{Beta.idx}{ A two element vector indicating the MSBVAR
     ceofficient matrix that is to be ordered for non-permutation
     sampling, i.e., the ordering of the states.  The states will be put
-    into ascending order for the parameter selected.}
+    into ascending order for the parameter selected.  The two elements
+    provide are for the two-dimensional array of the VAR
+    coefficients. The first number gives the coefficient, the second the
+    equation numbers.  Coefficients are ordered by lag, then variable.
+    So for an \eqn{m} equation VAR where we want the AR(1) coefficient on
+    the second variable's equation, use \code{c(2,2)}.  The intercept is the
+    last value, or \eqn{mp+1}.  So the intercept for the first equation
+    in a 4 variable model with two lags is \code{c(9,1)}.}
   \item{Sigma.idx}{Scalar integer giving the equation variance that is
     to be ordered for non-permutation sampling, i.e., the ordering of
     the states. The states will be put
-    into ascending order for the parameter selected.}
+    into ascending order for the variance parameter selected.}
   \item{posterior.fit}{logical (default=FALSE).  Should the
     loglikelihood and log marginal data density be computed (using the
     method of Chib [1995] from the posterior sample)}
@@ -156,7 +163,8 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
   example below for usage.
   
 }
-\seealso{ \code{\link{msbvar}}, \code{\link{plot.SS}}, \code{\link{mean.SS}} }
+\seealso{ \code{\link{msbvar}}, \code{\link{plot.SS}},
+  \code{\link{mean.SS}}, \code{\link{plotregimeid}}}
 \examples{
 \dontrun{
 # This example can be pasted into a script or copied into R to run.  It
@@ -185,69 +193,14 @@ N2 <- 500
 # First, so this with random permutation sampling
 x1 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=TRUE)
 
-# Since the sample was permuted, we need to cluster the posterior
-# to see what identifies the h! posterior modes
-Q.clus <- kmeans(x1$Q.sample, centers=2)
+# Identify the regimes using clustering in plotregimeid()
+plotregimeid(xm, x1, type="all")
 
-# Look at the modes
-print(Q.clus$centers)
+# Now re-estimate based on desired regime identification seen in the
+# plots.  Here we are using the variance of the first equation, so
+# Sigma.idx=1.
 
-# We need to translate these into identification restrictions on the
-# intercepts or the variances.  Here's how we can extract these from the
-# posterior:
-
-m <- ncol(IsraelPalestineConflict)
-h <- x1$h
-p <- 1
-
-intercept.indices <- seq(m*p + 1, by = m+1, length=m*h)
-
-# Extract the intercept and variance coefficients from the posterior
-# sample
-
-intercepts <- x1$Beta.sample[,intercept.indices]
-intercepts <- rbind(intercepts[,1:2], intercepts[,3:4])
-colnames(intercepts) <- colnames(IsraelPalestineConflict)
-
-# Extract out the variance elements
-tmp <- (rep(c(1,m:2),h))
-variance.indices <- tmp
-for(i in 2:(m*h)) variance.indices[i] <- variance.indices[i-1] + tmp[i]
-
-Sigma <- x1$Sigma.sample[,variance.indices]
-Sigma <- rbind(Sigma[,1:2], Sigma[,3:4])
-colnames(Sigma) <- colnames(IsraelPalestineConflict)
-
-# Make a vector of the indicators for the colors
-indicator <- rep(Q.clus$cluster, h)
-
-# Here's how to plot those based on the posterior clustering above.
-pairs(intercepts, pch=".", col=indicator)
-pairs(Sigma, pch=".", col=indicator)
-
-# Now sample, clustering on the intercepts of the first equation. To see
-# what the index is for this, look at the output of the mode:
-print(xm$hreg$Bk)
-
-x2 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=FALSE, Beta.idx=c(3,1))
-
-# Plot the regime probabilities
-plot.SS(x2)
-
-# Nicer plot with some labeling
-plot(ts(mean.SS(x2), start=c(1979,15), freq=52))
-
-# Look at the clustering of the intercepts for the identified model
-intercepts2 <- x2$Beta.sample[,intercept.indices]
-
-# Identified posterior modes
-summary(intercepts2)
-
-# So the first regime is high conflict (negative values) and the second
-#  regime is low conflict (closer to positive values):
-
-pairs(rbind(intercepts2[,1:2], intercepts2[,3:4]),
-      col=c(rep(1,N2), rep(2, N2)))
+x2 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=FALSE, Sigma.idx=1)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

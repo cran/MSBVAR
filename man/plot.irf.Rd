@@ -10,16 +10,15 @@
   
 }
 \usage{
-plot.irf(x, varnames = NULL, ...)
-%plot.irf.VAR(x, varnames = NULL, ...)
-%plot.irf.BVAR(x, varnames = NULL, ...)
-%plot.irf.BSVAR(x, varnames = NULL, ...)
+plot.irf(x, varnames = attr(x, "eqnames"), ...)
+
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{ Impulse response object produced by \code{\link{irf}}}
-  \item{varnames}{ Variance names in the format
-    \code{c("name1","name2",...)} }
+  \item{varnames}{ Names of equations and shocks in the format
+    \code{c("name1","name2",...)}. Default is to use the names of the
+  input variables from the estimation method.}
   \item{...}{other plot arguments}
 }
 %Improve details to reflect VAR/BVAR/BSVAR availability

@@ -521,8 +521,12 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
                    transition.sample=transition.storage,
                    ss.sample=ss.storage,
                    pfit=pfit,
-                   h=h)
+                   init.model=init.model,
+                   h=h,
+                   p=p,
+                   m=m)
 
     class(output) <- c("MSBVAR")
+    attr(output, "eqnames") <- attr(init.model, "eqnames")
     return(output)
 }

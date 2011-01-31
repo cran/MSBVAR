@@ -220,6 +220,8 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
                    marg.post=marg.post,
                    coef.post=coef.post)
     class(output) <- c("BVAR")
+    attr(output, "eqnames") <- colnames(dat) # Get variable names for
+                                             # attr
 
     # Compute the posterior fit measures.
     if(posterior.fit==T)

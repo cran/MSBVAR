@@ -12,7 +12,7 @@
 }
 \usage{
 plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
-            probs=c(0.16,0.84), varnames = NULL, ...)
+            probs=c(0.16,0.84), varnames = attr(x, "eqnames"), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,7 +32,9 @@ plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
   \item{probs}{ \code{probs} is the width of the error bands.  Default
     is \code{c(0.16, 0.84)} which is a 68\% band that is approximately
     one standard deviation, as suggested by Sims and Zha.}
-  \item{varnames}{ List of variable names for labeling the impulse responses.}
+  \item{varnames}{ List of variable names of length \eqn{m} for labeling
+    the impulse responses. Default are the input variable names from the
+    relevent estimation method.}
   \item{\dots}{ Other graphics parameters}
 }
 \details{
