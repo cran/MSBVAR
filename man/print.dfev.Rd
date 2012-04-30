@@ -7,15 +7,15 @@
   Prints decomposition of forecast error variance tables 
 }
 \usage{
-print.dfev(x, latex = F, file = NULL, ...)
+\method{print}{dfev}(x, latex = F, file = NULL, ...)
 
-summary.dfev(object, latex = F, file = NULL, ...)
+\method{summary}{dfev}(object, latex = F, file = NULL, ...)
 }
 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ DFEV object created by \code{dfev}}
-  \item{object}{DFEV object created by \code{dfev}}
+  \item{x}{ DFEV object created by \code{\link{dfev}}}
+  \item{object}{DFEV object created by \code{\link{dfev}}}
   \item{latex}{ Logical.  T = format results in LaTeX tables,  default
     is F, text output }
   \item{file}{ File for the results.  If \code{NULL}, prints to standard

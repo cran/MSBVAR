@@ -12,7 +12,7 @@
   "posterior.fit.BVAR", and "posterior.fit.BSVAR".
 }
 \usage{
-print.posterior.fit(x, ...)
+\method{print}{posterior.fit}(x, ...)
 %print.posterior.fit.VAR(x, ...)
 %print.posterior.fit.BVAR(x, ...)
 %print.posterior.fit.BSVAR(x, ...)

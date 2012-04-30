@@ -3,6 +3,7 @@
 # Plots densities of the A(0) parameters for a B-SVAR model object.
 # Also includes plotting of ther HDRs for each parameter
 
+# 20120120 : Renamed function to conform to classing.
 
 
 # This function from hdrcde package adds an hdr to a density figure.
@@ -204,5 +205,5 @@ function(den,falpha)
       }
   }
   }
-    close.screen(all=TRUE)
+    close.screen(all.screens = TRUE)
 }

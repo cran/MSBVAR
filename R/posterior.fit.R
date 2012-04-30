@@ -1,8 +1,8 @@
-"posterior.fit" <- function(varobj, A0.posterior.obj=NULL)
+"posterior.fit" <- function(varobj, A0.posterior.obj=NULL, maxiterbs=500)
 {
     if(inherits(varobj, "VAR"))
     {
-      stop("posterior.fit() not implemented for VAR class objects.\n")
+      stop("posterior.fit() not implemented for VAR class objects since they do not have a proper prior.\n")
 ##         output <- posterior.fit.VAR(varobj)
 ##         attr(output, "class") <- c("posterior.fit.VAR")
 ##         return(output)
@@ -17,6 +17,12 @@
     {
         output <- posterior.fit.BSVAR(varobj, A0.posterior.obj)
         attr(output, "class") <- c("posterior.fit.BSVAR")
+        return(output)
+    }
+    if(inherits(varobj, "MSBVAR"))
+    {
+        output <- posterior.fit.MSBVAR(x=varobj, maxiterbs=maxiterbs)
+        attr(output, "class") <- c("posterior.fit.MSBVAR")
         return(output)
     }
 }
@@ -263,80 +269,14 @@
 
 "print.posterior.fit.MSBVAR" <- function(x, ...)
 {
-    if(is.na(x$pfit)==TRUE) {
-        stop("gibbs.msbvar(..., posterior.fit=TRUE) needs to be used to estimate the posterior fit statistics\n")
-    } else {
-        cat("Log prior, Pr(A0, A+)            : ", x$pfit$log.prior, "\n")
-        cat("Log LLF, Pr(Y | A0, A+)          : ", x$pfit$log.llf, "\n")
-        cat("Log marginal density, Pr(Y)      : ", x$pfit$log.marginal.data.density, "\n")
-    }
+    cat("Marginal likelihood, importance sampler           :", x$marglik.IS, "\n")
+    cat("Marginal likelihood std error, importance sampler :", x$marglik.IS.se, "\n")
+
+    cat("Marginal likelihood, reciprocal sampler           :", x$marglik.RI, "\n")
+    cat("Marginal likelihood std error, reciprocal sampler :", x$marglik.RI.se, "\n")
+
+    cat("Marginal likelihood, bridge sampler               :", x$marglik.BS, "\n")
+    cat("Marginal likelihood std error, bridge sampler     :", x$marglik.BS.se, "\n")
+
 }
 
-## "posterior.fit.VAR" <- function(varobj)
-## {
-##       # Assign variables
-##       capT <- varobj$pfit$capT
-##       m <- varobj$m
-##       ncoef <- varobj$pfit$ncoef
-##       num.exog <- varobj$pfit$num.exog
-##       nu <- 0
-##       H0 <- 0*varobj$hstar
-##       S0 <- 0*varobj$hstar
-##       Y <- varobj$Y
-##       X <- varobj$X
-##       hstar1 <- varobj$hstar
-##       Sh <- varobj$mean.S
-##       u <- varobj$residuals
-##       Bh <- varobj$Bhat
-##       Sh1 <- varobj$pfit$Sh1
-
-##       scalefactor <- (sum(lgamma(nu + 1 - seq(1:m))) -
-##                       sum(lgamma(nu + capT + 1 - seq(1:m))))
-
-##       M0 <- diag(capT)
-##       B0 <- matrix(0,nrow=(ncoef+num.exog),ncol=m)
-##       diag(B0) <- 1
-##       Bdiff <- Y-X%*%B0
-
-##       ld.tmp <- determinant((S0 + t(Bdiff)%*%solve(M0)%*%Bdiff), logarithm=T)
-##       ld.tmp <- ld.tmp$sign * ld.tmp$modulus
-
-##       data.marg.llf <-  (-0.5*capT*m*log(2*pi) - scalefactor -
-##                          0.5*(nu+capT)*ld.tmp)
-
-##       # Now find the predictive posterior density
-##       M1 <- (diag(capT) + X%*%solve(hstar1)%*%t(X))
-
-##       ld.S1 <- determinant(Sh, logarithm=T)
-##       ld.S1 <- ld.S1$sign * ld.S1$modulus
-
-##       ld.M1 <- determinant(M1, logarithm=T)
-##       ld.M1 <- ld.M1$sign * ld.M1$modulus
-
-##       ld.tmp <- determinant((Sh + t(u)%*%solve(M1)%*%u), logarithm=T)
-##       ld.tmp <- ld.tmp$sign * ld.tmp$modulus
-
-##       data.marg.post <- (-0.5*capT*m*log(2*pi) - m*0.5*ld.M1 +
-##                          capT*0.5*ld.S1 - scalefactor  -
-##                          0.5*(nu+capT)*ld.tmp)
-
-##     # Now compute the marginal llf and the posterior for the
-##     # coefficients
-##       Bdiff <- B0 - Bh
-##       ld.S1 <- determinant(Sh1, logarithm=T)
-##       ld.S1 <- ld.S1$sign * ld.S1$modulus
-##       wdof <- capT - ncoef - num.exog - m - 1
-
-##       scalefactor1 <- (wdof*m*0.5)*log(2) + 0.25*m*(m-1) + (sum(lgamma(wdof + 1 - seq(1:m))))
-##       scalefactor2 <- -0.5*(ncoef*m)*log(2*pi)
-##       coef.post <- (scalefactor1 + scalefactor2 -0.5*(nu + capT + m +1)*ld.S1
-##                     - 0.5*sum(diag(solve(Sh1)%*%Sh))
-##                     - 0.5*(ncoef+num.exog)*ld.S1
-##                     - 0.5*sum(diag(Sh1%*%t(Bdiff)%*%hstar1%*%Bdiff)))
-
-##       output <- list(data.marg.llf=data.marg.llf,
-##                      data.marg.post=data.marg.post,
-##                      coef.post=coef.post)
-##       class(output) <- c("posterior.fit.VAR")
-##       return(output)
-## }

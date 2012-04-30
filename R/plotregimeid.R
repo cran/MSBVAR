@@ -10,9 +10,12 @@
 #            conditions for the plot types.
 # 20110118 : Updated logical conditions for plots and added section
 #            for plotting versus values of Q.
+# 20120426 : Updated to add AR(1) density and traceplots for the
+#            permuted, clustered regimes.
 
-plotregimeid <- function(m1, m1p,
-                         type=c("all", "intercepts", "Sigma", "Q"),
+
+plotregimeid <- function(x,
+                         type=c("all", "intercepts", "AR1", "Sigma", "Q"),
                          ask = TRUE, ...)
 {
 
@@ -20,10 +23,10 @@ plotregimeid <- function(m1, m1p,
     # Get the constants we need for setting up the matrices for the
     # clustering steps.
 
-    m <- m1$m                     # Number of equations
-    p <- m1$p                     # Lag length
-    h <- m1$h                     # Number of regimes
-    N2 <- length(m1p$ss.sample)   # Number of Gibbs draws
+    m <- x$m                     # Number of equations
+    p <- x$p                     # Lag length
+    h <- x$h                     # Number of regimes
+    N2 <- length(x$ss.sample)   # Number of Gibbs draws
 
     mpplus1 <- m*p + 1  # Number of coefficients in one equation of
                         # VAR(p)
@@ -31,12 +34,15 @@ plotregimeid <- function(m1, m1p,
     nc <- m*(mpplus1)   # Number of total coefs in one regime
 
     ii <- seq(mpplus1, by=mpplus1, length=m)  # Intercept indices
-    eqnnames <- colnames(m1$init.model$y)
+    aii <- rep(1:m,m) + (rep(0:(m-1), each=m))*mpplus1 # AR indices
+
+    # Get eqn names
+    eqnnames <- colnames(x$init.model$y)
 
     if(type=="all" || type=="intercepts")
     {
     # Now stack the regression coefficients for clustering
-        Beta <- matrix(t(m1p$Beta.sample), byrow=TRUE, ncol=nc)
+        Beta <- matrix(t(x$Beta.sample), byrow=TRUE, ncol=nc)
 
     # Now do the clustering for the regimes.
     # Probably should let the users choose the number of starting
@@ -46,7 +52,7 @@ plotregimeid <- function(m1, m1p,
     # Label things so the plots make sense
         colnames(intercepts) <- eqnnames
 
-        cl.int <- kmeans(intercepts, center=h, nstart=10)
+        cl.int <- kmeans(intercepts, centers=h, nstart=10)
 
 
     # Plot the intercepts based on the clustering
@@ -66,8 +72,10 @@ plotregimeid <- function(m1, m1p,
                     plot.points="rug",
                     main="Intercept densities by regime"))
 
-        form <- eval(parse(text = paste(paste(lapply(names(intercepts), as.name),
+        form <- eval(parse(text =
+                           paste(paste(lapply(names(intercepts), as.name),
                            collapse = "+"), "~ idx")))
+
         idx <- 1:nrow(intercepts)
 
         print(xyplot(form, data=intercepts,
@@ -76,15 +84,62 @@ plotregimeid <- function(m1, m1p,
                      main="Intercept traceplots by regime"))
     }
 
+
+    if(type=="all" || type=="AR1")
+    {
+    # Now stack the regression coefficients for clustering
+        Beta <- matrix(t(x$Beta.sample), byrow=TRUE, ncol=nc)
+
+    # Now do the clustering for the regimes.
+    # Probably should let the users choose the number of starting
+    # points for the clustering centers = nstart, later.
+
+        ar1 <- as.data.frame(Beta[,aii])
+
+        # Set up names
+        idx <- expand.grid(1:m, 1:m)
+        tmp <- cbind(rep(eqnnames,m), idx)
+
+        colnames(ar1) <- paste(tmp[,1], "(", tmp[,2], ",", tmp[,3],
+                               ")", sep="")
+
+        # Do the clustering
+        cl.ar1 <- kmeans(ar1, centers=h, nstart=10)
+
+
+        form <- as.formula(paste("~",
+                                 paste(lapply(names(ar1), as.name),
+                                       collapse = "+")))
+
+        print(densityplot(form, data=ar1, outer=TRUE,
+                    groups=cl.ar1$cluster, xlab=NULL,
+                    default.scales=list(relation="free"),
+                    plot.points="rug",
+                    main="AR(1) densities by regime"))
+
+        form <- eval(parse(text =
+                           paste(paste(lapply(names(ar1), as.name),
+                           collapse = "+"), "~ idx")))
+
+        idx <- 1:nrow(ar1)
+
+        print(xyplot(form, data=ar1,
+                     groups=cl.ar1$cluster, type="l", ylab=NULL,
+                     main="AR(1) coefficients traceplots by regime"))
+
+    }
+
+
     if(type=="all" || type=="Sigma")
     {
 
     # Now replicate this for the variance elements in
-    # m1p$Sigma.sample.  Note that the unique elements of the Sigma(h)
+    # x$Sigma.sample.  Note that the unique elements of the Sigma(h)
     # matrices are in this and make up a different dimension than the
     # regression effects.
         nvar <- (m*(m+1)*0.5) # Number of variance terms
-        Sigmaout <- matrix(t(m1p$Sigma), byrow=TRUE, ncol=nvar)
+        Sigmaout <- matrix(t(x$Sigma.sample),
+                           byrow=TRUE, ncol=nvar)
 
     # Get variance indices
         tmp <- m:2
@@ -95,7 +150,7 @@ plotregimeid <- function(m1, m1p,
         Sigmaout <- as.data.frame(Sigmaout[,ssidx[1:m]])
         colnames(Sigmaout) <- eqnnames
 
-        cl.sigma <- kmeans(Sigmaout, center=h, nstart=10)
+        cl.sigma <- kmeans(Sigmaout, centers=h, nstart=10)
 
     # Plots
         pairs(Sigmaout, pch=".", col=cl.sigma$cluster, ...)
@@ -123,14 +178,14 @@ plotregimeid <- function(m1, m1p,
 
     if(type=="all" || type=="Q")
     {
-    # Do the same as the above for the elements of m1p$Q.
+    # Do the same as the above for the elements of x$Q.sample
     # These do not need to be stacked like the other elements (why?)
 
-        Q <- as.data.frame(m1p$Q)
+        Q <- as.data.frame(x$Q.sample)
 
     # Cluster
 
-        cl.Q <- kmeans(Q, center=h, nstart=10)
+        cl.Q <- kmeans(Q, centers=h, nstart=10)
 
         idx <- cbind(rep(1:h, each=h), rep(1:h, times=h))
         Qnames <- paste("Q_", idx[,1], idx[,2], sep="")
@@ -166,7 +221,7 @@ plotregimeid <- function(m1, m1p,
 
     # Plots based on the posterior clustering of Q for the intercepts
        # Now stack the regression coefficients for clustering
-        Beta <- matrix(t(m1p$Beta.sample), byrow=TRUE, ncol=nc)
+        Beta <- matrix(t(x$Beta.sample), byrow=TRUE, ncol=nc)
 
     # Now do the clustering for the regimes.
     # Probably should let the users choose the number of starting

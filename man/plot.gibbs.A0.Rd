@@ -8,7 +8,7 @@
   \code{gibbs.A0}, with associated highest posterior density (HPD) regions.
 }
 \usage{
-plot.gibbs.A0(x, hpd = 0.68, varnames=attr(x, "eqnames"), ...)
+\method{plot}{gibbs.A0}(x, hpd = 0.68, varnames=attr(x, "eqnames"), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

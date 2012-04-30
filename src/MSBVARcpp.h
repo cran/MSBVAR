@@ -7,7 +7,7 @@
 #include <R_ext/Applic.h>  
 #include <math.h>
 //#include <stdbool.h>
-#include <stdint.h>        // uint_32t class type
+//#include <stdint.h>        // uint_32t class type
 #include <limits.h>        // POSIX standardization
 
 /* #include <string> */
@@ -25,7 +25,7 @@ extern "C" {
 #include "A0_W.h"          // Class for storing gibbs draws
 #include "QRD.h"           // Class for QR routines
 //#include "SS.h"            // State Space Class
-#include "newSS.h"	   // New State Space Class
+//#include "newSS.h"	   // New State Space Class
 
   // R object creation/manipulation functions
   void setdims(SEXP, int, int*);
@@ -101,14 +101,4 @@ extern "C" {
   SEXP drawA0(SEXP, SEXP, SEXP, SEXP, SEXP);
   SEXP gibbsA0(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
   
-  // State-Space/Markov-Switching Functions 
-  //SEXP SSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-  SEXP newSSdraw(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-  //  SEXP SSsumR(SEXP);
-  //  SEXP SSmeanR(SEXP, SEXP);
-  //  SEXP SSvarR(SEXP, SEXP);
-  SEXP BHLKR(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-  ReturnMatrix BHLK(SEXP, SEXP, Matrix&, SEXP, int, int, int); 
-  int bingen(Matrix&, Matrix&, int); 
-
 } // end extern "C"

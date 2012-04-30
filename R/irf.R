@@ -75,7 +75,7 @@
     stacked.impulses <- t(matrix(impulses, m^2, nsteps))
     stacked.impulses <- matrix(stacked.impulses, nsteps*m, m)
     dim(impulses) <- c((m^2), nsteps)
-    impulses <- ts(t(impulses), start = c(0, 1), freq = 1)
+    impulses <- ts(t(impulses), start = c(0, 1), frequency = 1)
     minmax <- apply(stacked.impulses, 2, range)
     print(minmax)
 

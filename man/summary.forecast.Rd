@@ -10,10 +10,7 @@
   forecasts generated through VAR / BVAR / B-SVAR model objects to
   standard output.
 }
-\usage{ summary.forecast(object, probs = c(0.16,0.84), ...)
-%        summary.forecast.VAR(x, probs, ...)
-%        summary.forecast.BVAR(x, probs, ...)
-%        summary.forecast.BSVAR(x, probs, ...)
+\usage{ \method{summary}{forecast}(object, probs = c(0.16,0.84), ...)
 }
 \arguments{
   \item{object}{ Forecast object genrated through fitting a VAR, BVAR,

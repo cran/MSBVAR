@@ -13,10 +13,9 @@
   method for them. 
 }
 \usage{
-mean.SS(x, ...)
-sum.SS(x, ...)
-%var.SS(x, ...)
-plot.SS(x, ylab="State Probabilities", ...)
+\method{mean}{SS}(x, ...)
+\method{sum}{SS}(x, ...)
+\method{plot}{SS}(x, ylab="State Probabilities", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -40,7 +40,10 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
     if(p==1)
       { datint <- as.vector(dat[1,]) }
     else
-      { datint<-as.vector(apply(dat[1:p,],2,mean)) }
+      {   # wrap first p values in an as.matrix() in case someone
+          # passes in a univariate series.
+          datint<-as.vector(apply(as.matrix(dat[1:p,]),2,mean))
+      }
 
     # Y and X matrices with m+1 initial dummy observations
     X<-matrix(0, nrow=capT, ncol=ncoef)
@@ -103,7 +106,7 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3,
     s2<-matrix(0,nrow=m,ncol=1)
     for(i in 1:m)
       {
-        s2[i,1] <- ar.ols(dat[,i], aic=FALSE, order.max=p,
+        s2[i,1] <- ar.ols(Y[,i], aic=FALSE, order.max=p,
                           intercept=TRUE, demean=FALSE)$var.pred
       }
     #  Prior scale matrix for Sigma:  Sigma ~ IW(H0,v) @

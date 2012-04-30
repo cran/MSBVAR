@@ -37,7 +37,7 @@ gibbs.A0(varobj, N1, N2, thin=1, normalization="DistanceMLA")
 
 }
 \value{
-  A list of five elements:
+  A list of class \code{gibbs.A0} with five elements:
   \item{A0.posterior}{A list of three elements containing the results
     of the \code{N2} \eqn{A_0}{A(0)} draws.  The list contains a vector
     storing all of the draws, the location of the drawn elements in and
@@ -86,7 +86,11 @@ Normalization in Multiple Equation Models" \emph{Journal of Econometrics},
   \eqn{A_0}{A(0)} normalization. 
   
   \code{\link{posterior.fit}} for computing the
-  marginal log likelihood for the model after sampling the posterior  }
+  marginal log likelihood for the model after sampling the posterior,
+
+  and \code{\link{plot}} for a unique density plot of the
+  \eqn{A_0}{A(0)} elements.
+}
 
 \examples{
 # SZ, B-SVAR model for the Levant data

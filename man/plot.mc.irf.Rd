@@ -1,8 +1,6 @@
 \name{plot.mc.irf}
 \alias{plot.mc.irf}
-%\alias{plot.mc.irf.VAR}
-%\alias{plot.mc.irf.BVAR}
-%\alias{plot.mc.irf.BSVAR}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Plotting posteriors of Monte Carlo simulated impulse responses}
 \description{
@@ -11,7 +9,7 @@
   or Bayesian error bands, as suggested by Sims and Zha (1999).
 }
 \usage{
-plot.mc.irf(x, method=c("Sims-Zha2"), component=1,
+\method{plot}{mc.irf}(x, method=c("Sims-Zha2"), component=1,
             probs=c(0.16,0.84), varnames = attr(x, "eqnames"), ...)
 }
 %- maybe also 'usage' for other objects documented here.

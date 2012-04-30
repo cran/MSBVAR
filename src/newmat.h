@@ -68,21 +68,21 @@ public:
 // Somewhat implementation dependent as it relies on "cout" still being
 // present when ExeCounter objects are destructed.
 
-#ifdef DO_REPORT
+/* #ifdef DO_REPORT */
 
-class ExeCounter
-{
-   int line;                                    // code line number
-   int fileid;                                  // file identifier
-   long nexe;                                   // number of executions
-   static int nreports;                         // number of reports
-public:
-   ExeCounter(int,int);
-   void operator++() { nexe++; }
-   ~ExeCounter();                               // prints out reports
-};
+/* class ExeCounter */
+/* { */
+/*    int line;                                    // code line number */
+/*    int fileid;                                  // file identifier */
+/*    long nexe;                                   // number of executions */
+/*    static int nreports;                         // number of reports */
+/* public: */
+/*    ExeCounter(int,int); */
+/*    void operator++() { nexe++; } */
+/*    ~ExeCounter();                               // prints out reports */
+/* }; */
 
-#endif
+/* #endif */
 
 
 // ************************** class MatrixType *****************************/

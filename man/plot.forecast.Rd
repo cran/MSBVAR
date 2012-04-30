@@ -7,7 +7,7 @@
 \description{ Generates simple plots of forecasts obtained from
   forecast.VAR / forecast.BVAR / forecast.B-SVAR}
 
-\usage{ plot.forecast(x, ...)
+\usage{ \method{plot}{forecast}(x, ...)
 }
 \arguments{
   \item{x}{ Plots generated from forecast genrated through fitted VAR,

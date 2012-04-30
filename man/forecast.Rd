@@ -11,42 +11,74 @@
 }
 \usage{
 forecast(varobj, nsteps, A0=t(chol(varobj$mean.S)),
-         shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
-         exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)))
+         shocks=matrix(0, nrow=nsteps, ncol=dim(varobj$ar.coefs)[1]),
+         exog.fut=matrix(0, nrow=nsteps, ncol=nrow(varobj$exog.coefs)),
+         N1, N2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{varobj}{ Fitted VAR model of the class VAR, BVAR, or BSVAR
-    produced by \code{\link{reduced.form.var}}, \code{\link{szbvar}}, or
-    \code{\link{szbsvar}} (Not yet implemented for \code{\link{msbvar}}.)}
+  \item{varobj}{ Fitted VAR model of the class VAR, BVAR, BSVAR, or MSBVAR
+    produced by \code{\link{reduced.form.var}}, \code{\link{szbvar}}, 
+    \code{\link{szbsvar}} or \code{\link{gibbs.msbvar}}.}
   \item{nsteps}{ Number of periods in the forecast horizon}
   \item{A0}{ \eqn{m \times m}{m x m} matrix of the decomposition of the
-    contemporaneous endogenous forecast innovations}
-  \item{shocks}{ Structural shocks to the VAR model.  These must be
-    scaled consistent with the structural identification in \eqn{A_0}{A(0)}}
+    contemporaneous endogenous forecast innovations for BSVAR models.}
+  \item{shocks}{ Structural shocks to the VAR, BVAR, or BSVAR models.
+    These must be scaled consistent with the structural identification
+    in \eqn{A_0}{A(0)}.} 
   \item{exog.fut}{ nsteps x number of exogenous variables matrix of the
-    future values of exogenous variable shocks.}
+    future values of exogenous variable shocks.  Only implemented for
+    VAR, BVAR, and BSVAR models at present.}
+  \item{N1}{ integer, number of burnin draws for the MSBVAR forecasts.}
+  \item{N2}{ integer, number of final posterior draws for MSBVAR
+    forecasts.} 
 }
 \details{
-  This function computes forecasts for both classical and Bayesian
-  (S)VARs.  Users can specify shocks to the system over the forecast
-  horizon (both structural and exogenous shocks).  The forecasting model
-  is that described by Waggoner and Zha (1999) and can be used to
-  construct unconditional forecasts based on thes
-  structural shocks and the contemporaneous decomposition of the
+  VAR / BVAR / BSVAR models:
+  
+  This function computes forecasts for the classical and Bayesian
+  VAR models that are estimated in the MSBVAR package.  Users can
+  specify shocks to the system over the forecast horizon (both
+  structural and exogenous shocks) for VAR, BVAR, and
+  BSVAR models.  The forecasting model is that described by Waggoner and
+  Zha (1999) and can be used to construct unconditional forecasts based
+  on the structural shocks and the contemporaneous decomposition of the
   innovation variance, A0.
+
+  MSBVAR:
+
+  Generates a set of \code{N2} draws from the posterior forecast
+  density.  Forecasts are constructed using data augmentation, so the
+  forecasts account for both forecast and parameter uncertainty. The
+  function for the MSBVAR model takes as arguments \code{varobj}, which
+  is the posterior parameters from a call to \code{\link{gibbs.msbvar}},
+  and \code{N1} and \code{N2} to set the burnin and number of draws from
+  the posterior.  The posterior forecasts are based on the mixture over
+  the \eqn{h} regimes for the specified model.  
 }
 \value{
-  A matrix time series object, \eqn{((T + nsteps) \times m)}{(T +
-    nsteps) x m} of the original series and forecasts.
+  For VAR, BVAR, and BSVAR models:
+  
+  A matrix time series object,
+    \eqn{((T + nsteps) \times m)}{(T + nsteps) x m} of the original
+    series and forecasts.
+
+  For MSBVAR models, a list of 4 elements:
+
+  \item{forecasts}{ \eqn{N2 \times nsteps \times m}{N2 x nsteps x m}
+    array of the posterior forecasts.}
+  \item{ss.sample}{ bit compressed version of the MS state space. (can
+    be summarized with \code{\link{plot.SS}} or \code{\link{mean.SS}}.)}
+  \item{k}{ number of forecast steps, nsteps}
+  \item{h}{ integer, number of MS regimes used in the forecasts.}
 }
 \references{Waggoner, Daniel F. and Tao Zha. 1999. "Conditional
   Forecasts in Dynamic Multivariate Models" Review of \emph{Economics and
   Statistics}, 81(4):639-651.
 }
 \author{ Patrick T. Brandt}
-\note{ The forecasts can be easily plotted by using the \code{plot.forecast()}
-  command to select the appropriate sample-forecast horizon}
+\note{ The forecasts can be plotted using the \code{plot.forecast()}
+  command to select the appropriate sample-forecast horizon.}
 
 \seealso{ \code{\link{reduced.form.var}}, \code{\link{szbvar}} and
   \code{\link{szbsvar}} for estimation methods that create the elements
@@ -76,6 +108,8 @@ p2i <- ts(cbind(Y.sample2[,2], forecasts.only[,2]),
 par(mfrow=c(2,1))
 plot(i2p, plot.type=c("single"))
 plot(p2i, plot.type=c("single"))
+
+# Need an example here for MSBVAR forecasts 
 }
 \keyword{ ts}
 \keyword{ regression }

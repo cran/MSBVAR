@@ -185,18 +185,38 @@ URL: http://www.utdallas.edu/~pbrandt/
 2011-01-31 Updated package to version 0.6-0 to reflect milestones in
 	   MSBVAR development.  Added initial documentation for
 	   plotregimeid(). 
-
+2011-02-11 Began works on forecasting MSBVAR models.  This is part of
+           a wholesale rewrite of how the forecasts are computed,
+	   presented and summarized in the package.
+2011-03-01 Corrected sample indexing for the msbvar() function.  It
+	   was carrying along one extra observation that should have
+	   been use for computing lags rather than part of the data.
+	   Changes down-stream functions like gibbs.msbvar(), etc. for
+	   compliance. 
+2011-03-04 Degrees of freedom corrections in the prior and the
+	   posterior computations for the msbvar() models.
+2011-12-07 Adjusted the underflow threshold for regime probabilities
+	   from 10^{-30} to 10^{-100} to improve the accuracy of
+	   regime classifications in the C++ code.
+2012-01-20 Updated MSBVAR model functions to use revised compiled
+	   Fortran code that is more numerically accurate.  New code
+	   follows Fruhwirth-Schnatter's (2006) recommendations for MS
+	   models.  Includes new code for MSBVAR models with all
+	   switching parameters, posterior summaries, etc.  See code
+	   and package details.
+2012-04-24 Revised computations of Sigma x (X'X)^{-1} computations in
+	   msbvar() to be more robust to near singularities.
+2012-05-XX Version 0.7-0 ready for release.
 
 MSBVAR Package
-Copyright (C) 2005-2011 Patrick T. Brandt
+Copyright (C) 2005-2012 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 
 Patrick T. Brandt
 School of Economic, Political and Policy Sciences
-University of Texas at Dallas
+University of Texas, Dallas
 800 W. Campbell Rd, Green 31
 Richardson, Texas 75080
-http://yule.utdallas.edu
 http://www.utdallas.edu/~pbrandt
 pbrandt@utdallas.edu

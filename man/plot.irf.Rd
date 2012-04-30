@@ -10,7 +10,7 @@
   
 }
 \usage{
-plot.irf(x, varnames = attr(x, "eqnames"), ...)
+\method{plot}{irf}(x, varnames = attr(x, "eqnames"), ...)
 
 }
 

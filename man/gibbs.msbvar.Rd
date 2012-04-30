@@ -10,7 +10,7 @@
 }
 \usage{
 gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
-             Beta.idx = NULL, Sigma.idx = NULL, posterior.fit=FALSE)
+             Beta.idx = NULL, Sigma.idx = NULL, Q.method="MH")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,51 +29,61 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
     coefficients. The first number gives the coefficient, the second the
     equation numbers.  Coefficients are ordered by lag, then variable.
     So for an \eqn{m} equation VAR where we want the AR(1) coefficient on
-    the second variable's equation, use \code{c(2,2)}.  The intercept is the
-    last value, or \eqn{mp+1}.  So the intercept for the first equation
-    in a 4 variable model with two lags is \code{c(9,1)}.}
+    the second variable's equation, use \code{c(2,2)}.  The intercept is
+    the last value, or \eqn{mp+1}.  So the intercept for the first
+    equation in a 4 variable model with two lags is \code{c(9,1)}.}
   \item{Sigma.idx}{Scalar integer giving the equation variance that is
     to be ordered for non-permutation sampling, i.e., the ordering of
     the states. The states will be put
-    into ascending order for the variance parameter selected.}
-  \item{posterior.fit}{logical (default=FALSE).  Should the
-    loglikelihood and log marginal data density be computed (using the
-    method of Chib [1995] from the posterior sample)}
+    into ascending order for the variance parameter selected.  So if you
+    want to identify the results based on equation three, set
+    \code{Sigma.idx=3}}
+  \item{Q.method}{ choice of the sampler step for the transition matrix,
+    \code{Q}. \code{default=MH} uses a Metropolis-Hastings algorithm
+    that assumes a stationary Markov process.  The other option is
+    \code{Gibbs} which uses a Gibbs sampler Dirichlet draw for a
+    non-stationary Markov-switching process.  See Fruwirth-Schnatter
+    (2006: 318, 340-341 for details)}
 }
+
 \details{
   This function implements a Gibbs sampler for the posterior of a MSBVAR
   model setup with \code{\link{msbvar}}.  This is a reduced form MSBVAR
-  model.  The estimation is done in a mixture of native R code and C++.
-  The sampling of the BVAR coefficients, the transition matrix, and the
-  error covariances for each regime are done in native R code.  The
-  forward-filtering-backward-sampling of the Markov-switching process
+  model.  The estimation is done in a mixture of native R code and
+  Fortran. The sampling of the BVAR coefficients, the transition matrix,
+  and the error covariances for each regime are done in native R code.
+  The forward-filtering-backward-sampling of the Markov-switching process
   (The most computationally intensive part of the estimation) is handled
-  in compiled C++ code.  As such, this model is reasonably fast for
-  small samples / small numbers of regimes (say less than 2000
+  in compiled Fortran code.  As such, this model is reasonably fast for
+  small samples / small numbers of regimes (say less than 5000
   observations and 2-4 regimes).  The reason for this mixed
   implementation is that it is easier to setup variants of the model
-  (some coefficients switching, others not; different sampling methods;
-  etc.)
+  (E.g., Some coefficients switching, others not; different sampling
+  methods, etc.  Details will come in future versions of the package.)
 
   The random permuation of the states is done using a multinomial step:
   at each draw of the Gibbs sampler, the states are permuted using a
   multinomial draw.  This generates a posterior sample where the states
   are unidentified.  This makes sense, since the user may have little
-  idea of how to select among the h! posterior models of the reduced
+  idea of how to select among the \eqn{h!} posterior models of the
+  reduced
   form MSBVAR model (see e.g., Fruhwirth-Schnatter (2006)).  Once a
   posterior sample has been draw with random permuation, a clustering
-  algorithm can be used to identify the states, for example, by
+  algorithm (see \code{\link{plotregimeid}}) can be used to identify the
+  states, for example, by
   examining the intercepts or covariances across the regimes (see the
   example below for details).
 
   Only the \code{Beta.idx} or \code{Sigma.idx} value is followed.  If
   the first is given the second will be ignored.  So variance ordering
-  for identification can only be used when \code{Beta.idx=NULL}.
+  for identification can only be used when \code{Beta.idx=NULL}.  See
+  \code{\link{plotregimeid}} for plotting and summary methods for the
+  permuted sampler.
 
   The Gibbs sampler is estimated using six steps:
   \describe{
     \item{Drawing the state-space for the Markov process }{ This step
-      uses compiled C++ code to draw the 0-1 matrix of the regimes.  It
+      uses compiled code to draw the 0-1 matrix of the regimes.  It
       uses the Baum-Hamilton-Lee-Kim (BHLK) filter and smoother to
       estimate the regime probabilities.  Draws are based on the
       standard forward-filter-backward-sample algorithm.}
@@ -121,14 +131,21 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
     elements in the matrix are the first, second, etc. columns / rows of
     the lower / upper version of the matrix.}
   \item{Q.sample }{ \eqn{N2 \times h^2}{N2 x h^2} }
-  \item{transition.sample }{ An array of \code{N2} \eqn{h \times h}{h x h}
-    transition matrices.}
+  \item{transition.sample }{ An array of \code{N2} \eqn{h \times h}{h x
+    h} transition matrices.}
   \item{ss.sample }{ List of class SS for the \code{N2} estimates of the state-space
     matrices coded as \code{\link[bit]{bit}} objects for compression /
     efficiency.}
   \item{pfit}{ A list of the posterior fit statistics for the MSBVAR
     model. }
+  \item{init.model}{ Initial model -- a varobj from a BVAR like
+    \code{\link{szbvar}} that sets up the data and priors.  See
+    \code{\link{szbvar}} for a description.}
+  \item{alpha.prior}{ Prior for the state-space transitions Q.  This is
+    set in the call to \code{\link{msbvar}} and inherited here.}
   \item{h}{ integer, number of regimes fit in the model.}
+  \item{p}{ integer, lag length}
+  \item{m}{ integer, number of equations}
 }
 \references{
   Brandt, Patrick T. 2009. "Empirical, Regime-Specific Models
@@ -163,10 +180,13 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
   example below for usage.
   
 }
-\seealso{ \code{\link{msbvar}}, \code{\link{plot.SS}},
-  \code{\link{mean.SS}}, \code{\link{plotregimeid}}}
+\seealso{ \code{\link{msbvar}} for initial mode finding,
+  \code{\link{plot.SS}} for plotting regime probabilities,
+  \code{\link{mean.SS}} for computing the mean regime probabilities,
+  \code{\link{plotregimeid}} for identifying the regimes from a permuted
+  sample. }
+
 \examples{
-\dontrun{
 # This example can be pasted into a script or copied into R to run.  It
 # takes a few minutes, but illustrates how the code can be used
 
@@ -176,32 +196,41 @@ data(IsraelPalestineConflict)
 # Initial guess is based on random draw, so set seed.
 set.seed(123)
 
-xm <- msbvar(y=IsraelPalestineConflict, p=1, h=2,
+xm <- msbvar(IsraelPalestineConflict, p=3, h=2,
              lambda0=0.8, lambda1=0.15,
-             lambda3=2, lambda4=1, lambda5=0, mu5=0,
+             lambda3=1, lambda4=1, lambda5=0, mu5=0,
              mu6=0, qm=12,
-             alpha.prior=matrix(c(5,2,2,10), 2, 2))
+             alpha.prior=matrix(c(10,5,5,9), 2, 2))
 
 # Plot out the initial mode
 plot(ts(xm$fp))
 print(xm$Q)
 
 # Now sample the posterior
-N1 <- 100
-N2 <- 500
+N1 <- 1000
+N2 <- 2000
 
 # First, so this with random permutation sampling
 x1 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=TRUE)
 
 # Identify the regimes using clustering in plotregimeid()
-plotregimeid(xm, x1, type="all")
+plotregimeid(x1, type="all")
 
 # Now re-estimate based on desired regime identification seen in the
-# plots.  Here we are using the variance of the first equation, so
-# Sigma.idx=1.
+# plots.  Here we are using the intercept of the first equation, so
+# Beta.idx=c(7,1).
 
-x2 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=FALSE, Sigma.idx=1)
-}
+x2 <- gibbs.msbvar(xm, N1=N1, N2=N2, permute=FALSE, Beta.idx=c(7,1))
+
+# Plot regimes
+plot.SS(x2)
+
+# Summary of transition matrix
+summary(x2$Q.sample)
+
+# Plot of the variance elements
+plot(x2$Sigma.sample)
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

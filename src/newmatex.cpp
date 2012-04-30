@@ -263,9 +263,9 @@ ExeCounter::ExeCounter(int xl, int xf) : line(xl), fileid(xf), nexe(0) {}
 ExeCounter::~ExeCounter()
 {
    nreports++;
-   cout << "REPORT  " << setw(6) << nreports << "  "
-      << setw(6) << fileid << "  " << setw(6) << line
-      << "  " << setw(6) << nexe << "\n";
+   //   cout << "REPORT  " << setw(6) << nreports << "  "
+   //   << setw(6) << fileid << "  " << setw(6) << line
+   //   << "  " << setw(6) << nexe << "\n";
 }
 
 #endif

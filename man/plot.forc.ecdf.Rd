@@ -6,7 +6,7 @@
   Plots mean VAR forecasts and pointwise error bands 
 }
 \usage{
-plot.forc.ecdf(x, probs = c(0.05, 0.95),
+\method{plot}{forc.ecdf}(x, probs = c(0.05, 0.95),
                xlab = "", ylab = "", ylim = NA, ...)
 }
 %- maybe also 'usage' for other objects documented here.

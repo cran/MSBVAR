@@ -1,22 +1,25 @@
-\name{SS.draw}
-\alias{SS.draw}
+\name{SS.ffbs}
+\alias{SS.ffbs}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{  State-space filter and sampler for a Markov-switching VAR model}
+\title{  State-space forward-filter and backwards-sampler for a
+  Markov-switching VAR model}
 
 \description{ This function estimates the \eqn{h} state probabilities for
   all of the observations for a Gaussian likelihood
 }
 \usage{
-SS.draw(u, TT, m, h, Sik, Q)
+SS.ffbs(e, bigt, m, p, h, sig2, Q)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{u}{ \eqn{TT \times m \times h}{TT x m x h} array of the residuals for an
+  \item{e}{ \eqn{bigt \times m \times h}{TT x m x h} array of the residuals for an
   MSBVAR process}
-  \item{TT}{ integer, number of observations in the model}
-  \item{m}{ integer, number of equations or variables in the MSBVAR model}
+  \item{bigt}{ integer, number of observations in the model}
+  \item{m}{ integer, number of equations or variables in the MSBVAR
+    model}
+  \item{p}{ integer, number of lags in the model}
   \item{h}{ integer, number of regimes in the MSBVAR model}
-  \item{Sik}{ \eqn{m \times m \times h}{m x m x h} array of the
+  \item{sig2}{ \eqn{m \times m \times h}{m x m x h} array of the
   covariances for each regime (can be the same for each of the \eqn{h} regimes)}
   \item{Q}{ \eqn{h \times h}{h x h} first order Markov transition
   matrix; each row must sum to 1 }
@@ -69,8 +72,7 @@ standard forward-filter-backward-sample algorithm.
 
 }
 
-\seealso{ \code{\link{BHLK.filter}}, \code{\link{msbvar}},
-  \code{\link{gibbs.msbvar}}
+\seealso{ \code{\link{msbvar}}, \code{\link{gibbs.msbvar}}
 }
 \examples{
 # Simple example to show how data are input to the filter-sampler.
@@ -105,7 +107,7 @@ Sik[,,2] <- diag(c(25,1))
 Q <- matrix(c(0.9,0.2,0.1,0.8), h, h)
 
 # estimate the states 100 times
-ss <- replicate(100, SS.draw(u, TT, m, h, Sik, Q), simplify=FALSE)
+ss <- replicate(100, SS.ffbs(u, TT, m, p=1, h, Sik, Q), simplify=FALSE)
 
 # Get the state estimates from the 100 simulations
 ss.est <- matrix(unlist(ss), nrow=(h*TT + h^2))

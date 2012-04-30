@@ -66,7 +66,7 @@ mc.irf(varobj, nsteps, draws=0, A0.posterior=NULL,
   VAR/BVAR:
   
   An \code{mc.irf.VAR} or \code{mc.irf.BVAR} class
-  object object that is the arrayof
+  object object that is the array of
   impulse response samples for the Monte Carlo samples
 
   \item{impulse}{\eqn{draws \times nsteps \times m^2}{ draws X nsteps X

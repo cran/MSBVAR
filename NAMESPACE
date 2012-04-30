@@ -42,19 +42,22 @@ export(
        print.posterior.fit,
        summary.forecast,
        list.print,
-       SS.draw,
+       SS.ffbs,
        sum.SS,
        mean.SS,
        plot.SS,
-       BHLK.filter,
        ddirichlet,
        rdirichlet,
        msbvar,
        gibbs.msbvar,
-       summary
+       summary,
+       initialize.msbvar,
+       simulateMSVAR,
+       simulateMSAR,
+       msvar
        )
 
-# Declare S3 methods
+# Declare S3 methods for printing and summaries
 
 S3method(print, posterior.fit.BVAR)
 S3method(print, posterior.fit.BSVAR)
@@ -73,12 +76,15 @@ S3method(summary, VAR)
 S3method(summary, BVAR)
 S3method(summary, BSVAR)
 
+# S3 method for gibbs.A0 objects
+S3method(plot, gibbs.A0)
+
+# Plot methods for IRF and forecasts
 S3method(plot, irf)
-
 S3method(plot, mc.irf)
-
 S3method(plot, forecast.VAR)
 
+# Summary and plot methods for objects of SS class.
 #S3method(summary, SS)
 S3method(sum, SS)
 S3method(mean, SS)

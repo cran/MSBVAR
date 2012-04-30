@@ -11,7 +11,8 @@
 # 20100617 : Wrote separate functions for the Beta, Sigma, and e block
 #            updates.  Cleans up the code for the gibbs.msbvar into
 #            managable chunks.
-
+# 20120113 : Replaced filtering-sampler steps for the state space with
+#            compiled Fortran code.
 
 
 ####################################################################
@@ -50,52 +51,140 @@ xpnd <- function (x, nrow = NULL)
 }
 
 ####################################################################
+# tcholpivot function for computing Choleski's of known PD matrices
+# with correction for underflow via pivoting.  Necessary to handle
+# some numerically unstable possible draws that the Gibbs sampler can
+# take with low probability.  Returns the draws after undoing the
+# pivoting and transposing for correct usage in scaling draws from the
+# relevant MVN densities.
+####################################################################
+tcholpivot <- function(x)
+{
+    tmp <- chol(x, pivot=TRUE)
+    return(t(tmp))
+}
+
+
+####################################################################
 # Sampler blocks for the MSBVAR Gibbs sampler
 ####################################################################
 # Metropolis-Hastings sampler for the transition matrix Q
-MSBVAR.Q.draw <- function(Q, SStrans, prior)
+Q.drawMH <- function(Q, SStrans, prior, h)
 {
     Q.old <- Q
-    h <- dim(Q)[1]
+
     # compute the density ordinate based on the counts.
     alpha <- SStrans + prior - matrix(1, h, h)
 
     Q.new <- t(apply(alpha, 1, rdirichlet, n=1))
 
-    # now form the components for the MH ratio
-    pnew <- ddirichlet(Q.new, SStrans + matrix(1, h, h))
-    pold <- ddirichlet(Q.old, SStrans + matrix(1, h, h))
-    gnew <- ddirichlet(Q.new, alpha)
-    gold <- ddirichlet(Q.old, alpha)
+    eta.new <- eta.ergodic(Q.new,h)
+    eta.old <- eta.ergodic(Q.old,h)
 
-    A <- sum(log(pnew, gold)) - sum(log(pold, gnew))
-    A <- ifelse(is.na(A)==TRUE, -100, A)
+    # acceptance rate
+    # assume initial state is state 1
+    A <- eta.new[1] / eta.old[1]
 
-    if( log(runif(1)) > A ) return(Q.old) else return(Q.new)
+    if (runif(1) < A) {
+        # need to add acceptance ratio calculations here
+        # e.g., accsum <- accsum + 1
+        return(Q.new)
+    } else {
+        return(Q.old)
+    }
 }
+
+# Calculate invariant probability distribution, eta,
+# when assumed distribution for initial state is ergodic
+# Fruhwirth-Schnatter 2006, page 306
+eta.ergodic <- function(Q, h)
+{
+    A <- rbind(diag(h)-Q, 1)
+    b <- solve(t(A) %*% A) %*% t(A)
+    eta <- b[,h+1]  # h by 1 column vector
+    return(eta)
+}
+
+
+# Gibbs sampler for the transition matrix Q
+Q.drawGibbs <- function(Q, SStrans, prior, h)
+{
+    # compute the density ordinate based on the counts.
+    alpha <- SStrans + prior - matrix(1, h, h)
+    # Sample
+    Q.new <- t(apply(alpha, 1, rdirichlet, n=1))
+    return(Q.new)
+}
+
 
 ####################################################################
 # State-space sampling for the regimes -- this is the FFBS
-# implementation.  Actual work is done by calling compiled C code in
-# the package
+# implementation.  Actual work is done by calling compiled Fortran
+# code in the package
 ####################################################################
+## oldSS.ffbs <- function(e, bigt, m, p, h, sig2, Q)
+## {
+##     TT <- bigt-p
+##     SStmp <- .Fortran("FFBS",
+##                       bigt=as.integer(bigt),
+##                       m = as.integer(m), p = as.integer(p),
+##                       h = as.integer(h), e = e, sig2 = sig2,
+##                       Q = Q, f = double(1),
+##                       filtprSt = matrix(0,as.integer(TT),as.integer(h)),
+##                       SS = matrix(as.integer(0),
+##                                   as.integer(TT),as.integer(h)),
+##                       transmat = matrix(as.integer(0),
+##                                         as.integer(h),as.integer(h))
+##                       )
 
-SS.draw <- function(u, TT, m, h, Sik, Q)
+##     # Output
+##     ss <- list(SS=SStmp$SS, transitions=SStmp$transmat)
+##     return(ss)
+## }
+
+SS.ffbs <- function(e, bigt, m, p, h, sig2, Q)
 {
-    u.vec <- matrix(0, (TT*m), h); sig.vec <- matrix(0,m*m,h)
-    for(i in 1:h){
-        u.vec[,i] <- as.vector(t(u[,,i]))
-        sig.vec[,i] <- as.vector(Sik[,,i])
-    }
 
-    # Compute the steady state / ergodic Q for the initialization.
-    SQ <- steady.Q(Q)
+    # Hamilton's forward filter
 
-    # Sample the state space sampler
-    ss <- .Call("SS.newdraw.cpp", u.vec, sig.vec, Q, SQ,
-                as.integer(TT), as.integer(h), as.integer(m))
+    ff <- .Fortran('ForwardFilter',
+                   nvar=as.integer(m), e=e,
+                   bigK=as.integer(h), bigT=as.integer(bigt),
+                   nbeta=as.integer(1+m*p),
+                   sig2, Q,
+                   llh=double(1),
+                   pfilt=matrix(0,bigt+1,h))
+
+    # Backwards multi-move sampler
+
+    # Draw random Unif(0,1) to feed into backwards sampler.
+    # Doing this on the R side (rather than using RAND() in Fortran)
+    # allows to control the seed.
+    rvu <- runif(bigt+1)
+
+    bs <- .Fortran('BackwardSampler',
+                   bigK=as.integer(h),bigT=as.integer(bigt),
+                   ff$pfilt,Q,rvu,
+                   backsamp.bigS=integer(bigt+1),
+                   transmat=matrix(as.integer(0),h,h))
+
+    # Now, convert the draws in backsamp.bigS (1,2,3,...)
+    # to matrix of zeros and ones.
+    # Includes initial state, we remove in the below ([-1])
+    matSS <- matrix(as.integer(matrix(seq(1,h), bigt, h,
+                                      byrow=TRUE)==bs$backsamp.bigS[-1]),
+                    bigt, h)
+
+    # Output:
+    # 1) SS = state-space
+    # 2) transitions = transition matrix
+    # 3) llf = log-likelihood computed by the filter
+    ss <- list(SS=matSS, transitions=bs$transmat, llf=ff$llh)
     return(ss)
 }
+
+
+
 
 ####################################################################
 # Sample the error covariances for each state
@@ -108,20 +197,26 @@ Sigma.draw <- function(m, h, ss, hreg, Sigmai)
     # then need to be unwound into the matrices we need.
 
     # Unscaled inverse Wishart draws
-    df <- colSums(ss$SS)
+    df <- hreg$df
     tmp <- array(unlist(lapply(sapply(1:h,
                                       function(i) {rwishart(N=1,
-                                                            df=df[i]+m,
+                                                            df=df[i]+m+1,
                                                             Sigma=diag(m))},
                                       simplify=FALSE), solve)), c(m,m,h))
+
+    wishscale <- hreg$Sigmak
 
     # Scale the draws for each regime
     for (i in 1:h)
     {
-        Sigmai[,,i] <- t(chol(hreg$Sigma[,,i]))%*%(tmp[,,i]*(df[i]))%*%chol(hreg$Sigma[,,i])
+#        dc <- tcholpivot(hreg$Sigmak[,,i])
+        dc <- t(chol(hreg$Sigmak[,,i]))
+        Sigmai[,,i] <- dc%*%(tmp[,,i]*(df[i]+m+1))%*%t(dc)
+        wishscale[,,i] <- wishscale[,,i]*(df[i]+m+1)
     }
 
-    return(Sigmai)
+
+    return(list(Sigmai=Sigmai, wishscale=wishscale))
 }
 
 ####################################################################
@@ -130,26 +225,52 @@ Sigma.draw <- function(m, h, ss, hreg, Sigmai)
 
 Beta.draw <- function(m, p, h, Sigmai, hreg, init.model, Betai)
 {
-    for(i in 1:h) {
-        # Get the variance of the regressors
-        bcoefs.se <- t(chol(kronecker(Sigmai[,,i],
-                                      solve(hreg$moment[[i]]$Sxx +
-                                            init.model$hstar))))
+    mmp1 <- m*(m*p+1)
+    Beta.cpprec <- Beta.cpv <- array(NA, c(mmp1,mmp1,h))
+
+    for(i in 1:h)
+    {
+        # Set up some the moments we need
+        # 1) (X'X)^{-1} with the prior included -- see regression step
+        # 2) Use the fact that the inverses and Kroneckers can be
+        # switched around.
+        # 3) Compute the posterior precision and variance on the fly
+        # for later use
+
+        # Robust version that uses stable choleskys to do the
+        # computation
+        Beta.cpprec[,,i] <- kronecker(Sigmai[,,i], hreg$moment[[i]]$Sxx
+                                 + init.model$H0)
+        Beta.cpv[,,i] <- chol2inv(chol(Beta.cpprec[,,i]))
+
+        bcoefs.se <- t(chol(Beta.cpv[,,i]))
+
         # Sample the regressors
-        Betai[,,i] <- hreg$Bk[,,i] + matrix(bcoefs.se%*%matrix(rnorm(m^2*p+m), ncol=1), ncol=m)
+        Betai[,,i] <- hreg$Bk[,,i] +
+            matrix(bcoefs.se%*%matrix(rnorm(m^2*p+m), ncol=1), ncol=m)
     }
 
-    return(Betai)
+    # Returns
+    # 1) Betai = the MCMC draw
+    # 2) Beta.cpm = conditional posterior mean
+    # 3) Beta.cpprec = conditional posterior precision
+    # 4) Beta.cpv = conditional posterior variance
+
+    return(list(Betai=Betai, Beta.cpm=hreg$Bk, Beta.cpprec=Beta.cpprec,
+                Beta.cpv=Beta.cpv))
 }
 
 ####################################################################
 # Update the residuals for each state
+# Start with m+2 residual, since the others are part of the dummy
+# observations for the prior.
 ####################################################################
 residual.update <- function(m, h, init.model, Betai, e)
 {
     for(i in 1:h)
     {
-        e[,,i] <- init.model$Y[(m+1):nrow(init.model$Y),] - init.model$X[(m+1):nrow(init.model$X),]%*%Betai[,,i]
+        e[,,i] <- init.model$Y[(m+2):nrow(init.model$Y),] -
+            init.model$X[(m+2):nrow(init.model$X),]%*%Betai[,,i]
     }
     return(e)
 }
@@ -167,7 +288,7 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
         rp <- sort(runif(h), index.return=TRUE)$ix
 
         Sigmaitmp <- x$Sigmai; Betaitmp <- x$Betai
-        etmp <- x$e; sstmp <- x$ss
+        etmp <- x$e; sstmp <- x$ss; df <- x$df
 
         for(i in 1:h)
         {
@@ -179,7 +300,9 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
 
         Q <- x$Q[rp,rp]
         sstmp$transitions <- x$ss$transitions[rp, rp]
-        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp, ss=sstmp, e=etmp, Q=Q))
+        df <- df[rp]
+        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp,
+                    ss=sstmp, e=etmp, Q=Q, df=df))
     }
 
     # Sort regimes based on values of regressors in Beta using the
@@ -193,6 +316,7 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
         Betaitmp <- x$Betai
         etmp <- x$e
         sstmp <- x$ss
+        df <- x$df
 
         for(i in 1:h)
         {
@@ -204,7 +328,9 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
 
         Q <- x$Q[ix,ix]
         sstmp$transitions <- x$ss$transitions[ix, ix]
-        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp, ss=sstmp, e=etmp, Q=Q))
+        df <- df[ix]
+        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp, ss=sstmp,
+                    e=etmp, Q=Q, df=df))
     }
 
     # Sort regimes based on values of the Sigma matrix element
@@ -218,6 +344,7 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
         Betaitmp <- x$Betai
         etmp <- x$e
         sstmp <- x$ss
+        df <- x$df
 
         for(i in 1:h)
         {
@@ -229,18 +356,61 @@ PermuteFlip <- function(x, h, permute, Beta.idx, Sigma.idx)
 
         Q <- x$Q[ix,ix]
         sstmp$transitions <- x$ss$transitions[ix, ix]
-        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp, ss=sstmp, e=etmp, Q=Q))
+        df <- df[ix]
+        return(list(Betai=Betaitmp, Sigmai=Sigmaitmp, ss=sstmp,
+                    e=etmp, Q=Q, df=df))
     }
 }
 
+######################################################################
+# marginal.moments() Computes the marginal moments for the conditional
+# posterior of Beta and Sigma for the given prior.  These computations
+# are necessary for later evaluation of the marginal likelihood.  So
+# this function is called conditionally after the regression draws are
+# made in order to get the conditional moments.
+######################################################################
+
+## marginal.moments <- function(h, Betai, Sigmai, hreg, init.model)
+## {
+##     # Constants we need up front
+##     tmp <- dim(Betai)
+##     mp1 <- tmp[1]
+##     m <- tmp[2]
+##     h <- tmp[3]
+
+##     prior.b0m <- as.vector(rbind(diag(m), matrix(0, m*(p-1)+1, m)))
+
+##     # Storage
+
+##     for(i in 1:h)
+##     {
+##         Sinv <- chol2inv(chol(Sigmai[,,i]))
+##         SiginvXX <- kronecker(Sinv, hreg$moment[[i]]$Sxx)
+
+##         # Compute the conditional posterior precision, B|S^{-1}
+##         beta.prec <- kronecker(Sinv, init.model$H0) + SiginvXX
+
+##         # Compute conditional posterior variance, B|S
+##         beta.cpv <- chol2inv(chol(beta.prec))
+
+##         # Compute the conditional posterior mean
+##         bhat <- kronecker(Sinv, diag(mp1)) %*% as.vector(hreg$moment[[i]]$Sxy)
+##         beta.cpm <- beta.cpv %*% kronecker(Sinv, init.model$H0) + bhat
+
+##         # Flatten things out for later storage
+
+##     }
+##     return()
+## }
 
 ####################################################################
 # Full MCMC sampler for MSBVAR models with SZ prior
 ####################################################################
 
-gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
+gibbs.msbvar <- function(x, N1=1000, N2=1000,
+                         permute=TRUE,
                          Beta.idx=NULL, Sigma.idx=NULL,
-                         posterior.fit=FALSE)
+                         Q.method="MH")
 {
     # Do some sanity / error checking on the inputs so people know
     # what they are getting back
@@ -256,6 +426,10 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
         is.null(Sigma.idx)==TRUE)){
         cat("You have set permute=FALSE, but failed to provide an identification to label the regimes.\n Set Beta.idx or Sigma.idx != NULL")
     }
+
+    # Set the sampler method for Q based on inputs
+    if(Q.method=="Gibbs") Qsampler <- Q.drawGibbs
+    if(Q.method=="MH") Qsampler <- Q.drawMH
 
     # Initializations
     init.model <- x$init.model
@@ -276,20 +450,33 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
     # Burnin loop
     for(j in 1:N1)
     {
-        # Smooth / draw the state-space
-        ss <- SS.draw(e, TT, m, h, Sigmai, Q)
+        # Smooth / draw the state-space, with checks for the
+        # degeneracy of the state-space on the R side.
+##         oldtran <- matrix(0,h,h)
 
+##         while(sum(diag(oldtran)==0)>0)
+##         {
+##             ss <- SS.ffbs(e, (TT+p), m, p, h, Sigmai, Q) # may need p=0
+##             oldtran <- ss$transitions
+## #            print(oldtran)
+##         }
+
+        ss <- SS.ffbs(e, TT, m, p, h, Sigmai, Q)
+
+#        print(ss$transitions)
         # Draw Q
-        Q <- MSBVAR.Q.draw(Q, ss$transitions, prior=alpha.prior)
+        Q <- Qsampler(Q, ss$transitions, prior=alpha.prior, h)
 
         # Update the regression step
-        hreg <- hregime.reg2(h, m, p, TT, ss$SS, init.model)
+        hreg <- hregime.reg2(h, m, p, ss$SS, init.model)
 
         # Draw the variance matrices for each regime
-        Sigmai <- Sigma.draw(m, h, ss, hreg, Sigmai)
+        Sout <- Sigma.draw(m, h, ss, hreg, Sigmai)
+        Sigmai <- Sout$Sigmai
 
         # Sample the regression coefficients
-        Betai <- Beta.draw(m, p, h, Sigmai, hreg, init.model, Betai)
+        Bout <- Beta.draw(m, p, h, Sigmai, hreg, init.model, Betai)
+        Betai <- Bout$Betai
 
         # Update the residuals
         e <- residual.update(m, h, init.model, Betai, e)
@@ -298,7 +485,7 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
         # for the permutation or sort the regimes based on the
         # Beta.idx or Sigma.idx conditions.
         pf.obj <- PermuteFlip(x=list(Betai=Betai, Sigmai=Sigmai,
-                                     ss=ss, e=e, Q=Q),
+                                     ss=ss, e=e, Q=Q, df=hreg$df),
                               h, permute, Beta.idx, Sigma.idx)
 
         # Replace sampler objects with permuted / flipped ones
@@ -321,6 +508,21 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
     Beta.storage <- matrix(NA, N2, (m^2*p+m)*h)
     Sigma.storage <- matrix(NA, N2, m*(m+1)*0.5*h)
     Q.storage <- matrix(NA, N2, h^2)
+    llf <- matrix(NA, N2, 1)
+
+    # Storage for the conditional posterior moments when permute==TRUE
+    if(permute==TRUE)
+    {
+        # Conditional posterior moments
+        Beta.cpm <- matrix(NA, N2, (m^2*p+m)*h)
+        Sigma.wishscale <- matrix(NA, N2, 0.5*m*(m+1)*h)
+        tmpdim <- m*((m*p)+1)
+        Beta.cpprec <- Beta.cpv <- matrix(NA, N2, 0.5*tmpdim*(tmpdim+1)*h)
+        # Sigma / Wishart df moments
+        df.storage <- matrix(NA, N2, h)
+        # Q, conditional posterior
+        Q.cp <- matrix(NA, N2, h^2)
+    }
 
     # Main loop after the burnin -- these are the sweeps that are kept
     # for the final posterior sample.
@@ -329,19 +531,31 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
     for(j in 1:N2)
     {
         # Draw the state-space
-        ss <- SS.draw(e, TT, m, h, Sigmai, Q)
+        # Smooth / draw the state-space, with checks for the
+        # degeneracy of the state-space on the R side.
+        ## oldtran <- matrix(0,h,h)
+
+        ## while(sum(diag(oldtran)==0)>0)
+        ## {
+        ##     ss <- SS.ffbs(e, (TT+p), m, p, h, Sigmai, Q) # may need p=0
+        ##     oldtran <- ss$transitions
+        ## }
+
+        ss <- SS.ffbs(e, TT, m, p, h, Sigmai, Q)
 
         # Draw Q
-        Q <- MSBVAR.Q.draw(Q, ss$transitions, prior=alpha.prior)
+        Q <- Qsampler(Q, ss$transitions, prior=alpha.prior, h)
 
         # Update the regression step
-        hreg <- hregime.reg2(h, m, p, TT, ss$SS, init.model)
+        hreg <- hregime.reg2(h, m, p, ss$SS, init.model)
 
         # Draw the variance matrices for each regime
-        Sigmai <- Sigma.draw(m, h, ss, hreg, Sigmai)
+        Sout <- Sigma.draw(m, h, ss, hreg, Sigmai)
+        Sigmai <- Sout$Sigmai
 
         # Sample the regression coefficients
-        Betai <- Beta.draw(m, p, h, Sigmai, hreg, init.model, Betai)
+        Bout <- Beta.draw(m, p, h, Sigmai, hreg, init.model, Betai)
+        Betai <- Bout$Betai
 
         # Update the residuals
         e <- residual.update(m, h, init.model, Betai, e)
@@ -350,7 +564,7 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
         # for the permutation or sort the regimes based on the
         # Beta.idx or Sigma.idx conditions.
         pf.obj <- PermuteFlip(x=list(Betai=Betai, Sigmai=Sigmai,
-                                     ss=ss, e=e, Q=Q),
+                              ss=ss, e=e, Q=Q, df=hreg$df),
                               h, permute, Beta.idx, Sigma.idx)
 
         # Replace sampler objects with permuted / flipped ones
@@ -359,6 +573,7 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
         ss <- pf.obj$ss
         e <- pf.obj$e
         Q <- pf.obj$Q
+        df <- pf.obj$df
 
         # Store things -- after flip / identification
         Sigma.storage[j,] <- as.vector(apply(Sigmai, 3, vech))
@@ -367,166 +582,138 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000, permute=TRUE,
         transition.storage[,,j] <- ss$transitions
         Q.storage[j,] <- as.vector(Q)
 
+        # Store the llf
+        llf[j,1] <- ss$llf
+
+        # Store conditional posterior moments
+        if(permute==TRUE)
+        {
+            Beta.cpm[j,] <- as.vector(Bout$Beta.cpm)
+            Beta.cpprec[j,] <- as.vector(apply(Bout$Beta.cpprec, 3, vech))
+            Beta.cpv [j,] <- as.vector(apply(Bout$Beta.cpv, 3, vech))
+            Sigma.wishscale[j,] <- as.vector(apply(Sout$wishscale, 3, vech))
+            df.storage[j,] <- df
+            Q.cp[j,] <- as.vector(ss$transitions + alpha.prior)
+        }
+
         # Print out some iteration information
         if(j%%1000==0) cat("Final iteration : ", j, "\n")
     }
 
-    #################################################################
-    # Compute the posterior fit if requested -- this is the logMDD
-    # computation in the algo.
-    #
-    # This section should be later unloaded to posterior.fit with a
-    # class.
-    #################################################################
-
-    pfit <- NA
-
-    if(posterior.fit==TRUE & permute==TRUE)
-    {
-        cat("The options posterior.fit==TRUE and permute==TRUE do not make sense.\nInference is only meaningful for the identified regimes.\nPosterior fit measure has not been computed\n")
-    }
-
-    if(posterior.fit==TRUE & permute==FALSE)
-    {
-
-    # Find the posterior mode for each component of the model
-    Beta.mean <- array(apply(Beta.storage, 2, mean), c(m*p + 1, m, h))
-    Sigma.part <- matrix(apply(Sigma.storage, 2, mean), ncol=h)
-    Sigma.mean <- array(sapply(1:h,
-                               function(i){xpnd(Sigma.part[,i])}), c(m,m,h))
-
-    Q.mean <- matrix(apply(Q.storage, 2, mean), h, h)
-
-    ss.mean <- apply(matrix(unlist(lapply(ss.storage, as.integer)),
-                            TT, N2), 1, sum)
-    ss.mean <- matrix(ss.mean, TT, h-1)
-    ss.mean <- cbind(ss.mean, rep(N2, TT) - rowSums(ss.mean))/N2
-
-    # Compute the log priors
-    B0 <- matrix(0, m*p + 1, m)
-    diag(B0) <- 1
-    BS <- kronecker(x$init.model$S0, solve(x$init.model$H0))
-    log.B0 <- sum(sapply(1:h, function(i){dmvnorm(as.vector(Beta.mean[,,i]),
-                                                  mean=as.vector(B0),
-                                                  sigma=BS,
-                                                  log=TRUE)}))
-
-    log.S0 <- sum(sapply(1:h, function(i){ldwishart(solve(x$init.model$S0),
-                                                    round(colSums(ss.mean))[i],
-                                                    solve(Sigma.mean[,,i]))}))
-
-    log.Q <- sum(log(ddirichlet(Q.mean, alpha.prior)))
-
-    # Compute the log likelihood
-    tmp <- hregime.reg2(h, m, p, TT, ss.mean, init.model)
-
-    ll <- sum(sapply(1:h, function(i){dmvnorm(tmp$e[,,i],
-                                              mean=rep(0,m),
-                                              sigma=Sigma.mean[,,i],
-                                              log=TRUE)}))
-
-    # Find the pdf of the model parameters -- this is evaluating the
-    # mode at each of the draws.
-
-    pdf.Sigma <- pdf.Q <- rep(NA,N2)
-    pdf.Beta <- matrix(NA, N2, h)
-
-    hreg <- hregime.reg2(h, m, p, TT, ss.mean, init.model)
-
-    # No need to permute here since we working with the identified
-    # posterior mode.
-    X <- init.model$X[(m+1):nrow(init.model$X),]
-
-    for(i in 1:N2)
-    {
-        # Pr(Q | Beta, Sigma, y, S) -- resimulate the state-space,
-        # redraw Q and then find the density at the mode.
-
-        pdf.Q[i] <- prod(ddirichlet(matrix(Q.mean, h, h),
-                                    transition.storage[,,i] + alpha.prior))
-
-        # Pr(Sigma | Beta, Q, y, S)
-        Sigmai <- matrix(Sigma.storage[i,], ncol=h)
-        Sigmai <- array(sapply(1:h, function(j){xpnd(Sigmai[,j])}),
-                        c(m,m,h))
-        dftmp <- matrix(as.integer(ss.storage[[i]]), ncol=h-1)
-        dftmp <- cbind(dftmp, 1 - rowSums(dftmp))
-        df <- colSums(dftmp)
-        pdf.Sigma[i] <- sum(sapply(1:h,
-                                function(j){ldwishart(Sigma.mean[,,j],
-                                                      df[j],
-                                                      Sigmai[,,j])}))
-
-        # Pr(Beta | Sigma, Q, y, S)
-
-        # Compute the var-cov of the coefficients from the sample.
-        # Need to get the X'X matrix for the state for the computation
-        ss <- matrix(as.integer(ss.storage[[i]]), ncol=h-1)
-        ss <- cbind(ss, rep(1, TT) - rowSums(ss))
-
-        Betai <- matrix(Beta.storage[i,], ncol=h)
-
-        for(j in 1:h)
-        {
-            XX <- crossprod(X, diag(ss[,j]))%*%X +
-                  crossprod(init.model$X[1:(m+1),]) + init.model$H0
-
-            BS <- kronecker(Sigmai[,,j], solve(XX))
-            pdf.Beta[i,j] <- dmvnorm(as.vector(Beta.mean[,,j]),
-                                     mean=Betai[,j],
-                                     sigma=BS, log=TRUE)
-        }
-
-    }
-
-    # log pdf components computation
-    log.pdf.Q <- log(mean(pdf.Q))
-
-    log.pdf.Sigma <- pdf.Sigma
-    log.pdf.Sigma.max <- max(pdf.Sigma)
-    qlog1 <- log.pdf.Sigma - log.pdf.Sigma.max
-    log.pdf.Sigma <- log.pdf.Sigma.max - log(N2) + log(sum(exp(qlog1)))
-
-    log.pdf.Beta <- apply(pdf.Beta, 1, sum)
-    log.pdf.Beta.max <- max(log.pdf.Beta)
-    qlog2 <- log.pdf.Beta - log.pdf.Beta.max
-    log.pdf.Beta <- log.pdf.Beta.max - log(N2) + log(sum(exp(qlog2)))
-
-    log.prior <- log.B0 + log.S0 + log.Q
-
-    # Do the log marginal density calculation
-    num <- ll + log.prior
-    den <- log.pdf.Q + log.pdf.Sigma + log.pdf.Beta
-
-    lmdd <- num - den
-
-    # Store the results for the fit measures
-    pfit <- list(log.llf=ll,
-                 log.prior=log.prior,
-                 log.marginal.data.density=lmdd,
-                 log.pdf.Q=log.pdf.Q,
-                 log.pdf.Sigma=log.pdf.Sigma,
-                 log.pdf.Beta=log.pdf.Beta,
-                 log.marginal.posterior=den)
-
-}  # End of loop for the iterations for the posterior fit blocks
-
     # Now make an output object and provide classing
     class(ss.storage) <- c("SS")
-    class(pfit) <- c("posterior.fit.MSBVAR")
 
-    output <- list(Beta.sample=mcmc(Beta.storage),
-                   Sigma.sample=mcmc(Sigma.storage),
-                   Q.sample=mcmc(Q.storage),
-                   transition.sample=transition.storage,
-                   ss.sample=ss.storage,
-                   pfit=pfit,
-                   init.model=init.model,
-                   h=h,
-                   p=p,
-                   m=m)
+    if(permute==FALSE)
+    {
+        output <- list(Beta.sample=mcmc(Beta.storage),
+                       Sigma.sample=mcmc(Sigma.storage),
+                       Q.sample=mcmc(Q.storage),
+                       transition.sample=transition.storage,
+                       ss.sample=ss.storage,
+                       llf=llf,
+                       init.model=init.model,
+                       alpha.prior=alpha.prior,
+                       h=h,
+                       p=p,
+                       m=m)
+    } else {
+        output <- list(Beta.sample=mcmc(Beta.storage),
+                       Sigma.sample=mcmc(Sigma.storage),
+                       Q.sample=mcmc(Q.storage),
+                       transition.sample=transition.storage,
+                       ss.sample=ss.storage,
+                       llf=llf,
+                       init.model=init.model,
+                       alpha.prior=alpha.prior,
+                       h=h,
+                       p=p,
+                       m=m,
+                       Beta.cpm=Beta.cpm,
+                       Beta.cpprec=Beta.cpprec,
+                       Beta.cpv=Beta.cpv,
+                       Sigma.wishscale=Sigma.wishscale,
+                       df=df.storage,
+                       Q.cp=Q.cp)
+    }
 
+    # Class the equation name information
     class(output) <- c("MSBVAR")
     attr(output, "eqnames") <- attr(init.model, "eqnames")
+
+    # Keep track of the regime identification properties from
+    # estimation.
+    attr(output, "permute") <- permute
+    attr(output, "Beta.idx") <- Beta.idx
+    attr(output, "Sigma.idx") <- Sigma.idx
+    attr(output, "Qsampler") <- Q.method
+
+    # ts attributes for inputs to later plotting and summary functions
+    # for the states.
+    tmp <- tsp(init.model$y)
+    attr(output, "start") <- tmp[1]
+    attr(output, "end") <- tmp[2]
+    attr(output, "freq") <- tmp[3]
+
     return(output)
 }
+
+################################################################
+# Deprecated code
+################################################################
+
+# R code for legacy purposes
+#SS.ffbs(e, TT+p, m, p, h, Sigmai, Q)
+#SS.ffbs <- function(e, bigt, m, p, h, sig2, Q)
+#{
+#  TT <- bigt-p
+#
+#  # Forward-filtering
+#  fHam <- .Fortran("HamiltonFilter",
+#                   bigt=as.integer(bigt),
+#                   m = as.integer(m), p = as.integer(p), h = as.integer(h),
+#                   e = e,
+#                   sig2 = sig2,
+#                   Q = Q,
+#                   f = double(1),
+#                   filtprSt = matrix(0,as.integer(TT),as.integer(h))
+#                   )
+#  fpH <- fHam$filtprSt
+#
+#  # Backwards-sampling
+#  SS <- matrix(0, nrow=TT, ncol=h)
+#  SS[TT,] <- bingen(fpH[TT,], Q, 1, h)
+#  for (t in (TT-1):1)
+#  {
+#    SS[t,] <- bingen(fpH[t,], Q, which(SS[t+1,]==1), h)
+#  }
+#
+#  # Construct STT (TTx1 vector of regimes)
+#  STT <- rep(0,TT)
+#  for (ist in 1:TT) {
+#    STT[ist] <- which(SS[ist,]==1)
+#  }
+#
+#  # Construct transition matrix
+#  transmat <- matrix(0,h,h)
+#
+#  for (ist in 1:(TT-1)) {
+#    transmat[STT[ist+1], STT[ist]] <- transmat[STT[ist+1], STT[ist]] + 1
+#  }
+#
+#  ss <- list(SS=SS,
+#             transitions=transmat)
+#
+#  return(ss)
+#}
+#
+#bingen <- function(prob, Q, st1, h)
+#{
+#  i <- 1
+#  while(i<h)
+#  {
+#    pr0 <- prob[i]*Q[st1,i]/sum(prob[i:h]*Q[st1,i:h])
+#    if(runif(1)<=pr0)
+#    { return(diag(h)[i,]) } else { st1 <- i <- i+1 }
+#  }
+#  return(diag(h)[h,])
+#}

@@ -1,6 +1,13 @@
+# Generate forecast methods for the models in the MSBVAR package
+#
+# Patrick T. Brandt
+#
+# 20120621 : Updated to include MSBVAR forecast functions.
+
 "forecast" <- function(varobj, nsteps, A0=t(chol(varobj$mean.S)),
                        shocks=matrix(0,nrow=nsteps,ncol=dim(varobj$ar.coefs)[1]),
-                       exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)))
+                       exog.fut=matrix(0,nrow=nsteps,ncol=nrow(varobj$exog.coefs)),
+                       N1, N2)
 {
     if(inherits(varobj,"VAR")){
         return(forecast.VAR(varobj, nsteps, A0=A0,
@@ -15,6 +22,10 @@
     if(inherits(varobj, "BSVAR")){
         return(forecast.VAR(varobj, nsteps, A0=solve(varobj$A0.mode),
                        shocks=shocks, exog.fut=exog.fut))
+    }
+
+    if(inherits(varobj, "MSBVAR")){
+        return(forecast.MSBVAR(x=varobj, k=nsteps, N1, N2))
     }
 }
 
@@ -74,7 +85,8 @@ function(varobj, nsteps, A0, shocks, exog.fut)
     return(output)
 }
 
-"uc.forecast" <- function(varobj, nsteps, burnin, gibbs, exog=NULL)
+"uc.forecast" <- function(varobj, nsteps, burnin, gibbs,
+                          exog=NULL)
 {
     if(inherits(varobj, "VAR"))
     {
@@ -102,7 +114,7 @@ function(varobj, nsteps, A0, shocks, exog.fut)
     }
 }
 
-"uc.forecast.VAR" <- function(varobj, nsteps, burnin, gibbs, exog=NULL)
+"uc.forecast.VAR" <- function(varobj, nsteps, burnin, gibbs, exog)
   { # Extract all the elements from the VAR object
     y <- varobj$y
     ar.coefs <- varobj$ar.coefs
@@ -154,7 +166,8 @@ function(varobj, nsteps, A0, shocks, exog.fut)
       epsilon.i <- matrix(rnorm(nsteps*m),nrow=nsteps,ncol=m)
 
       # Then construct a forecast using the innovations
-      ytmp <- forecast.VAR(varobj, nsteps, A0=A0, shocks=epsilon.i)
+      ytmp <- forecast.VAR(varobj, nsteps, A0=A0, shocks=epsilon.i,
+                           exog)
 
       # Store draws that are past the burnin in the array
       if(i>burnin)
@@ -498,6 +511,391 @@ function(varobj, yconst, nsteps, burnin, gibbs, exog=NULL)
     # Returns a list object
     output <- list(forecast=yforc, orig.y=y) #llf=ts(llf),hyperp=c(mu,prior)))
     attr(output, "class") <- c("forecast.VAR")
+    return(output)
+}
+
+
+# Forecasting function for MSBVAR models.
+#
+# 20110113 : Initial version
+# 20110628 : Clean out remaining bugs on DF corrections for
+#            observations
+# 20120207 : Updated to work with revisions to MSBVAR
+
+###### MSBVARfcast #####
+# Forecast for one draw -- this is an internal function that only
+# returns the forecasts averaged over the regimes.
+#
+# Inputs :
+# y = data modeled + forecast steps
+# k = number of forecast steps
+# h = number of regimesq
+# ar.coefs = array of c(m,m,p,h) for the MSBVAR
+# intercepts = array of c(m,h) for the intercepts
+# Sigma = array of c(m.m,h) for the variances
+# shock = array of c(k,m,h) for the shocks
+# ss = matrix of c(k,h) for the regimes
+
+MSBVARfcast <- function(y, k, h, ar.coefs, intercepts, shocks, ss)
+{
+    # Get constants
+    dims <- dim(ar.coefs)
+    m <- dims[1]
+    p <- dims[3]
+    capT <- nrow(y)
+
+    # Set up the object to hold the forecasts
+    # Zero out forecast periods so we can cumulate sums over time,
+    # lags, and regimes to get the correct weighted forecast.
+
+    forcs <- rbind(y, matrix(0, k, m))
+
+    for(j in 1:k)     # Loop over forecast steps
+    {
+        for(i in 1:h) # Now over the regime weights, multiplying by
+                      # the regime weights and aggregating
+        {
+            forcs[capT + j,] <- forcs[capT+j,] +
+                                ss[(capT+j),i]*(forcs[capT + j - 1,] %*%
+                                                ar.coefs[,,1,i] + intercepts[,i] + shocks[j,,i])
+            # Now add in the other lags -- be sure they are from the
+            # right state!
+            if(p>1) { for(lg in 2:p)
+                      { forcs[capT + j, ] <- (forcs[capT + j, ] +
+                                              ss[(capT+j-lg),i]*(forcs[capT + j - lg, ] %*% ar.coefs[,,lg,i]))
+                    }
+                  }
+        }
+    }
+
+    return(forcs[(capT+1):(capT+k),])
+}
+
+# Betai2coefs
+# Converts the draw Betai into arrays of AR coefficents for each
+# regime and the intercepts
+Betai2coefs <- function(Betai, m, p, h)
+{
+    ar.coefsi <- array(0, c(m,m,p,h))
+    for(i in 1:h)
+    {
+        tmp <- t(Betai[1:(m*p),,i])
+        dim(tmp) <- c(m,m,p)
+        ar.coefsi[,,,i] <- aperm(tmp, c(2,1,3))  # lags then regimes.
+#        ar.coefs[,,,i] <- tmp
+}
+    intercepts <- Betai[(m*p+1),,]
+    return(list(ar.coefsi=ar.coefsi, intercepts=intercepts))
+}
+
+
+updateinit <- function(Y, init.model)
+{
+    n<-nrow(Y);	 	# of observations in data set
+    m<-ncol(Y)	# of variables in data set
+    p <- init.model$p
+
+    # Compute the number of coefficients
+    ncoef<-(m*p)+1;  # AR coefficients plus intercept in each RF equation
+    ndum<-m+1;                # of dummy observations
+    capT<-n-p+ndum;   	      # # of observations used in mixed estimation (Was T)
+    Ts<-n-p;  		      # # of actual data observations @
+
+    # Declare the endoegnous variables as a matrix.
+    dat<-as.matrix(Y);
+
+    # Create data matrix including dummy observations
+    # X: Tx(m*p+1)
+    # Y: Txm, ndum=m+1 prior dummy obs (sums of coeffs and coint).
+	# mean of the first p data values = initial conditions
+    if(p==1)
+      { datint <- as.vector(dat[1,]) }
+    else
+      { datint<-as.vector(apply(dat[1:p,],2,mean)) }
+
+    # Y and X matrices with m+1 initial dummy observations
+    X<-matrix(0, nrow=capT, ncol=ncoef)
+    Y<-matrix(0, nrow=capT, ncol=m)
+    const<-matrix(1, nrow=capT)
+    const[1:m,]<-0;	         # no constant for the first m periods
+    X[,ncoef]<-const;
+
+    # Build the dummy observations we need
+    for(i in 1:m)
+      {
+        Y[ndum,i]<-datint[i];
+        Y[i,i]<-datint[i];
+        for(j in 1:p)
+          { X[ndum,m*(j-1)+i]<-datint[i];
+            X[i,m*(j-1)+i]<-datint[i];
+          }
+      }
+
+    # Note that constant is put last here when the lags are made
+    for(i in 1:p)
+      { X[(ndum+1):capT,(m*(i-1)+1):(m*i)]<-matrix(dat[(p+1-i):(n-i),],ncol=m)
+      }
+
+     # Put on the exogenous regressors and make the constant the
+     # first exog regressor after the AR coefs
+    ## if(is.null(z)==F)
+    ##   {
+    ##     pad.z <- matrix(0,nrow=capT,ncol=ncol(z))
+    ##     pad.z[(ndum+1):capT,] <- matrix(z[(p+1):n,], ncol=ncol(z))
+    ##     X<-cbind(X,pad.z);
+    ##   }
+
+    # Get the corresponding values of Y
+    Y[(ndum+1):capT,]<-matrix(dat[(p+1):n,],ncol=m);
+
+    # Weight dummy observations
+    X[1:m,] <- init.model$prior[6]*X[1:m,];
+    Y[1:m,] <- init.model$prior[6]*Y[1:m,];
+    X[ndum,] <- init.model$prior[7]*X[ndum,];
+    Y[ndum,] <- init.model$prior[7]*Y[ndum,];
+
+    init.model$X <- X
+    init.model$Y <- Y
+    init.model$hstar <- (init.model$H0 + crossprod(X))
+
+    return(init.model)
+}
+
+
+# This is an amalgam of uc.forecast and gibbs.msbvar.  In this
+# version, the same steps as gibbs.msbvar are used, but with the
+# updated data from the forecast step.
+
+# x = posterior mode object -- can either be from gibbs.msbvar or
+#     msbvar.  Need to handle identification steps or permute as
+#     appropriate.  Should warn against permuting!
+# k = number of forecast steps.
+#
+# -----------------------------------------------------------------#
+################## Steps in MSBVAR forecasting #####################
+# -----------------------------------------------------------------#
+# A) Augment the dataset from the mode -- forecasting
+# B) Update the input data
+# C) For given parameters,
+#    1) draw statespace
+#    2) update / draw Q
+#    3) update regression -- need to remake the input matrices as part
+#       of this.
+#    4) sample variances
+#    5) sample regression
+#    6) update errors
+#    7) Impose identification on the regimes (if necessary)
+# top of loop
+# -----------------------------------------------------------------#
+#
+# Initial version assumes user is inputing an identified object from
+# gibbs.msbvar().  Need to add a warning when they using an msbvar()
+#     object and reconcile this.
+#
+forecast.MSBVAR <- function(x, k, N1=1000, N2=1000)
+{
+    # Get some constants / objects
+    init.model <- x$init.model  # initial model with the prior
+                                # matrices.
+
+    # Get other constants from the input object
+    h <- x$h
+    m <- x$m
+    p <- x$p
+
+    # Set the sampler method for Q based on inputs
+    if(attr(x, "Qsampler")=="Gibbs") Qsampler <- Q.drawGibbs
+    if(attr(x, "Qsampler")=="MH") Qsampler <- Q.drawMH
+
+    # Input data
+    y <- init.model$y
+
+    # Get sample size of original dataset and the effective sample
+    TT <- capT <- nrow(init.model$y)
+
+    # Settle how we are going to handle input sample size versus the
+    # other sample sizes for the inputs / outputs.  Do this the same
+    # way as the earlier unconditional forecasting code.  In this
+    # code, we treated capT as the full original sample size minus the
+    # lags to make it match the estimator. We then
+    # manipulate from that.  We do this by always forecasting off of
+    # the original data from capT+1 to capT+k,  This is the principal
+    # in uc.forecast() and forecast.VAR and coef.forecast.VAR() [in
+    # hidden.R].  The difference here is that tbe value of capT has to
+    # be adjusted compared to what is in the other code.
+    #
+    # Principal in this is just working with data augmentation off of
+    # the original data setup.
+
+    Tp <- TT-p # effective sample
+
+    alpha.prior <- x$alpha.prior
+
+    # Get the modes for the posterior
+    Q <- matrix(apply(x$Q.sample, 2, mean), h, h)
+    Betai <- array(apply(x$Beta.sample, 2, mean), c(m*p+1, m, h))
+    tmp <- Betai2coefs(Betai, m, p, h)
+    ar.coefsi <- tmp$ar.coefsi
+    intercepts <- tmp$intercepts
+
+    Sigmai <- array(apply(matrix(apply(x$Sigma.sample, 2, mean),
+                                 m*(m+1)/2, h),
+                          2, xpnd), c(m,m,h))
+    intercepts <- Betai[(m*p+1),,]
+
+    # Extend the dataset / input data
+    # Residuals and regression
+    hreg <- hregime.reg2(h, m, p, mean.SS(x), init.model)
+    e <- array(0, c(Tp+k, m, h))
+
+    # Now take random draws from the error process for each regime to
+    # pad out initial values for the forecast periods.
+    Sigmachol <- aperm(array(apply(Sigmai, 3, chol), c(m,m,h)),
+                       c(2,1,3))
+
+    for(i in 1:h)
+    {
+        etmp <-  t(Sigmachol[,,i]%*%matrix(rnorm(k*m), m, k))
+        e[,,i] <- rbind(hreg$e[,,i], etmp)
+    }
+
+    # State-space initialization -- flat convolution of the last
+    # state!
+
+    tmpSS <- mean.SS(x)
+    sstmp <- rbind(mean.SS(x), matrix(rep(NA, k*h), k, h))
+
+    for(i in 1:k)
+    {
+        tmp <- sstmp[Tp+i-1,]%*%Q
+        sstmp[Tp+i,] <- tmp/sum(tmp)
+
+    }
+
+    transtmp <- count.transitions(sstmp)
+    ss <- list(SS=sstmp, transitions=transtmp)
+
+    # Make list objects for Beta and Sigma
+    Betai <- list(Betai=Betai)
+    Sigmai <- list(Sigmai=Sigmai)
+
+    # Storage
+    forecasts <- array(0, c(N2, k, m))
+    states <- vector("list", N2)
+
+    # Burnin loop + Final loop
+    for (j in 1:(N1+N2))
+    {
+
+        # Update the residuals
+        shocks <- array(rnorm(m*k*h), c(k, m, h))
+
+        Sigmai.chol <- aperm(array(apply(Sigmai$Sigmai, 3, chol), c(m,m,h)),
+                             c(2,1,3))
+
+        for(i in 1:h)
+         {
+#             shocks[,,i] <- Sigmai.chol[,,i]%*%shocks[,,i]
+             shocks[,,i] <- t(tcrossprod(Sigmai.chol[,,i], shocks[,,i]))
+             e[(Tp+1):(Tp+k),,i] <- (shocks[,,i])
+         }
+
+
+        # Forecast
+
+        fcast <- MSBVARfcast(y[(p+1):nrow(y),], k, h, ar.coefsi,
+                             intercepts, shocks, ss$SS)
+
+#        print(round(cbind(shocks[,,1], shocks[,,2], fcast), 2))
+
+        # Update / Draw statespace
+
+        oldtran <- matrix(0,h,h)
+
+        while(sum(diag(oldtran)==0)>0)
+        {
+            ss <- SS.ffbs(e, (Tp+k), m, p, h, Sigmai$Sigmai, Q)
+            oldtran <- ss$transitions
+        }
+
+        #print(ss$transitions)
+        ## plot(ts(ss$SS), plot.type="s", col=1:h,
+        ##      main=paste("Iteration :", j))
+
+        #if(sum(diag(ss$transitions)==0)>0) stop("Oops.")
+
+        # Draw Q
+        Q <- Qsampler(Q, ss$transitions, prior=alpha.prior, h)
+
+        # Update regression
+        # Update the model object input with the new data -- this is
+        # not very efficient right now, but it works
+
+        # Need to re-initialize the init.model object with the latest
+        # forecast data so it can be an input to the next sample calls
+        #
+        # This should be really done with some BVAR setup function
+        # that is then used in all of the later models in the pkg --
+        # something to do later for speed.
+
+        init.model <- updateinit(Y=rbind(y,fcast), init.model)
+
+        # Update regression steps
+        hreg <- hregime.reg2(h, m, p, ss$SS, init.model)
+
+        # Draw variances
+
+#        cat("Iteration :", j, "\n")
+#        print(hreg$Sigmak)
+
+        Sigmai <- Sigma.draw(m, h, ss, hreg, Sigmai$Sigmai)
+
+#        print(Sigmai)
+
+        # Draw VAR regression coefficients
+        Betai <- Beta.draw(m, p, h, Sigmai$Sigmai, hreg, init.model,
+                           Betai$Betai)
+
+        # Split out AR coefs and intercepts
+        tmp <- Betai2coefs(Betai$Betai, m, p, h)
+        ar.coefsi <- tmp$ar.coefsi
+        intercepts <- tmp$intercepts
+
+        # Update error estimate
+        e <- residual.update(m, h, init.model, Betai$Betai, e)
+
+        # Permute regimes if necessary / order regimes
+
+        # Save results if past burnin=N1.
+        # Store forecasts and states
+        if(j > N1)
+        {
+            for(i in 1:m)
+            {
+                forecasts[(j-N1),,i] <- t(fcast[,i])
+                states[[(j-N1)]] <-
+                    as.bit.integer(as.integer(ss$SS[,1:(h-1)]))
+            }
+        }
+
+        # Print out iteration information
+        if(j%%1000==0) cat("Iteration : ", j, "\n")
+    }
+
+    # Define the output object and its attributes
+    class(forecasts) <- c("forecast.MSBVAR")
+    class(states) <- c("SS")
+
+    output <- list(forecasts=forecasts, ss.sample=states, k=k, h=h)
+
+    # Add classing and attributes here.  These will be use later for
+    # the plotting and other summary functions.
+    attr(output, "eqnames") <- attr(x, "eqnames")
+    tmp <- tsp(x$init.model$y)
+    attr(output, "start") <- tmp[1]
+    attr(output, "end") <- tmp[2]
+    attr(output, "freq") <- tmp[3]
+
     return(output)
 }
 
