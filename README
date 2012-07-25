@@ -206,7 +206,9 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   and package details.
 2012-04-24 Revised computations of Sigma x (X'X)^{-1} computations in
 	   msbvar() to be more robust to near singularities.
-2012-05-XX Version 0.7-0 ready for release.
+2012-07-21 Version 0.7-0 ready for release, including new code for
+           msbvar() modeling
+2012-07-25 Version 0.7-1, corrects a bug in Fortran allocations.
 
 MSBVAR Package
 Copyright (C) 2005-2012 Patrick T. Brandt

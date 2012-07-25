@@ -1,6 +1,6 @@
 263b03fca1747f78c6f7dc74e8d028b3 *COPYING
-0afe61259bb2bd092aa99b6929566a5b *DESCRIPTION
-2d8fc655773fa8d5d956be6eac6f4119 *LICENSE
+549bf1fede25a332055aee0f07d632ac *DESCRIPTION
+b8058dd6836b4b7bd00fac7cf050ebca *LICENSE
 4229be362b179da61625b3f5657d8d6a *NAMESPACE
 c43895aaf282336d59d1a5e1b46b6e85 *R/SS.R
 6d830eb1c07d910ae9fd6bec2c3748ac *R/SZ.prior.evaluation.R
@@ -42,8 +42,8 @@ fada5ea7f491930c01e6103d356fdb4d *R/simulateMSAR.R
 4c3689e4afc1788219f4ce2349b33545 *R/szbsvar.R
 76ecb015e69c8071658d4c972dc737f8 *R/szbvar.R
 e2cfb2b344eb82c74b8cf367f999c032 *R/var.lag.specification.R
-dffde4cc9b934fc56ffc1592ea964b5e *R/zzz.R
-7a02f53b257d094f786e7161d1b59cac *README
+7039e5a1aeab76c432c388d868a66d97 *R/zzz.R
+6b06d5f4a8efa55ffa105921099d4f1a *README
 82d0f588881aa6321cf0218103fa54cd *data/BCFdata.RData
 45ebcc7201eeafe51b0985e09799210f *data/HamiltonGDP.RData
 9eedc964b21323db8dcfbd911a7bf012 *data/IsraelPalestineConflict.RData
@@ -51,7 +51,7 @@ dffde4cc9b934fc56ffc1592ea964b5e *R/zzz.R
 f7e01b6bc308381b4b48679d0b7b8e7f *man/BCFdata.Rd
 18a86a52795612ac29e21783e2faa41c *man/HamiltonGDP.Rd
 2c575c34cada1cc05adfe278ae46852a *man/IsraelPalestineConflict.Rd
-8e1a57c1f18f311746334aa165ec7c31 *man/SS.ffbs.Rd
+e708ce7cb97f0d7ce37fd2ba0c5fa3cc *man/SS.ffbs.Rd
 84279b612f15491e54b37fcbec3630aa *man/SZ.prior.evaluation.Rd
 699f886af9dac85d831e412dac29ac4b *man/cf.forecasts.Rd
 1697e966d2b28c2a80de3a88906bdc5a *man/decay.spec.Rd
@@ -102,7 +102,7 @@ bbc1ef586b1699763943f166bdcffd55 *man/uc.forecast.Rd
 f617dc68e5491a9770035b88e172d6c6 *src/A0_W.h
 0795ff96bee21d80479abc04788ad379 *src/BackwardSampler.f
 e47b9d49e43dca520fd4fca6cd789897 *src/FFBS.f
-8d7eb7da0f8db834e3b240e74e20ced5 *src/ForwardFilter.f
+a2867cb127e98a8364f6576b28a0cf00 *src/ForwardFilter.f
 05a442af6a3ec695259ede984b52926d *src/ForwardFilterReg.f
 1b5a87c75218a168404ba4c2f09c4ae9 *src/HamiltonFilter.f
 3b13ef54c1081fb5a5eb33b985ce14e7 *src/MSBVARcpp.h

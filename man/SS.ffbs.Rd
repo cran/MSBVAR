@@ -32,7 +32,7 @@ provides a way to accomplish this and is one of the workhorses in the
 estimation in the \code{\link{msbvar}} and \code{\link{gibbs.msbvar}}
 function.
 
-This function uses compiled C++ code to draw the 0-1 matrix of the regimes.  It
+This function uses compiled Fortran code to draw the 0-1 matrix of the regimes.  It
 uses the Baum-Hamilton-Lee-Kim (BHLK) filter and smoother to
 estimate the regime probabilities.  Draws are based on the
 standard forward-filter-backward-sample algorithm.

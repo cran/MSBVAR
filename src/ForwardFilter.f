@@ -1,6 +1,8 @@
       SUBROUTINE ForwardFilter(nvar, bigRk, bigK, bigT, 
      &     nbeta, sigdraw, xidraw, llh, pfilt)
 
+      Implicit None
+
 c     External function calls
       EXTERNAL detabs, inv
       EXTERNAL MatrixMultiply, MatrixTranspose
@@ -52,7 +54,7 @@ c     loop iteration counters
       INTEGER itk,itt
 
 c     temporary storage
-      DOUBLE PRECISION  tmpe(1,nvar)
+      DOUBLE PRECISION  tmpe(1,nvar), transtmpe(nvar,1)
       DOUBLE PRECISION  tmpsig(nvar,nvar), tmpsigld(1,1)
       DOUBLE PRECISION  tmpsiginv(nvar,nvar)
       DOUBLE PRECISION  matmulone(1,nvar), matmultwo(1,1)
@@ -115,23 +117,23 @@ c           transtmpe = nvar by 1, transpose of tmpe
 cccccccccccccccccccccccccccccccccccccccccccccccc
 c     max-adjusted llht for numerical stabilization
 
-      summaxllh = 0.0
-      DO itt = 1,bigT
-c        set temporary max to first regime
-         tmpmax = llht(itt,1)
-         IF (bigK > 1) THEN 
-            DO itk = 2,bigK
-               IF (llht(itt,itk) > tmpmax) THEN
-                  tmpmax = llht(itt,itk)
-               END IF
-            END DO
-         END IF
-         summaxllh = summaxllh + tmpmax
-         DO itk = 1,bigK
-            lhma(itt,itk) = EXP(REAL(llht(itt,itk)) 
-     &                              - REAL(tmpmax))
-         END DO
-      END DO
+c$$$      summaxllh = 0.0
+c$$$      DO itt = 1,bigT
+c$$$c        set temporary max to first regime
+c$$$         tmpmax = llht(itt,1)
+c$$$         IF (bigK > 1) THEN 
+c$$$            DO itk = 2,bigK
+c$$$               IF (llht(itt,itk) > tmpmax) THEN
+c$$$                  tmpmax = llht(itt,itk)
+c$$$               END IF
+c$$$            END DO
+c$$$         END IF
+c$$$         summaxllh = summaxllh + tmpmax
+c$$$         DO itk = 1,bigK
+c$$$            lhma(itt,itk) = EXP(REAL(llht(itt,itk)) 
+c$$$     &                              - REAL(tmpmax))
+c$$$         END DO
+c$$$      END DO
 
 cccccccccccccccccccccccccccccccccccccccccccccccc
 c     Forward filtering
@@ -139,41 +141,41 @@ c     Forward filtering
       sp = 0.0
       pfilt = 0.0
 
-      IF (bigK > 1) THEN 
-c        initialize
-         pinit(1,:) = 1.0/bigK
-         pfilt(1,:) = pinit(1,:)
-
-c        get transpose
-         CALL MatrixTranspose(xidraw, bigK, bigK, transxi)
-
-         DO itt = 1,bigT
-
-            CALL MatrixTranspose(pfilt(itt,:), 1, bigK, transpfilt)
-
-            CALL MatrixMultiply(transxi, bigK, bigK, 
-     &           transpfilt, bigK, 1, 
-     &           matmulfilt, 1)
-
-            CALL MatrixTranspose(lhma(itt,:), 1, bigK, translhma)
-            ptmp = matmulfilt*translhma
-
-c           now to normalize, sum up and divide.  these probabilities become
-c           pfilt values at next iteration, t+1
-            st = 0.0
-            DO itk = 1,bigK
-               st = st + REAL(ptmp(itk,1))
-            END DO
-            CALL MatrixTranspose(ptmp, bigK, 1, transptmp)
-            pfilt(itt+1,:) = transptmp(1,:) / st
-
-            sp = sp + LOG(st)
-            
-         END DO
-      END IF
-
-c     Add back max adjustment
-      llh = sp + summaxllh
+c$$$      IF (bigK > 1) THEN 
+c$$$c        initialize
+c$$$         pinit(1,:) = 1.0/bigK
+c$$$         pfilt(1,:) = pinit(1,:)
+c$$$
+c$$$c        get transpose
+c$$$         CALL MatrixTranspose(xidraw, bigK, bigK, transxi)
+c$$$
+c$$$         DO itt = 1,bigT
+c$$$
+c$$$            CALL MatrixTranspose(pfilt(itt,:), 1, bigK, transpfilt)
+c$$$
+c$$$            CALL MatrixMultiply(transxi, bigK, bigK, 
+c$$$     &           transpfilt, bigK, 1, 
+c$$$     &           matmulfilt, 1)
+c$$$
+c$$$            CALL MatrixTranspose(lhma(itt,:), 1, bigK, translhma)
+c$$$            ptmp = matmulfilt*translhma
+c$$$
+c$$$c           now to normalize, sum up and divide.  these probabilities become
+c$$$c           pfilt values at next iteration, t+1
+c$$$            st = 0.0
+c$$$            DO itk = 1,bigK
+c$$$               st = st + REAL(ptmp(itk,1))
+c$$$            END DO
+c$$$            CALL MatrixTranspose(ptmp, bigK, 1, transptmp)
+c$$$            pfilt(itt+1,:) = transptmp(1,:) / st
+c$$$
+c$$$            sp = sp + LOG(st)
+c$$$            
+c$$$         END DO
+c$$$      END IF
+c$$$
+c$$$c     Add back max adjustment
+c$$$      llh = sp + summaxllh
       
       RETURN
 
