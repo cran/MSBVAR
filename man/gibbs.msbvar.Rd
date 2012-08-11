@@ -187,6 +187,7 @@ gibbs.msbvar(x, N1 = 1000, N2 = 1000, permute = TRUE,
   sample. }
 
 \examples{
+\dontrun{
 # This example can be pasted into a script or copied into R to run.  It
 # takes a few minutes, but illustrates how the code can be used
 
@@ -230,7 +231,7 @@ summary(x2$Q.sample)
 
 # Plot of the variance elements
 plot(x2$Sigma.sample)
-
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.7-1
-Date: 2012-07-25
+Version: 0.7-2
+Date: 2012-08-11
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Authors@R: c(person("Patrick", "Brandt", role=c("aut", "cre"),
         email="pbrandt@utdallas.edu"))
@@ -19,6 +19,6 @@ Description: Provides methods for estimating frequentist and Bayesian
         normal densities.  Current version includes functionality to
         build and evaluate models with Markov switching.
 License: GPL (>= 2)
-Packaged: 2012-07-25 23:50:13 UTC; patrick
+Packaged: 2012-08-14 16:23:32 UTC; patrick
 Repository: CRAN
-Date/Publication: 2012-07-26 05:48:40
+Date/Publication: 2012-08-14 18:04:34

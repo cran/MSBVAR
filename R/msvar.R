@@ -44,7 +44,7 @@ msvar <- function(Y, p, h, niterblkopt=10)
 # the sig2 starting values need to be different though,
 # so adjust these by a small amount over regimes
     for (i in 1:h) { thetahat.start[,(1+m*p+1):(1+m*p+m),i] <-
-                         sig2.start*runif(1)}
+                         sig2.start}
 
     blkopt.est <- blkopt(Y=Y, p=p, thetahat.start=thetahat.start,
                          Qhat.start=Qhat.start, niter=niterblkopt,

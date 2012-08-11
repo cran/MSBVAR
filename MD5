@@ -1,6 +1,6 @@
 263b03fca1747f78c6f7dc74e8d028b3 *COPYING
-549bf1fede25a332055aee0f07d632ac *DESCRIPTION
-b8058dd6836b4b7bd00fac7cf050ebca *LICENSE
+f2efaf45cb74208eb2a122e3cd3ac887 *DESCRIPTION
+0687a4722b02c85cc49dfcbb1a8cbfa4 *LICENSE
 4229be362b179da61625b3f5657d8d6a *NAMESPACE
 c43895aaf282336d59d1a5e1b46b6e85 *R/SS.R
 6d830eb1c07d910ae9fd6bec2c3748ac *R/SZ.prior.evaluation.R
@@ -22,7 +22,7 @@ af5deb7ee2caa863984bede78820c522 *R/irf.R
 09675c7ee0f39f1c2e5152bdd26bc7f9 *R/mcmc.szbsvar.R
 3e32eeac91cd18d07b621ab5606f578a *R/mountains.R
 82e5d1317601337375c7e3e652341051 *R/msbvar.R
-3d181c5a6b964387d7864659acd3d946 *R/msvar.R
+583f907c6c69033f3382a00b0ac6108f *R/msvar.R
 2976e679c48d46b686e6f93277e4ea06 *R/normalize.svar.R
 bb677b8d84a41b26def6c36e27110148 *R/null.space.R
 16120dcf9957d20718b5374601bb5d16 *R/plot.forecast.R
@@ -42,8 +42,8 @@ fada5ea7f491930c01e6103d356fdb4d *R/simulateMSAR.R
 4c3689e4afc1788219f4ce2349b33545 *R/szbsvar.R
 76ecb015e69c8071658d4c972dc737f8 *R/szbvar.R
 e2cfb2b344eb82c74b8cf367f999c032 *R/var.lag.specification.R
-7039e5a1aeab76c432c388d868a66d97 *R/zzz.R
-6b06d5f4a8efa55ffa105921099d4f1a *README
+a4045127112079ae133b85e8781101fe *R/zzz.R
+82073c6b8cbb1a1cbc0d5e7fafa111e9 *README
 82d0f588881aa6321cf0218103fa54cd *data/BCFdata.RData
 45ebcc7201eeafe51b0985e09799210f *data/HamiltonGDP.RData
 9eedc964b21323db8dcfbd911a7bf012 *data/IsraelPalestineConflict.RData
@@ -59,7 +59,7 @@ fdaa840ce053b290d8587d709234b26e *man/dfev.Rd
 971581274c80f77629c45515b229f721 *man/forc.ecdf.Rd
 1d4c4aa437541c528c693f2a7298eab3 *man/forecast.Rd
 b94312c008bcab96caaeb06cb06c8666 *man/gibbs.A0.Rd
-8e1277a4b32685ccb85ff4834417dd90 *man/gibbs.msbvar.Rd
+19bd7c3d61788dcaca813405c52f0386 *man/gibbs.msbvar.Rd
 c97250ae9a947b0ae73f98a9e45a56c4 *man/granger.test.Rd
 83d53a24818f5399590f9016f9b83637 *man/hc.forecast.Rd
 59ee0f0437046062db4efe4062f50eea *man/initialize.msbvar.Rd
@@ -91,7 +91,7 @@ d554a8c02ff94b6718f70b1e78be527c *man/rmse.Rd
 c992dc3e8781eb4109d70e722c0bbb06 *man/rmultnorm.Rd
 517fd8493af9b06c112482541bd2152c *man/rwishart.Rd
 1859696bdcea825dfdb5b63c81f9b698 *man/simulateMSAR.Rd
-5c64c213681d9f0d0ee7d2d061cfb6a8 *man/simulateMSVAR.Rd
+e81375e32cdf0aabe93580ac55410d81 *man/simulateMSVAR.Rd
 11e4c5302be19f002b4b795bf8e4c19a *man/summary.Rd
 1a66c55b5bfd146d0f66e02bdc152634 *man/summary.forecast.Rd
 3902add185fb398f52bcf4ff3eebb732 *man/szbsvar.Rd
@@ -102,8 +102,8 @@ bbc1ef586b1699763943f166bdcffd55 *man/uc.forecast.Rd
 f617dc68e5491a9770035b88e172d6c6 *src/A0_W.h
 0795ff96bee21d80479abc04788ad379 *src/BackwardSampler.f
 e47b9d49e43dca520fd4fca6cd789897 *src/FFBS.f
-a2867cb127e98a8364f6576b28a0cf00 *src/ForwardFilter.f
-05a442af6a3ec695259ede984b52926d *src/ForwardFilterReg.f
+f60d118e65e9b85fe6b2f15d4425ed6d *src/ForwardFilter.f
+62586b0570030023a31a07c75b69b117 *src/ForwardFilterReg.f
 1b5a87c75218a168404ba4c2f09c4ae9 *src/HamiltonFilter.f
 3b13ef54c1081fb5a5eb33b985ce14e7 *src/MSBVARcpp.h
 a3604b0f721ffe80b28cb5c9caad7b62 *src/MSBVARfun.cpp

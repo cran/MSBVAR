@@ -1,6 +1,8 @@
       SUBROUTINE ForwardFilterReg(nvar, bigY, bigX, bigK, bigT, 
      &     nbeta, betadraw, sigdraw, xidraw, llh, pfilt)
 
+      IMPLICIT NONE
+
 c     External function calls
       EXTERNAL detabs, inv
       EXTERNAL MatrixMultiply, MatrixTranspose
@@ -55,7 +57,7 @@ c     loop iteration counters
       INTEGER itk,itt
 
 c     temporary storage
-      DOUBLE PRECISION  tmpe(1,nvar)
+      DOUBLE PRECISION  tmpe(1,nvar), transtmpe(nvar,1)
       DOUBLE PRECISION  tmpsig(nvar,nvar), tmpsigld(1,1)
       DOUBLE PRECISION  tmpsiginv(nvar,nvar)
       DOUBLE PRECISION  matmulone(1,nvar), matmultwo(1,1)

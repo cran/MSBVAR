@@ -68,6 +68,7 @@ simulateMSVAR(bigt, m, p, var.beta0, var.betas, e.vcv, Q, seed = 214)
 }
 
 \examples{
+\dontrun{
 # Example: simulate an MS(h)-VAR(p) model with two equations.
 # Have h = 2, m=2, and p=1, simplest case
 
@@ -136,7 +137,7 @@ model <- msvar(Y=simdata[[1]], p=1, h=2, niterblkopt=50)
 par(mfrow=c(2,1))
 plot(ts(model$fp))
 plot(ts(simdata$st))
-
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
