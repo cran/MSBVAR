@@ -1,6 +1,7 @@
 #include "MSBVARcpp.h"
 
-extern "C" SEXP mc_irf_var(SEXP varobj, SEXP nsteps, SEXP draws)
+//extern "C"
+SEXP mc_irf_var(SEXP varobj, SEXP nsteps, SEXP draws)
 {
   int m, p, dr=INTEGER(draws)[0], ns=INTEGER(nsteps)[0], T, df, i;
   SEXP AR, Y, Bhat, XR, prior, hstar, meanS, output;
@@ -15,8 +16,8 @@ extern "C" SEXP mc_irf_var(SEXP varobj, SEXP nsteps, SEXP draws)
 
   // Put coefficients from varobj$Bhat in Bcoefs vector (m^2*p, 1)
   PROTECT(Bhat = coerceVector(listElt(varobj, "Bhat"), REALSXP));
-  Matrix bcoefs = R2Cmat(Bhat, m*p, m); 
-  bcoefs = bcoefs.AsColumn(); 
+  Matrix bcoefs = R2Cmat(Bhat, m*p, m);
+  bcoefs = bcoefs.AsColumn();
   UNPROTECT(1);
 
   // Define X(T x m*p) subset of varobj$X and XXinv as solve(X'X)
@@ -30,7 +31,7 @@ extern "C" SEXP mc_irf_var(SEXP varobj, SEXP nsteps, SEXP draws)
     PROTECT(hstar = coerceVector(listElt(varobj,"hstar"),REALSXP));
     XXinv = R2Cmat(hstar, m*p, m*p).i();
     UNPROTECT(1);
-  } 
+  }
   else { XXinv = (X.t()*X).i(); }
   UNPROTECT(1);
 
@@ -59,7 +60,7 @@ extern "C" SEXP mc_irf_var(SEXP varobj, SEXP nsteps, SEXP draws)
     bvec = bcoefs+KP(sqrtwish, XXinv)*rnorms(m*m*p);
 
     // IRF computation
-    impulse.Row(i) = irf_var_from_beta(sqrtwish, bvec, ns).t(); 
+    impulse.Row(i) = irf_var_from_beta(sqrtwish, bvec, ns).t();
     if (!(i%1000)){ Rprintf("Monte Carlo IRF Iteration = %d\n",i); }
   } // end main loop
   PutRNGstate();

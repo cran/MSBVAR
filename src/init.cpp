@@ -14,14 +14,7 @@ extern "C" {
     {"drawA0.cpp", (DL_FUNC) &drawA0, 5},
     {"gibbsA0.cpp",(DL_FUNC) &gibbsA0, 6},
     {"log.marginal.A0k",(DL_FUNC) &log_marg_A0k, 9},
-    // Deprecated by use of Fortran code
-    // {"BHLK.filter.cpp", (DL_FUNC) &BHLKR, 7},
-    // {"SS.draw.cpp", (DL_FUNC) &SSdraw, 7},
-    // {"SS.newdraw.cpp", (DL_FUNC) &newSSdraw, 7},
-    // {"bingen.cpp", (DL_FUNC) &bingen, 3},
-    //    {"SS.sum.cpp", (DL_FUNC) &SSsumR, 1},
-    //    {"SS.mean.cpp",(DL_FUNC) &SSmeanR, 2},
-    //    {"SS.var.cpp",(DL_FUNC) &SSvarR, 2},
+    //    {"irf.var.from.beta", (DL_FUNC) &irf_var_from_beta, 3},
     {NULL, NULL, 0}
   };
   

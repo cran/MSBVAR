@@ -1,24 +1,32 @@
 Package: MSBVAR
-Version: 0.7-2
-Date: 2012-08-11
+Version: 0.9-0
+Date: 2014-05-12
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Authors@R: c(person("Patrick", "Brandt", role=c("aut", "cre"),
-        email="pbrandt@utdallas.edu"))
-Author: Patrick T. Brandt, with contributions from W. Ryan Davis
-Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
-Depends: R (>= 2.14.0), KernSmooth, xtable, coda, bit, mvtnorm, lattice
-Description: Provides methods for estimating frequentist and Bayesian
-        Vector Autoregression (VAR) models and Markov-switching
-        Bayesian VAR (MSBVAR).  Functions for reduced form and
-        structural VAR models are also available. Includes methods for
-        the generating posterior inferences for these models,
-        forecasts, impulse responses (using likelihood-based error
-        bands), and forecast error decompositions.  Also includes
-        utility functions for plotting forecasts and impulse responses,
-        and generating draws from Wishart and singular multivariate
-        normal densities.  Current version includes functionality to
-        build and evaluate models with Markov switching.
-License: GPL (>= 2)
-Packaged: 2012-08-14 16:23:32 UTC; patrick
+                     email="pbrandt@utdallas.edu"),
+	     person("W. Ryan", "Davis", role=c("cre")))
+Maintainer: Patrick Brandt <pbrandt@utdallas.edu>
+Imports: KernSmooth, xtable, coda, bit, mvtnorm, lattice
+Description: Provides methods for estimating frequentist and
+  Bayesian Vector Autoregression (VAR) models and Markov-switching
+  Bayesian VAR (MSBVAR).  Functions for reduced
+  form and structural VAR models are also available. Includes
+  methods for the generating posterior inferences for these models,
+  forecasts, impulse responses (using likelihood-based error bands),
+  and forecast error decompositions.  Also includes utility functions
+  for plotting forecasts and impulse responses, and generating draws
+  from Wishart and singular multivariate normal densities.  Current
+  version includes functionality to build and evaluate models with
+  Markov switching.
+License: MIT + file LICENSE
+License_is_FOSS: yes
+License_restricts_use: no
+SystemRequirements: gcc (>= 4.0)
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-08-14 18:04:34
+Packaged: 2014-06-02 02:25:42 UTC; pbrandt
+Author: Patrick Brandt [aut, cre],
+  W. Ryan Davis [cre]
+X-CRAN-Comment: Archived on 2014-05-16 as C++ errors were not
+        corrected.
+Date/Publication: 2014-06-02 07:44:50

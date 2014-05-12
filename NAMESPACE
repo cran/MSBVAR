@@ -1,7 +1,15 @@
+# Register the package
 useDynLib(MSBVAR, .registration=TRUE)
+
+# Import required packages
 import(KernSmooth)
 import(coda)
+import(xtable)
+import(bit)
+import(mvtnorm)
+import(lattice)
 
+# Functions visible to pkg users
 export(
        dfev,
        print.dfev,

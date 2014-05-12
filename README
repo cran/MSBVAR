@@ -5,16 +5,16 @@ Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
 Depends: R (>= 2.11.0), KernSmooth, xtable, coda, bit, mvtnorm
-Description: Provides methods for estimating frequentist and 
+Description: Provides methods for estimating frequentist and
   Bayesian Vector Autoregression (VAR) models.  Functions for reduced
-  form and structural VAR models are also available. Includes 
-  methods for the generating posterior inferences for VAR 
+  form and structural VAR models are also available. Includes
+  methods for the generating posterior inferences for VAR
   forecasts, impulse responses (using likelihood-based error bands),
-  and forecast error decompositions.  Also includes utility functions 
-  for plotting forecasts and impulse responses, and generating draws 
-  from Wishart and singular multivariate normal densities.  Current 
+  and forecast error decompositions.  Also includes utility functions
+  for plotting forecasts and impulse responses, and generating draws
+  from Wishart and singular multivariate normal densities.  Current
   version includes functionality to build models with
-  Markov switching. 
+  Markov switching.
 LazyLoad: yes
 License: GPL (>= 2)
 URL: http://www.utdallas.edu/~pbrandt/
@@ -64,7 +64,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   determinants in posterior.fit.structural.szbvar() by
 	   changing the computation of the log determinant for a
 	   diagonal matrix to the simpler sum of the diagonal
-           elements or using the determinant(,logarithm=T) function. 
+           elements or using the determinant(,logarithm=T) function.
 2006-03-15 Version 0.1.9
 	   1) Added option to change normalization rules for A(0) in
            sampling the structural parameters of B-SVAR models.
@@ -72,7 +72,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   version supports all of the normalization rules in
 	   normalize.svar().  Documentation for this change has been
            updated as well.
-2006-03-15 Version 0.1.10	
+2006-03-15 Version 0.1.10
 	   1) Corrected matrix inversion of A(0) in
 	   mc.irf.structural.szbvar() and mcmc.structural.szbvar().
 	   Previous version were possibly zeroing out A(0) terms
@@ -82,7 +82,7 @@ URL: http://www.utdallas.edu/~pbrandt/
            the output object in reduced.form.var().  Previous version
 	   selected the wrong coefficients for the intercept and AR(1)
 	   terms.
-2006-03-17 Version 0.1.11 
+2006-03-17 Version 0.1.11
 	   Changed order of arguments in gibbs.A0.structural.szbvar()
 	   so that the normalization options do not break older
 	   code.
@@ -113,7 +113,7 @@ URL: http://www.utdallas.edu/~pbrandt/
            reduced.form.var() function.  Previous version thought the
 	   intercept was the first, when it should be the last
 	   coefficients.
-2007-06-18 C++ implementations added 
+2007-06-18 C++ implementations added
 2007-10-23 Bug fixes: corrected summary() methods for VAR, BVAR and
            BSVAR classes and fixed bugs in gibbs.A0(), the Gibbs
 	   sampler for B-SVAR models.  Thanks to Tatevik Sekhposyan
@@ -125,7 +125,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 2007-12-06 Fixed classes / defaults for plot.mc.irf() related
 	   functions.  Previous versions had hard coded values rather
 	   than allowing the user to control the arguments.  Thanks
-	   to Mike Colaresi for finding this bug.	 
+	   to Mike Colaresi for finding this bug.
 2008-04-22 Updated defaults to plot.mc.irf to properly pass user
 	   arguments (which may have been arbitrarily ignored in the
 	   past).  Also updated the sanity.check.prior() functions
@@ -165,7 +165,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   intercepts to zero when computing the variance of the
 	   prior. Thanks to Gareth Thomas for comments on this.
 2010-06-23 Added full documentation for the MSBVAR model gibbs
-           sampler.  Example included for gibbs.msbvar(). 
+           sampler.  Example included for gibbs.msbvar().
 2010-11-28 Updated NAMESPACE and DESCRIPTION to comply with R 2.12.0.
 	   Update BCF citations in documentation.
 	   Update BCFdata files to fit documentation and published
@@ -173,7 +173,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   Updated version to 0.5.1.
 2011-01-13 Added attribute objects to VAR, BVAR, MSBVAR models so we
            have sensible variable names to use in the plots and
-	   analyses. 
+	   analyses.
 2011-01-27 Added plotregimeid() function to plot post-posterior
 	   sampling clustered draws from the Gibbs random permutation
 	   sampler. This can be used for graphic identification of the
@@ -181,10 +181,10 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   of the VAR equations.  Since there are h! orderings of the
 	   regimes (and identical posterior modes) such a function
 	   helps identify a single posterior mode for refined
-	   sampling. 
+	   sampling.
 2011-01-31 Updated package to version 0.6-0 to reflect milestones in
 	   MSBVAR development.  Added initial documentation for
-	   plotregimeid(). 
+	   plotregimeid().
 2011-02-11 Began works on forecasting MSBVAR models.  This is part of
            a wholesale rewrite of how the forecasts are computed,
 	   presented and summarized in the package.
@@ -192,7 +192,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   was carrying along one extra observation that should have
 	   been use for computing lags rather than part of the data.
 	   Changes down-stream functions like gibbs.msbvar(), etc. for
-	   compliance. 
+	   compliance.
 2011-03-04 Degrees of freedom corrections in the prior and the
 	   posterior computations for the msbvar() models.
 2011-12-07 Adjusted the underflow threshold for regime probabilities
@@ -212,6 +212,7 @@ URL: http://www.utdallas.edu/~pbrandt/
 2012-07-26 Updated to correct Fortran allocation error.  Change
            initialization of msvar() function.  Corrects how the state
 	   space filter compiles across archs.
+2014-05-12 Corrected "extern C" errors in C++ code.
 
 
 MSBVAR Package
