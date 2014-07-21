@@ -369,6 +369,35 @@ function(capT,m,ncoef,num.exog,nu,H0,S0,Y,X,hstar1,Sh,u, Bh,Sh1)
     return(Wout)
 }
 
+############################################
+# MSBVAR model helper functions
+############################################
+
+# Get the long run regime probabilities from transition matrix P
+
+steady.Q <- function(P)
+  { M <- dim(P)[1]
+    if (M<3)
+      {
+        eta <- solve(rbind(cbind(1 - P[1,1], P[2,1]), rep(1,2)))%*%matrix(c(0,1))
+      }
+    else
+      {
+        eta <- solve(rbind(cbind(diag(M-1) - t(P)[1:(M-1),1:(M-1)],
+                                 t(P)[1:(M-1),M]),
+                           rep(1,M)))%*%matrix(c(rep(0,M-1),1))
+
+      }
+    # Find the steady state if there are negative values -- that is
+    # iterate a bit!
+    while(cumprod(eta)[M]<0)
+      {
+        eta <- t(P)%*%eta
+      }
+    return(eta)
+  }
+
+
 
 
 ## # ONE STEP Function to draw 1 A0 from the posterior of a structural
@@ -537,4 +566,3 @@ function(capT,m,ncoef,num.exog,nu,H0,S0,Y,X,hstar1,Sh,u, Bh,Sh1)
 ##     return(list(A0gbs=A0gbs, W=Wout))
 
 ##   }
-

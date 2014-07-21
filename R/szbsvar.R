@@ -328,33 +328,36 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
           exog.coefs <- B.posterior[((m*p)+2):nrow(B.posterior),]
       }
 
+    # gc() call for some cleanup
+    gc(); gc();
+
       # Now build an output list / object for the B-SVAR model
-      output <- list(XX=XX,                               # data matrix moments with dummy obs
-                     XY=XY,
-                     YY=YY,
-                     y=Y,
-                     Y=Y1,
-                     X=X1,
-                     structural.innovations=structural.innovations,
-                     Ui=Ui,                                         # restriction transformation
-                     Hpinv.tilde=Hpinv.tilde,    # Prior moments
-                     H0inv.tilde=H0inv.tilde,
-                     Pi.tilde=Pi.tilde,
-                     Hpinv.posterior=Hpinv.posterior,
-                     P.posterior=P.posterior,
-                     H0inv.posterior=H0inv.posterior,
-                     A0.mode=A0.mode,
-                     F.posterior=F.posterior,
-                     B.posterior=B.posterior,
-                     ar.coefs=AR.coefs.posterior,
-                     intercept=B.posterior[(m*p+1),],
-                     exog.coefs=exog.coefs,
-                     prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,mu5,mu6),
-                     df=capT,
-                     n0=n0,
-                     ident=ident,
-                     b=max.obj$par
-                     )
+    output <- list(XX=XX,                               # data matrix moments with dummy obs
+                   XY=XY,
+                   YY=YY,
+                   y=Y,
+                   Y=Y1,
+                   X=X1,
+                   structural.innovations=structural.innovations,
+                   Ui=Ui,                                         # restriction transformation
+                   Hpinv.tilde=Hpinv.tilde,    # Prior moments
+                   H0inv.tilde=H0inv.tilde,
+                   Pi.tilde=Pi.tilde,
+                   Hpinv.posterior=Hpinv.posterior,
+                   P.posterior=P.posterior,
+                   H0inv.posterior=H0inv.posterior,
+                   A0.mode=A0.mode,
+                   F.posterior=F.posterior,
+                   B.posterior=B.posterior,
+                   ar.coefs=AR.coefs.posterior,
+                   intercept=B.posterior[(m*p+1),],
+                   exog.coefs=exog.coefs,
+                   prior=c(lambda0,lambda1,lambda3,lambda4,lambda5,mu5,mu6),
+                   df=capT,
+                   n0=n0,
+                   ident=ident,
+                   b=max.obj$par
+                   )
     class(output) <- c("BSVAR")
     attr(output, "eqnames") <- colnames(Y) # Get variable names for
                                            # attr
@@ -366,6 +369,9 @@ function(Y, p, z=NULL, lambda0, lambda1, lambda3, lambda4, lambda5,
 # Summary function for BSVAR models
 "summary.BSVAR" <- function(object, ...)
 {
+    # Get p
+    p <- dim(object$ar.coefs)[3]
+
     cat("------------------------------------------\n")
     cat("A0 restriction matrix\n")
     cat("------------------------------------------\n")

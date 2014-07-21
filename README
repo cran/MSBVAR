@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.7-2
-Date: 2011-07-26
+Version: 0.9-1
+Date: 2014-07-21
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
@@ -16,7 +16,7 @@ Description: Provides methods for estimating frequentist and
   version includes functionality to build models with
   Markov switching.
 LazyLoad: yes
-License: GPL (>= 2)
+License: MIT
 URL: http://www.utdallas.edu/~pbrandt/
 
 
@@ -212,11 +212,49 @@ URL: http://www.utdallas.edu/~pbrandt/
 2012-07-26 Updated to correct Fortran allocation error.  Change
            initialization of msvar() function.  Corrects how the state
 	   space filter compiles across archs.
-2014-05-12 Corrected "extern C" errors in C++ code.
+2014-05-12 Corrected "extern C" errors in C++ code.  Version 0.9-0
+2014-06-09 *Bug fixes*
+
+	   Corrected summary.BSVAR to include "p" (long-standing bug,
+	   	   output now works).
+	   New startup message code.
+	   Added some gc() calls for memory cleanup after some
+	   	 intensive functions.
+	   Added par() reset to plotregimeid() so subsequent plot
+	   	 calls have the correct layouts and expected margins.
+		 Corrected startup of plotregimeid so it now produces
+		 a plot rather an a user prompt for the first one.
+
+	   *Features*
+
+	   Added correct time series axis to plot.SS
+
+	   Separated code to compute IRF modes and error bands from
+	   the plotting.  This makes the package easier to maintain
+	   and extend for other methods and plotting.
+
+	   Added impulse response functions for the MSBVAR models via
+	   plot.mc.irf().
+
+	   Added plot.ms.irf() functions as an experiment in
+	   combining IRFs across regimes in one plot.
+
+2014-06-20 *Features*
+	   regimeSummary() command added to provide summary statistics
+	   for estimated MSBVAR regime probability densities and
+	   durations.
+
+	   Added forecast() example for MSBVAR models
+
+	   *Bug fixes*
+
+	   Added length check on sign.list in mc.irf for BSVAR models.
+	   Added dimension check on prior transition matrix to MSBVAR
+	   models,
 
 
 MSBVAR Package
-Copyright (C) 2005-2012 Patrick T. Brandt
+Copyright (C) 2005-2014 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 

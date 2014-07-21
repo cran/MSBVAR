@@ -28,6 +28,11 @@ msbvar <- function(Y, z=NULL, p, h,
         stop("\n\n\t -- For MSBVAR models, h>1.  Otherwise, just for a BVAR or VAR!\n")
     }
 
+    # Check the dimensions of alpha.prior
+    chk <- dim(alpha.prior)
+    if( chk[1]!=h) stop("Incorrect number of rows in alpha.prior.")
+    if( chk[2]!=h) stop("Incorrect number of columns in alpha.prior.")
+
     ########################################################
     # Before the loop this is all initialization for the EM
     # implementation of the Bayesian model.
@@ -660,4 +665,3 @@ count.transitions <- function(s)
       }
     return(sw)
   }
-

@@ -12,14 +12,17 @@
 #            for plotting versus values of Q.
 # 20120426 : Updated to add AR(1) density and traceplots for the
 #            permuted, clustered regimes.
-
+# 20140609 : Added a par() reset so future plot calls have the right setup
 
 plotregimeid <- function(x,
                          type=c("all", "intercepts", "AR1", "Sigma", "Q"),
                          ask = TRUE, ...)
 {
+    # Plot setup stuff
+    op <- par(no.readonly = TRUE)
+    on.exit(par(op))
 
-    devAskNewPage(ask)
+    devAskNewPage()
     # Get the constants we need for setting up the matrices for the
     # clustering steps.
 
@@ -66,6 +69,7 @@ plotregimeid <- function(x,
                                  paste(lapply(names(intercepts), as.name),
                                        collapse = "+")))
 
+        devAskNewPage(ask=ask)
         print(densityplot(form, data=intercepts, outer=TRUE,
                     groups=cl.int$cluster, xlab=NULL,
                     default.scales=list(relation="free"),
@@ -78,6 +82,7 @@ plotregimeid <- function(x,
 
         idx <- 1:nrow(intercepts)
 
+        devAskNewPage(ask=ask)
         print(xyplot(form, data=intercepts,
                      groups=cl.int$cluster, type="l", ylab=NULL,
                      default.scales=list(relation="free"),
@@ -110,7 +115,7 @@ plotregimeid <- function(x,
         form <- as.formula(paste("~",
                                  paste(lapply(names(ar1), as.name),
                                        collapse = "+")))
-
+        devAskNewPage(ask=ask)
         print(densityplot(form, data=ar1, outer=TRUE,
                     groups=cl.ar1$cluster, xlab=NULL,
                     default.scales=list(relation="free"),
@@ -123,6 +128,7 @@ plotregimeid <- function(x,
 
         idx <- 1:nrow(ar1)
 
+        devAskNewPage(ask=ask)
         print(xyplot(form, data=ar1,
                      groups=cl.ar1$cluster, type="l", ylab=NULL,
                      main="AR(1) coefficients traceplots by regime"))
@@ -153,6 +159,7 @@ plotregimeid <- function(x,
         cl.sigma <- kmeans(Sigmaout, centers=h, nstart=10)
 
     # Plots
+        devAskNewPage(ask=ask)
         pairs(Sigmaout, pch=".", col=cl.sigma$cluster, ...)
         title("Variances pairs plot by regime", line=3)
 
@@ -160,6 +167,7 @@ plotregimeid <- function(x,
                           paste(lapply(names(Sigmaout), as.name),
                                 collapse = "+")))
 
+        devAskNewPage(ask=ask)
         print(densityplot(form, data=Sigmaout, outer=TRUE,
                     groups=cl.sigma$cluster, xlab=NULL,
                     default.scales=list(relation="free"),
@@ -170,6 +178,7 @@ plotregimeid <- function(x,
                            collapse = "+"), "~ idx")))
         idx <- 1:nrow(Sigmaout)
 
+        devAskNewPage(ask=ask)
         print(xyplot(form, data=Sigmaout,
                      groups=cl.sigma$cluster, type="l", ylab=NULL,
                      default.scales=list(relation="free"),
@@ -192,7 +201,7 @@ plotregimeid <- function(x,
         colnames(Q) <- Qnames
 
     # Plots
-
+        devAskNewPage(ask=ask)
         pairs(Q, pch=".", col=cl.Q$cluster, ...)
         title("Transitions pairs plot by regime", line=3)
 
@@ -200,6 +209,7 @@ plotregimeid <- function(x,
                           paste(lapply(names(Q), as.name),
                                 collapse = "+")))
 
+        devAskNewPage(ask=ask)
         print(densityplot(form, data=Q, outer=TRUE,
                     groups=cl.Q$cluster, xlab=NULL,
                     default.scales=list(relation="free"),
@@ -210,6 +220,7 @@ plotregimeid <- function(x,
                            collapse = "+"), "~ idx")))
         idx <- 1:nrow(Q)
 
+        devAskNewPage(ask=ask)
         print(xyplot(form, data=Q,
                      groups=cl.Q$cluster, type="l", ylab=NULL,
                      default.scales=list(relation="free"),
@@ -234,6 +245,7 @@ plotregimeid <- function(x,
     # Get diagonal of Q
         qdiag <- diag(matrix(1:h^2, h, h))
 
+        devAskNewPage(ask=ask)
         par(mfrow=c(2, round(m/2)), omi=c(0.5, 0.75, 0.75, 0.25))
         for(i in 1:m)
         {
@@ -245,5 +257,7 @@ plotregimeid <- function(x,
               outer=TRUE, line=1)
 
     }
+    # Clean up after plotting
     devAskNewPage(FALSE)
+    invisible()
 }

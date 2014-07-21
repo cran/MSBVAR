@@ -44,6 +44,7 @@ export(
        plot.gibbs.A0,
        plot.irf,
        plot.mc.irf,
+       plot.ms.irf,
        plot.forecast,
        plot.forc.ecdf,
        plotregimeid,
@@ -62,7 +63,8 @@ export(
        initialize.msbvar,
        simulateMSVAR,
        simulateMSAR,
-       msvar
+       msvar,
+       regimeSummary
        )
 
 # Declare S3 methods for printing and summaries
@@ -97,4 +99,3 @@ S3method(plot, forecast.VAR)
 S3method(sum, SS)
 S3method(mean, SS)
 S3method(plot, SS)
-

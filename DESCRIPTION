@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.9-0
-Date: 2014-05-12
+Version: 0.9-1
+Date: 2014-07-21
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Authors@R: c(person("Patrick", "Brandt", role=c("aut", "cre"),
                      email="pbrandt@utdallas.edu"),
@@ -23,10 +23,8 @@ License_is_FOSS: yes
 License_restricts_use: no
 SystemRequirements: gcc (>= 4.0)
 NeedsCompilation: yes
-Repository: CRAN
-Packaged: 2014-06-02 02:25:42 UTC; pbrandt
+Packaged: 2014-07-25 14:13:56 UTC; pbrandt
 Author: Patrick Brandt [aut, cre],
   W. Ryan Davis [cre]
-X-CRAN-Comment: Archived on 2014-05-16 as C++ errors were not
-        corrected.
-Date/Publication: 2014-06-02 07:44:50
+Repository: CRAN
+Date/Publication: 2014-07-25 16:29:00

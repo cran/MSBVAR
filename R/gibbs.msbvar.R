@@ -13,6 +13,7 @@
 #            managable chunks.
 # 20120113 : Replaced filtering-sampler steps for the state space with
 #            compiled Fortran code.
+# 20140609 : Added gc() calls for some improved memory usage
 
 
 ####################################################################
@@ -502,6 +503,8 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000,
 
     # End of burnin loop!
 
+    gc(); gc()
+
     # Declare the storage for the return objects
     ss.storage <- vector("list", N2)
     transition.storage <- array(NA, c(h,h,N2))
@@ -599,6 +602,8 @@ gibbs.msbvar <- function(x, N1=1000, N2=1000,
         # Print out some iteration information
         if(j%%1000==0) cat("Final iteration : ", j, "\n")
     }
+
+    gc(); gc()
 
     # Now make an output object and provide classing
     class(ss.storage) <- c("SS")

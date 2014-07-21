@@ -57,7 +57,12 @@ mean.SS <- function(x, ...){
 plot.SS <- function(x, ylab="State Probabilities", ...)
 {
     tmp <- mean.SS(x)
-    plot(ts(tmp), plot.type="single", col=1:ncol(tmp),
+    shift <- x$p/attr(x, "freq")
+    plot(ts(tmp,
+            start=attr(x, "start")+shift,
+            end=attr(x, "end"), frequency=attr(x, "freq")),
+###            deltat=attr(x, "freq")),
+         plot.type="single", col=1:ncol(tmp),
          ylim=c(0,1), ylab=ylab, ...)
     abline(h=0.5, lty=2, ...)
 }
@@ -132,4 +137,3 @@ plot.SS <- function(x, ylab="State Probabilities", ...)
 ##     ss <- generate.states(fp, Q)
 ##     return(ss)
 ## }
-

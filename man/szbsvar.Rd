@@ -59,7 +59,7 @@ szbsvar(Y, p, z = NULL,
   variables (including an intercept) and \eqn{\epsilon_t}{e(t)} is the \eqn{m \times
     1}{m x 1} matrix of structural shocks.  NOTE that in this representation of
   the model, the columns of the \eqn{A_\ell}{A(i)} matrices refer to the equations!
-   
+
    The structural shocks are normal with mean and variance equal to the
    following:
    \deqn{
@@ -76,14 +76,14 @@ szbsvar(Y, p, z = NULL,
    A_0^{-1} + z_t^\prime DA_0^{-1} + \epsilon_t^\prime
    A_0^{-1}}{y_t' A(0) A(0)^{-1} = \sum_{i=1}^p Y(t-i)' A(i)
    A(0)^{-1} + z_t' D A(0)^{-1} + e(t)' A(0)^{-1}}
- 
+
    \deqn{y_t^\prime  = \sum_{\ell=1}^p Y_{t-\ell}^\prime B_\ell
    + z_t^\prime \Gamma  + \epsilon_t^\prime A_0^{-1}.}{y(t)'  =
    \sum_{i=1}^p Y(t-i)' B(i) + z(t)' G  + e(t)' A(0)^{-1}.}
 
   The reduced form error covariance matrix is found from the crossproduct
   of the reduced form innovations:
- 
+
  \deqn{
   \Sigma = E[(\epsilon_t^\prime A_0^{-1})(\epsilon_t^\prime
   A_0^{-1})^\prime] = [A_0 A_0^\prime]^{-1}.
@@ -123,7 +123,7 @@ szbsvar(Y, p, z = NULL,
   \deqn{
   y_t^\prime A_0 = x_t^\prime F + \epsilon_t^\prime}{y(t)' A(0) = x(t)'F
   + e(t)'}
-  where 
+  where
   \deqn{
   x_t^\prime = [ y_{t-1}^\prime \cdots y_{t-p}^\prime, z_t^\prime],
   F^\prime = [A_1^\prime \cdots A_p^\prime \, D^\prime]
@@ -143,12 +143,12 @@ szbsvar(Y, p, z = NULL,
   prior covariance of the parameters in \eqn{f_i | a_i}{f(i) | a(i)}.
   The prior means of
   \eqn{a_i}{a(i)} are zero in the structural model, while the "random walk"
-  component is in \eqn{\bar{P}_i a_i}{P(i) a(i)}.  
-  
+  component is in \eqn{\bar{P}_i a_i}{P(i) a(i)}.
+
   The prior covariance matrix of the errors, \eqn{\bar{S}_i}{S(i)}, is
   initially estimated using a VAR(p) model via OLS, with an intercept
   and no demeaning of the data.
-  
+
   The Bayesian prior is constructed for the unrestricted VAR model and
   then mapped into the restricted prior parameter space, as discussed in
   Waggoner and Zha (2003a).
@@ -157,8 +157,8 @@ szbsvar(Y, p, z = NULL,
 \value{
   A list of the class "BSVAR" that summarizes the posterior mode of the
   B-SVAR model
-  
-  
+
+
   \item{XX }{ \eqn{X'X + H_0}{X'X + H_0} crossproduct moment matrix for the predetermined
     variables in the model plus the prior}
   \item{XY}{ \eqn{X'Y} for the model, including the dummy observations for mu5
@@ -170,7 +170,7 @@ szbsvar(Y, p, z = NULL,
   \item{structural.innovations}{ \eqn{T \times m}{T x m} structural innovations for the
     SVAR model}
   \item{Ui}{ \eqn{m \times q_i}{m x q(i)} Null space matrices that map
-    the columns of \eqn{A_0}{A(0)} to the free parameters of the columns } 
+    the columns of \eqn{A_0}{A(0)} to the free parameters of the columns }
   \item{Hpinv.tilde}{ Prior covariance for the predetermined and
     exogenous regression in the B-SVAR}
   \item{H0inv.tilde}{ \eqn{m} dimensional list of the prior covariances for
@@ -195,7 +195,7 @@ szbsvar(Y, p, z = NULL,
   \item{intercept}{ \eqn{m} dimensional vector of the reduced form
     intercepts }
   \item{exog.coefs}{ \eqn{h \times m}{h x m} matrix of the reduced form exogenous
-    variable coefficients } 
+    variable coefficients }
   \item{prior}{ List of the prior parameter:
     \code{c(lambda0,lambda1,lambda3,lambda4,lambda5, mu5, mu6)}. }
   \item{df}{ Degrees of freedom for the model: T + number of dummy
@@ -203,7 +203,7 @@ szbsvar(Y, p, z = NULL,
   \item{n0}{ \eqn{m} dimensional list of the number of free parameters for the
   \eqn{A_0}{A(0)} matrix for equation \eqn{i}. }
   \item{ident}{ \eqn{m \times m}{m x m} identification matrix
-    \code{ident}. } 
+    \code{ident}. }
 }
 \references{
 Sims, C.A. and Tao A. Zha. 1998. "Bayesian Methods for Dynamic

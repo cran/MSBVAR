@@ -6,7 +6,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Generate forecasts for fitted VAR objects}
 \description{
-  Forecasting for VAR/BVAR/BSVAR objects with structural (endogenous)
+  Forecasting for VAR/BVAR/BSVAR/MSBVAR objects with structural (endogenous)
   and exogenous shocks.
 }
 \usage{
@@ -18,24 +18,24 @@ forecast(varobj, nsteps, A0=t(chol(varobj$mean.S)),
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{varobj}{ Fitted VAR model of the class VAR, BVAR, BSVAR, or MSBVAR
-    produced by \code{\link{reduced.form.var}}, \code{\link{szbvar}}, 
+    produced by \code{\link{reduced.form.var}}, \code{\link{szbvar}},
     \code{\link{szbsvar}} or \code{\link{gibbs.msbvar}}.}
   \item{nsteps}{ Number of periods in the forecast horizon}
   \item{A0}{ \eqn{m \times m}{m x m} matrix of the decomposition of the
     contemporaneous endogenous forecast innovations for BSVAR models.}
   \item{shocks}{ Structural shocks to the VAR, BVAR, or BSVAR models.
     These must be scaled consistent with the structural identification
-    in \eqn{A_0}{A(0)}.} 
+    in \eqn{A_0}{A(0)}.}
   \item{exog.fut}{ nsteps x number of exogenous variables matrix of the
     future values of exogenous variable shocks.  Only implemented for
     VAR, BVAR, and BSVAR models at present.}
   \item{N1}{ integer, number of burnin draws for the MSBVAR forecasts.}
   \item{N2}{ integer, number of final posterior draws for MSBVAR
-    forecasts.} 
+    forecasts.}
 }
 \details{
   VAR / BVAR / BSVAR models:
-  
+
   This function computes forecasts for the classical and Bayesian
   VAR models that are estimated in the MSBVAR package.  Users can
   specify shocks to the system over the forecast horizon (both
@@ -54,11 +54,11 @@ forecast(varobj, nsteps, A0=t(chol(varobj$mean.S)),
   is the posterior parameters from a call to \code{\link{gibbs.msbvar}},
   and \code{N1} and \code{N2} to set the burnin and number of draws from
   the posterior.  The posterior forecasts are based on the mixture over
-  the \eqn{h} regimes for the specified model.  
+  the \eqn{h} regimes for the specified model.
 }
 \value{
   For VAR, BVAR, and BSVAR models:
-  
+
   A matrix time series object,
     \eqn{((T + nsteps) \times m)}{(T + nsteps) x m} of the original
     series and forecasts.
@@ -82,7 +82,7 @@ forecast(varobj, nsteps, A0=t(chol(varobj$mean.S)),
 
 \seealso{ \code{\link{reduced.form.var}}, \code{\link{szbvar}} and
   \code{\link{szbsvar}} for estimation methods that create the elements
-  needed to forecast} 
+  needed to forecast}
 
 \examples{
 data(IsraelPalestineConflict)
@@ -109,7 +109,25 @@ par(mfrow=c(2,1))
 plot(i2p, plot.type=c("single"))
 plot(p2i, plot.type=c("single"))
 
-# Need an example here for MSBVAR forecasts 
+
+\dontrun{
+# MSBVAR forecasts
+
+# Fit model
+m1 <- msbvar(Y.sample1, p=1, h=2, lambda0=0.8, lambda1=0.2,
+             lambda3=1, lambda4=0.2, lambda5=0, mu5=0, mu6=0,
+             qm=12, prior=0)
+
+# Gibbs sampling
+m1id <- gibbs.msbvar(m1, N1=1000, N2=10000, permute=FALSE, Sigma.idx=1)
+
+# Forecast density estimation
+msforc <- forecast(m1id, nsteps=nrow(Y.sample2), N1=1000, N2=10000)
+
+# Summarize forecasts
+apply(msforc$forecasts, c(2,3), mean)
+
+}
 }
 \keyword{ ts}
 \keyword{ regression }

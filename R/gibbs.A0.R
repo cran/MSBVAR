@@ -19,12 +19,16 @@
                   as.integer(thin), as.integer(method),
                   gibbs.setup.bsvar(varobj)$UT)
 
+    # Memory cleanup
+    gc(); gc();
+
     # Set classing
     class(tmp2) <- c("gibbs.A0")
     return(tmp2)
 }
 
 
+# Converts the A0 object into something that coda can understand.
 "A02mcmc" <- function(x)
 {
     return(mcmc(matrix(x$A0.posterior$A0,
@@ -33,4 +37,3 @@
                        byrow=T),
                 thin=x$thin))
 }
-
