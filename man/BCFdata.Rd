@@ -17,10 +17,10 @@
   Positive values indicate an average of more cooperation and less
   conflict and negative values indicate an average with more conflict
   than cooperation.  These are a subset
-  of the Levant dataset from the Kansas / Penn State Event Data Project Levant
-  dataset.  The data are from AFP news sources and encoded
-  into the World Event Interaction Survey (WEIS) coding system and
-  Goldstein scalings using the Penn State Event Data Project TABARI
+  of the Levant dataset from the Kansas / Penn State / Computational
+  Event Data Project Levant dataset.  The data are from AFP news sources
+  and encoded into the World Event Interaction Survey (WEIS) coding
+  system and Goldstein scalings using the Event Data Project TABARI
   program.  Source data can be found on the site below.
  }
  \usage{data(BCFdata)}
@@ -51,7 +51,7 @@
   Credibility.'' \emph{Journal of Conflict Resolution}. 52(3): 343-374.
   
   Replication materials at
-  \url{http://www.utdallas.edu/~pbrandt/pbrandt/Replication_files/BrandtColaresiFreemanJCR08.tar.gz} 
+  \url{http://jcr.sagepub.com/content/52/3/343}
   
  }
  
@@ -60,7 +60,7 @@
    Goldstein, Joshua. S. 1992. "A Conflict-Cooperation Scale for WEIS
    Event Data" \emph{Journal of Conflict Resolution}. 36:369-385.
    
-   Penn State Event Data Project \url{http://eventdata.psu.edu}
+   Computational Event Data Project \url{http://eventdata.parusanalytics.com/}
 }
 
 \keyword{datasets}

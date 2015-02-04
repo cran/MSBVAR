@@ -32,11 +32,11 @@ c     eyemat is an n x n identity matrix
       DOUBLE PRECISION eyemat (n,n)
 
 c     Set each element to zero
-      eyemat = 0.0        
-      
+      eyemat = 0.0
+
 c     Change value of each element along diagonal to zero
-      DO j = 1,n                
-         eyemat(j,j) = 1.0    
+      DO j = 1,n
+         eyemat(j,j) = 1.0
       END DO
 
       END SUBROUTINE diag
@@ -89,7 +89,7 @@ c     to obtain determinant
             IF (i==j) det = det*matOut(i,j)
          END DO
       END DO
-      
+
       det = ABS(det)
 
       RETURN
@@ -99,8 +99,8 @@ c     to obtain determinant
 
 ccccccccccccccccccccccccccccccccccccccccccccc
 c     subroutine for matrix matrix multiplication
-      SUBROUTINE MatrixMultiply(matA, nrowA, ncolA, 
-     &                          matB, nrowB, ncolB, 
+      SUBROUTINE MatrixMultiply(matA, nrowA, ncolA,
+     &                          matB, nrowB, ncolB,
      &                          matC, tmpint)
 
 c      EXTERNAL DGEMM
@@ -112,7 +112,7 @@ c      EXTERNAL DGEMM
 c     Note the d0's in the call.
       CALL DGEMM('N','N',nrowA,ncolB,ncolA,1.0d0,
      &           matA,nrowA,matB,nrowB,0.0d0,matC,nrowA)
-   
+
       RETURN
 
       END SUBROUTINE MatrixMultiply
@@ -125,9 +125,9 @@ c     subroutine to transpose matrix
 
       INTEGER nrow, ncol, irow, icol
       DOUBLE PRECISION matIn(nrow,ncol), matOut(ncol,nrow)
-    
+
 c     Change value of each element along diagonal to zero
-      DO irow = 1,nrow              
+      DO irow = 1,nrow
          DO icol = 1,ncol
             matOut(icol,irow) = matIn(irow,icol)
          END DO
@@ -136,3 +136,21 @@ c     Change value of each element along diagonal to zero
       RETURN
 
       END SUBROUTINE MatrixTranspose
+
+ccccccccccccccccccccccccccccccccccccccccccccccccc
+c     Uniform (0,1) random number generator
+c
+c     use R's random number generator directly
+c     the way `Writing R extentions' advertises.
+c
+
+      SUBROUTINE MVUNI(y)
+      DOUBLE PRECISION unifrnd, y
+
+      CALL rndstart()
+      y = unifrnd()
+      CALL rndend()
+      RETURN
+
+      END SUBROUTINE MVUNI
+

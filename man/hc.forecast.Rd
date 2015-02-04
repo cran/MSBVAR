@@ -71,7 +71,7 @@ hc.forecast(varobj, yconst, nsteps, burnin,
 \examples{
 \dontrun{
 ## Uses the example from Brandt and Freeman 2006.  Will not run unless
-## you have their data from http://yule.utdallas.edu or the Politcal
+## you have their data from the Politcal
 ## Analysis website!
 library(MSBVAR)   
 

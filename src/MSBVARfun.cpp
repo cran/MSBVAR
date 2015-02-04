@@ -1,5 +1,6 @@
 #include "MSBVARcpp.h"
-
+#include <R_ext/RS.h>
+#include <Rmath.h>
 //extern "C" {
 
 SEXP listElt(SEXP list, const char* str)

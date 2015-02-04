@@ -99,3 +99,9 @@ S3method(plot, forecast.VAR)
 S3method(sum, SS)
 S3method(mean, SS)
 S3method(plot, SS)
+
+# Others
+S3method(plot, forc.ecdf)
+S3method(plot, ms.irf)
+S3method(print, posterior.fit)
+S3method(summary, forecast)

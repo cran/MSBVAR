@@ -14,7 +14,7 @@
     yr <- substr(dt, x[1], x[1] + attr(x, "match.length") - 1)
 
     packageStartupMessage(
-        c("##\n## MSBVAR Package v.0.9-1\n",
+        c("##\n## MSBVAR Package v.0.9-2\n",
           paste("## Build date: ", date(), "\n"),
           paste("## Copyright (C) 2005-", yr, ", Patrick T. Brandt\n", sep=""),
           "## Written by Patrick T. Brandt\n",

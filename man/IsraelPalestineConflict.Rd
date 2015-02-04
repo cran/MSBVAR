@@ -34,7 +34,7 @@
    Goldstein, Joshua. S. 1992. "A Conflict-Cooperation Scale for WEIS
    Event Data" \emph{Journal of Conflict Resolution}. 36:369-385.
    
-   Penn State Event Data Project \url{http://eventdata.psu.edu}
+   Computational Event Data Project \url{http://eventdata.parusanalytics.com}
 }
  
 \keyword{datasets}

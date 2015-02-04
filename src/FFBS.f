@@ -23,7 +23,7 @@ c     Forward-Filtering
 
 c     SS is (bigt-p)x(h) matrix of zeros currently
 c     (SS was initialized in R code).
-c     Using last observation from the filter output, 
+c     Using last observation from the filter output,
 c     generate state
 c     SScurr = current SS based on t
       st1 = 1
@@ -40,7 +40,7 @@ c     SScurr = current SS based on t
 c     Construct transition matrix
       transmat = 0.0
       DO t = 1,(bigt-p-1)
-         transmat(STT(t+1,1), STT(t,1)) = 
+         transmat(STT(t+1,1), STT(t,1)) =
      &        transmat(STT(t+1,1), STT(t,1)) + 1
       END DO
 
@@ -58,7 +58,7 @@ c     st1 is changed to for the next call
       INTEGER st1, h
       DOUBLE PRECISION prob(h,1), Q(h,h)
       INTEGER SScurr(h,1)
-      DOUBLE PRECISION pr0, tmpsum
+      DOUBLE PRECISION pr0, tmpsum, MVUNI
 
       INTEGER i
 
@@ -75,7 +75,7 @@ c
             tmpsum = tmpsum + prob(j,1)*Q(st1,j)
          END DO
          pr0 = (prob(i,1)*Q(st1,i)) / tmpsum
-         IF (RAND(0) .LE. pr0) THEN
+         IF (MVUNI(1.0) .LE. pr0) THEN
             SScurr(1:h,1) = Imath(i,:)
             st1 = i
             GO TO 3

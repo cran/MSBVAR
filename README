@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.9-1
-Date: 2014-07-21
+Version: 0.9-2
+Date: 2015-02-04
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
@@ -251,10 +251,13 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   Added length check on sign.list in mc.irf for BSVAR models.
 	   Added dimension check on prior transition matrix to MSBVAR
 	   models,
-
+2015-02-04 Updated DESCRIPTION files.
+	   Added wrapper.c so that RNG calls point to unif_rand for
+	   use in the FFBS.f Fortran code.  This way the RNG is all
+	   seeded by R.
 
 MSBVAR Package
-Copyright (C) 2005-2014 Patrick T. Brandt
+Copyright (C) 2005-2015 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 
