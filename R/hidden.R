@@ -50,9 +50,7 @@
 
 "list.print" <- function(x)
 {
-    if(is.null(x$values)){
-        return
-    } else if(is.list(x$values)){
+    if(is.list(x$values)){
         cat("==========================================\n")
         cat(x$labels[1],"\n")
         cat("==========================================\n")
@@ -69,9 +67,7 @@
             cat(x$labels[1],": \n",sep="")
             prmatrix(x$values)
         } else if(is.null(dim(x$values))){
-            if (is.null(x$values)){
-                return
-            } else if ((length(x$values)/length(x$labels))==1){
+            if ((length(x$values)/length(x$labels))==1){
                 for(i in 1:length(x$values))
                     cat(x$labels[i], ":    ", x$values[i], "\n")
             } else {

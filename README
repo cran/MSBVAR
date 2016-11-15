@@ -1,6 +1,6 @@
 Package: MSBVAR
-Version: 0.9-2
-Date: 2015-02-04
+Version: 0.9-3
+Date: 2016-11-14
 Title: Markov-Switching, Bayesian, Vector Autoregression Models
 Author: Patrick T. Brandt <pbrandt@utdallas.edu>
 Maintainer: Patrick T. Brandt <pbrandt@utdallas.edu>
@@ -255,9 +255,10 @@ URL: http://www.utdallas.edu/~pbrandt/
 	   Added wrapper.c so that RNG calls point to unif_rand for
 	   use in the FFBS.f Fortran code.  This way the RNG is all
 	   seeded by R.
+2016-11-14 Updates to correct use of return in hidden.R
 
 MSBVAR Package
-Copyright (C) 2005-2015 Patrick T. Brandt
+Copyright (C) 2005-2016 Patrick T. Brandt
 Support provided by the U.S. National Science Foundation
 (Grants SES-0351179, SES-0351205, SES-0540816, and SES-0921051)
 

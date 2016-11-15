@@ -9,6 +9,16 @@ import(bit)
 import(mvtnorm)
 import(lattice)
 
+importFrom("graphics", "abline", "box", "close.screen", "contour",
+           "layout", "lines", "mtext", "pairs", "par", "persp", "plot",
+           "plot.new", "points", "polygon", "screen", "split.screen",
+           "title")
+importFrom("stats", "approx", "ar.ols", "as.formula", "as.ts",
+           "density", "embed", "frequency", "kmeans", "lm", "optim",
+           "pchisq", "pf", "qnorm", "quantile", "rchisq", "rgamma",
+           "rnorm", "runif", "start", "ts", "ts.plot", "tsp", "var")
+importFrom("grDevices", "devAskNewPage")
+
 # Functions visible to pkg users
 export(
        dfev,

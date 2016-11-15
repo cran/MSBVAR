@@ -1,7 +1,7 @@
 263b03fca1747f78c6f7dc74e8d028b3 *COPYING
-e06f604fc43148d3c67b9633ca458d8c *DESCRIPTION
-88e338ef4d98d645ea783d5ee925d0e5 *LICENSE
-9c6adc6afd816f214b30b7ada005106c *NAMESPACE
+8b63e46e382b886b3b7acb3f1b72681c *DESCRIPTION
+fef601861faf4202fe6d96d55642d873 *LICENSE
+d24bc3fd2dd3dc02a6d905b072e43a6a *NAMESPACE
 30b712208e1d2d8d9b1f1bb5378d247b *R/SS.R
 6d830eb1c07d910ae9fd6bec2c3748ac *R/SZ.prior.evaluation.R
 93bb693d9896ccaf7d68bd431776d725 *R/bingen.R
@@ -14,7 +14,7 @@ c480d7798b5bab4103618f3c82042fbf *R/decay.spec.R
 811115d191a61af1a5f6400dd6bb8b4a *R/gibbs.A0.R
 40eb16465764907458f83517417a4f31 *R/gibbs.msbvar.R
 7cf1c881872485b37ae08f4d8625a321 *R/granger.test.R
-1be48552bed217f2c7b6c8d7fc1595a8 *R/hidden.R
+83714ee3e3241becbeb6a535f23bce27 *R/hidden.R
 4c754dd77a3dd2a96f0532138b3aeb45 *R/initialize.msbvar.R
 af5deb7ee2caa863984bede78820c522 *R/irf.R
 8468b4cb294cd04193515124aa0cf265 *R/mae.R
@@ -45,7 +45,7 @@ fada5ea7f491930c01e6103d356fdb4d *R/simulateMSAR.R
 76ecb015e69c8071658d4c972dc737f8 *R/szbvar.R
 e2cfb2b344eb82c74b8cf367f999c032 *R/var.lag.specification.R
 cff410ba12495ac27dbb247362205547 *R/zzz.R
-a64ca5bff4d7488c5c71361118a56faf *README
+9f54c6d1f5d78f768f64de4cdcc9c4c8 *README
 82d0f588881aa6321cf0218103fa54cd *data/BCFdata.RData
 45ebcc7201eeafe51b0985e09799210f *data/HamiltonGDP.RData
 9eedc964b21323db8dcfbd911a7bf012 *data/IsraelPalestineConflict.RData
